@@ -1,0 +1,16 @@
+*possibly do this* depending on where we know the green or red space to be in select the "best" corner to start search with (depending how far away is it from the wall, if we want to maximize our time and do the most crowded areas first)
+
+go straight for the zone from the starting point and avoid or collect any blocks on the way in the direct path
+start scanning at the corner clockwise at 30 deg from the zone
+once you see something (other than wall, maybe put known wall distance as max), go straight up to the object
+
+if it is a blue block capture it, turn around, and bring it straight back to the zone, stack or garbage collect
+then continue scanning it from the angle and corner you left off at and repeat
+
+if it it is a wooden block, go straight back, keep track of angle you were at.
+continue scanning from the angle but keep track of the values in an array, if there is an __ amount in difference from value to another, we are past the wooden block, continue searching like usual
+
+continue the scan until you are 30 deg from the other side of the zone, then go on to the next corner.
+
+Once you are done searching from each corner, a new kind of search begins (this is to collect blocks that were too far for the sensor to see or behind a wooden block, if we even have enough time left to get to this).
+
