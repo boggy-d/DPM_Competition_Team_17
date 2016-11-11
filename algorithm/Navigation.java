@@ -61,6 +61,7 @@ public class Navigation implements TimerListener{
 	public double wrapAngle(double angle){
 		
 		//TODO Might be deprecated because of the fixDegreeAngle method
+		
 		if (angle < 0)
 		{ angle += 360;	}
 
@@ -71,16 +72,16 @@ public class Navigation implements TimerListener{
 	}
 	
 	/**
-	 * Converts the angle (needs to be explained)
-	 * @param radius
-	 * @param width
-	 * @param angle
-	 * @return
+	 * (needs to be explained
+	 * @param radius the radius of the wheels
+	 * @param width the distance between the wheels
+	 * @param angle the angle to convert
+	 * @return the converted angle
 	 */
 	public int convertAngle( double radius, double width, double angle){
 
 		//TODO ERIC WTF DOES THIS DO
-		return (int)((width * angle / 2.0) / (radius));
+		return (int)Math.toDegrees(((width * angle / 2.0) / (radius)));
 	}
 
 	/**
@@ -97,18 +98,20 @@ public class Navigation implements TimerListener{
 
 		double delta_x = (final_x - initial_x);
 		double delta_y = (final_y - initial_y);
-
+		double return_angle = 0;
 		if (delta_x < 0){
 
 			if (delta_y > 0)
-				{ return Math.atan(delta_y / delta_x) + Math.PI; }
+				{ return_angle = Math.atan(delta_y / delta_x) + Math.PI; }
 
 			else
-				{ return Math.atan(delta_y / delta_x) - Math.PI; }
+				{ return_angle = Math.atan(delta_y / delta_x) - Math.PI; }
 		}
 
 		else
-			{ return Math.atan(delta_y / delta_x); }
+			{ return_angle = Math.atan(delta_y / delta_x); }
+		
+		return Math.toDegrees(return_angle);
 	}
 
 	/**
@@ -121,7 +124,7 @@ public class Navigation implements TimerListener{
 		ActionController.stopMotors();
 		ActionController.setSpeeds(ROTATION_SPEED, ROTATION_SPEED);
 
-		double delta_theta = Math.toDegrees(target_angle - odometer.getAng());
+		double delta_theta = target_angle - odometer.getAng();
 		int turning_angle =convertAngle(RADIUS, TRACK, delta_theta);
 
 		double adjusted_theta = 360 - delta_theta;

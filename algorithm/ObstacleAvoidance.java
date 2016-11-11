@@ -25,8 +25,8 @@ public class ObstacleAvoidance {
 	/**
 	 * Turns the robot 90deg and breaks out of obstacle avoidance (exact algorithm still TBD)
 	 * 
-	 * @see TimeRecorder
-	 * @see Odometer
+	 * @see component.TimeRecorder
+	 * @see component.Odometer
 	 */
 	public void avoidWall()
 	{

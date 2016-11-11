@@ -15,6 +15,11 @@ import lejos.utility.TimerListener;
 
 public class LightPoller implements TimerListener{
 	
+	// initializes color sensor.
+	// method with variable filters for different needs
+	// one filter for black gridlines
+	// one filter for object detection
+	
 	/**
 	 * Class Constructor
 	 * 
