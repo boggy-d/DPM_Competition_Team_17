@@ -3,7 +3,7 @@
  * machine for the system as it controls the flow
  * of the routine.
  * 
- * @author Bogdan Dumitru
+ * @author Bogdan Dumitru, Eric Zimmermann
  * @version 0.2.0
  * 
  */
@@ -43,6 +43,15 @@ public class ActionController implements TimerListener {
 	 * @param lSpd	the speed of the left motor
 	 * @param rSpd	the speed of the right motor
 	 */
+	
+	/*PROBLEM: if set speeds causes motors to actually move, the function gives user less control.
+	 * This results in unnecessary movement that will interfere with methods in Navigation
+	 * The robot will start rotating before actual scaled rotation in passed.
+	 * Make a go backward method that uses distance.
+	 * Make a generalized go forward/backward that doesnt take in any distances
+	 * Just make a general setSpeeds that doesn't take make the bot move immediately
+	 */
+	
 	public static void setSpeeds(int lSpd, int rSpd) {
 
 		leftMotor.setSpeed(lSpd);
