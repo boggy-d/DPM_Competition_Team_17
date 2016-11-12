@@ -16,14 +16,13 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.robotics.SampleProvider;
 
 public class USLocalization {
-	final static int ROTATE_SPEED = 100, CLIP = 55, WALL_DIST = 50, US_MARGIN = 3;
+	final static int ROTATE_SPEED = 100, CLIP = 45, WALL_DIST = 40, US_MARGIN = 2;
 
 	// for constructor
 	private Odometer odometer;
 	private USPoller usPoller;
 
 	private EV3LargeRegulatedMotor leftMotor;
-
 	private EV3LargeRegulatedMotor rightMotor;
 
 	/**
@@ -46,7 +45,9 @@ public class USLocalization {
 	 * Localize the robot to coordinate (0 , 0) with a heading of 0 by using the
 	 * USPoller to detect Rising Edge
 	 */
-	public void localize() {
+	
+	//Renamed in order to differentiate the type of localization: US vs Light
+	public void usLocalize() {
 		// TODO Use Eric's code with Bogdan's architecture for this method
 
 		double[] position = new double[3];
@@ -102,16 +103,10 @@ public class USLocalization {
 
 		// set positions below
 		odometer.setPosition(position, update);
-
+		
+		//rotate robot to 45 degrees in order for light localization to be performed
+		//where should this be handled?
+		
 	}
 
-	private float getFilteredData() {
-
-		// TODO Remove this and use the USPoller class
-
-//		usSensor.fetchSample(usData, 0);
-//		float distance = usData[0] * 100;
-//
-		return 0;
-	}
 }
