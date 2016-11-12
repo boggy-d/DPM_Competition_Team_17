@@ -72,7 +72,9 @@ public class Navigation implements TimerListener{
 	}
 	
 	/**
-	 * (needs to be explained
+	 * Calculates rotations needed to be performed by both wheels in order to rotate by a certain angle. 
+	 * Rotations needed are calculated by the relative dimensions of the bot
+	 * accuracy is clipped by casting actual value to an integer value
 	 * @param radius the radius of the wheels
 	 * @param width the distance between the wheels
 	 * @param angle the angle to convert
@@ -80,7 +82,6 @@ public class Navigation implements TimerListener{
 	 */
 	public int convertAngle( double radius, double width, double angle){
 
-		//TODO ERIC WTF DOES THIS DO
 		return (int)Math.toDegrees(((width * angle / 2.0) / (radius)));
 	}
 
@@ -98,18 +99,16 @@ public class Navigation implements TimerListener{
 
 		double delta_x = (final_x - initial_x);
 		double delta_y = (final_y - initial_y);
-		double return_angle = 0;
+		double return_angle = Math.atan(delta_y / delta_x);  //edited for efficiency such that minimal work is required
+		
 		if (delta_x < 0){
 
 			if (delta_y > 0)
-				{ return_angle = Math.atan(delta_y / delta_x) + Math.PI; }
+				{ return_angle += Math.PI; }
 
 			else
-				{ return_angle = Math.atan(delta_y / delta_x) - Math.PI; }
+				{ return_angle -= Math.PI; }
 		}
-
-		else
-			{ return_angle = Math.atan(delta_y / delta_x); }
 		
 		return Math.toDegrees(return_angle);
 	}
@@ -122,7 +121,7 @@ public class Navigation implements TimerListener{
 	public void turnTo(double target_angle){
 
 		ActionController.stopMotors();
-		ActionController.setSpeeds(ROTATION_SPEED, ROTATION_SPEED);
+		ActionController.setSpeeds(ROTATION_SPEED, ROTATION_SPEED); //SETSPEEDS CAUSES BOT TO MOVE FORWARD *ERROR*
 
 		double delta_theta = target_angle - odometer.getAng();
 		int turning_angle =convertAngle(RADIUS, TRACK, delta_theta);
