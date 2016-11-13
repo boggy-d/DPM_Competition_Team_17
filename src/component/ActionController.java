@@ -54,8 +54,8 @@ public class ActionController implements TimerListener {
 	
 	public static void setSpeeds(int lSpd, int rSpd, boolean move) {
 
-		leftMotor.setSpeed(lSpd);
-		rightMotor.setSpeed(rSpd);
+		leftMotor.setSpeed(Math.abs(lSpd));
+		rightMotor.setSpeed(Math.abs(rSpd));
 		
 		if(move){
 			
