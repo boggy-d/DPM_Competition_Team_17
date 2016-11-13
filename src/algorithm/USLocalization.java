@@ -59,7 +59,7 @@ public class USLocalization {
 		boolean[] update = { false, false, true };
 		double cw_angle, ccw_angle;
 
-		ActionController.setSpeeds(ROTATE_SPEED, ROTATE_SPEED);
+		ActionController.setSpeeds(ROTATE_SPEED, ROTATE_SPEED, false);
 
 		while (usPoller.getClippedData(CLIP) == WALL_DIST) {
 
@@ -75,7 +75,7 @@ public class USLocalization {
 
 		ActionController.stopMotors();
 		cw_angle = odometer.getAng();
-		ActionController.setSpeeds(ROTATE_SPEED, ROTATE_SPEED);
+		ActionController.setSpeeds(ROTATE_SPEED, ROTATE_SPEED, false);
 
 		while (usPoller.getClippedData(CLIP) >= WALL_DIST) {
 
@@ -90,7 +90,6 @@ public class USLocalization {
 		}
 
 		ActionController.stopMotors();
-		ActionController.setSpeeds(ROTATE_SPEED, ROTATE_SPEED);
 		ccw_angle = odometer.getAng();
 
 		if (cw_angle > ccw_angle) {
