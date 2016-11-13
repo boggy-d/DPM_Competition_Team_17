@@ -121,7 +121,7 @@ public class Navigation implements TimerListener{
 	public void turnTo(double target_angle){
 
 		ActionController.stopMotors();
-		ActionController.setSpeeds(ROTATION_SPEED, ROTATION_SPEED); //SETSPEEDS CAUSES BOT TO MOVE FORWARD *ERROR*
+		ActionController.setSpeeds(ROTATION_SPEED, ROTATION_SPEED, false); //SETSPEEDS CAUSES BOT TO MOVE FORWARD *ERROR*
 
 		double delta_theta = target_angle - odometer.getAng();
 		int turning_angle =convertAngle(RADIUS, TRACK, delta_theta);
@@ -159,12 +159,11 @@ public class Navigation implements TimerListener{
 	public void travelTo(double destination_x, double destination_y){
 
 		turnTo(calculateAngle(odometer.getX(), odometer.getY(), destination_x, destination_y));
-		ActionController.setSpeeds(FORWARD_SPEED, FORWARD_SPEED);
+		ActionController.setSpeeds(FORWARD_SPEED, FORWARD_SPEED, true);
 
 		while ((Math.abs(odometer.getX() - destination_x) > DIST_ERR) || (Math.abs(odometer.getY() - destination_y) > DIST_ERR)){
 
-			leftMotor.forward();
-			rightMotor.backward();
+			//already moving forward -- do nothing
 		}
 		
 		ActionController.stopMotors();
