@@ -9,26 +9,29 @@
 
 package algorithm;
 
+import component.ActionController;
 import component.Odometer;
+import component.Navigation;
 import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.robotics.SampleProvider;
 
 public class LightLocalization {
 	//for the constructor
-	private Odometer odo;
+	private Odometer odometer;
 	private Navigation navigation;
 	private SampleProvider colorSensor;
 	private float[] colorData;	
 	private EV3LargeRegulatedMotor leftMotor, rightMotor;
 	
-	//motor speeds
+	//motor speeds can be accessed in navigation
 	private final int FORWARD_SPEED = 100;
 	private final int ROTATION_SPEED = 60;
+	private final int COLOR_THRESHOLD = 000;
 	
 	//for doLocalization 
-	private final double COLOR_DIST = 13.7;									//distance between the center of rotation of robot and light sensor
-	private final double BUFFER_DIST = 6/Math.sqrt(2);						//buffer distance (where we want to be before rotating)
+	private final double COLOR_DIST = 0000;		//distance between the center of rotation of robot and light sensor
+						
 	
 	/**
 	 * Class constructor specifying the different parameters this class
@@ -44,14 +47,18 @@ public class LightLocalization {
 	 * @see Odometer
 	 * @see Navigation
 	 */
-	public LightLocalization(Odometer odo, Navigation navigation, SampleProvider colorSensor, float[] colorData, 
-			EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor) {
-		this.odo = odo;
+	public LightLocalization(Odometer odo, Navigation navigation, SampleProvider colorSensor, float[] colorData) {
+		
+		this.odo = odometer;
 		this.navigation = navigation;
 		this.colorSensor = colorSensor;
 		this.colorData = colorData;
-		this.leftMotor = leftMotor;
-		this.rightMotor = rightMotor;
+		
+		
+		//motors are static and may be accessed by action controller -- not sure how to do this
+		EV3LargeRegulatedMotor[] motors = this.odometer.getMotors();
+		this.leftMotor = motors[0];
+		this.rightMotor = motors[1];
 	}
 	
 	/**
@@ -72,59 +79,23 @@ public class LightLocalization {
 		//turn to approximate direction of lines
 		navigation.turnTo(45);
 	
-		//save starting position (before light localization)
-		double posXo = odo.getX();
-		double posYo = odo.getY();
 		
 		//setting speed to forward speed
-		leftMotor.setSpeed(FORWARD_SPEED);
-		rightMotor.setSpeed(FORWARD_SPEED);
+		ActionController.setSpeeds(FORWARD_SPEED,FORWARD_SPEED, true);
 		
 		// drive forward until we detect a line
-		while(getColorData() > 350){
-			leftMotor.forward();
-			rightMotor.forward();
-		}
+		while(getColorData() > 350)
+		{ ActionController.stopMotors(); }
 		
 		 Sound.beep(); 
 		
-		/*
-		 * Stop motor.
-		 * We need to set speed to 0 before stopping the motor 
-		 * because stop() doesn't stop both motors at the same time
-		 * and leads to error (testing hardware issue).
-		 */
-		leftMotor.setSpeed(0);
-		rightMotor.setSpeed(0);
-		leftMotor.forward();
-		rightMotor.forward();
-		leftMotor.stop();
-		rightMotor.stop();
 		
-		//setting speed to forward speed
-		leftMotor.setSpeed(FORWARD_SPEED);
-		rightMotor.setSpeed(FORWARD_SPEED);
 		
-		//save position we are at after having moved forward and seen a line
-		double posX = odo.getX();
-		double posY = odo.getY();
-	
 		//move backward until we are in the negative XY quadrant
-		// we want to end up at BUFFER_DIST behind the lines (to make sure test is done in the right spot)
-		while(odo.getX() > ( posX  - ((COLOR_DIST/Math.sqrt(2)) + BUFFER_DIST )  ) && 
-				odo.getY() > ( posY  - ((COLOR_DIST/Math.sqrt(2)) + BUFFER_DIST)))
-		{
-			leftMotor.backward();
-			rightMotor.backward();
-		}
+		ActionController.goForward(COLOR_DIST + BUFFER_DIST, -FORWARD_SPEED);
 		
 		//stop motor
-		leftMotor.setSpeed(0);
-		rightMotor.setSpeed(0);
-		leftMotor.forward();
-		rightMotor.forward();
-		leftMotor.stop();
-		rightMotor.stop();
+		ActionController.stopMotors();
 		
 		//line count
 		int count = 0;
@@ -133,35 +104,26 @@ public class LightLocalization {
 		double[] angles = new double[4] ;
 		
 		//set rotation speed
-		leftMotor.setSpeed(ROTATION_SPEED);
-		rightMotor.setSpeed(ROTATION_SPEED);
+		ActionController.setSpeeds(FORWARD_SPEED, -FORWARD_SPEED, true);
 		
 		//we need to cross 4 lines
 		while (count < 4){
 			
-			//rotate clockwise
-			leftMotor.forward();
-			rightMotor.backward();
+			//rotate clockwise -- already rotating
 			
 			//when we see a line
-			if(getColorData() < 500){
+			if(getColorData() < COLOR_THRESHOLD){
 				
 				//store the angle in array
 				 angles[count] = odo.getAng();
 				 //increment line count
-				 count++;
-				 Sound.beep(); 				
+				 count++;			
 			}
 			
 		}
 		
 		//stop motor
-		leftMotor.setSpeed(0);
-		rightMotor.setSpeed(0);
-		leftMotor.forward();
-		rightMotor.forward();
-		leftMotor.stop();
-		rightMotor.stop();
+		ActionController.stopMotors();
 		
 		//update positions
 		//position x
@@ -187,7 +149,7 @@ public class LightLocalization {
 
 	private float getColorData() {
 		
-		//TODO Remove and replace by USPoller object
+		//TODO Remove and replace by LightPoller object
 		
 		colorSensor.fetchSample(colorData, 0);
 		float color = colorData[0]*1000;
