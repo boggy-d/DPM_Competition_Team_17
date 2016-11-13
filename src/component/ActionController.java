@@ -52,10 +52,13 @@ public class ActionController implements TimerListener {
 	 * Just make a general setSpeeds that doesn't take make the bot move immediately
 	 */
 	
-	public static void setSpeeds(int lSpd, int rSpd) {
+	public static void setSpeeds(int lSpd, int rSpd, boolean move) {
 
 		leftMotor.setSpeed(lSpd);
 		rightMotor.setSpeed(rSpd);
+		
+		if(move){
+			
 		if (lSpd < 0)
 			leftMotor.backward();
 		else
@@ -64,6 +67,7 @@ public class ActionController implements TimerListener {
 			rightMotor.backward();
 		else
 			rightMotor.forward();
+		}
 	}
 
 	/**
@@ -71,7 +75,7 @@ public class ActionController implements TimerListener {
 	 */
 	public static void stopMotors() {
 
-		setSpeeds(0,0);
+		setSpeeds(0,0,true);
 
 		leftMotor.stop();
 		rightMotor.stop();
@@ -86,7 +90,7 @@ public class ActionController implements TimerListener {
 	 */
 	public void goForward(float distance, int speed) {
 
-		setSpeeds(speed, speed);
+		setSpeeds(speed, speed, true);
 
 		double initial_X = odometer.getX();
 		double initial_Y = odometer.getY();
