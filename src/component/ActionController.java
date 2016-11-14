@@ -25,7 +25,7 @@ public class ActionController implements TimerListener {
 	private final int CLAW_LIFT_TWO_BLOCK = 600;
 	private final int CLAW_LIFT_THREE_BLOCK = 500;
 
-	private Odometer odometer;
+	private static Odometer odometer;
 	private static EV3LargeRegulatedMotor leftMotor;
 	private static EV3LargeRegulatedMotor rightMotor;
 
@@ -88,7 +88,7 @@ public class ActionController implements TimerListener {
 	 * @param distance the distance (in cm) to travel
 	 * @param speed the speed of the wheels
 	 */
-	public void goForward(float distance, int speed) {
+	public static void goForward(double distance, int speed) {
 
 		setSpeeds(speed, speed, true);
 
