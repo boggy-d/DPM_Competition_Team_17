@@ -60,8 +60,8 @@ public class USPoller implements TimerListener{
 	public boolean isBlock()
 	{
 		//TODO Write algorithm for block detection. Implement filters.
-		
-		return false;
+		return (getClippedData(255) < 5);
+
 		
 	}
 	
@@ -69,6 +69,10 @@ public class USPoller implements TimerListener{
 	@Override
 	public void timedOut() {
 		//TODO Get data. Check thresholds (basically use the above methods)
-		
+		while(true){
+			if (isBlock()) {
+				
+			}
+		}
 	}
 }

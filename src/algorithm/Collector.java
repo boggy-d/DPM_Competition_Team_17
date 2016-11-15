@@ -16,7 +16,7 @@ public class Collector {
 	 * 
 	 * @see ActionController
 	 * @see Navigator
-	 * @see ObstacleAvoidance
+	 * @see ObstacleAvoider
 	 */
 	public void goToRed()
 	{

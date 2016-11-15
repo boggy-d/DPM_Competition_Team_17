@@ -97,6 +97,10 @@ public class LightPoller implements TimerListener{
 
 	@Override
 	public void timedOut() {
+		
+		while (true) {
+
+			}
 		//TODO Get data. Check thresholds (basically use the above methods)
 		
 	}

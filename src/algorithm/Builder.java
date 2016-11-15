@@ -17,7 +17,7 @@ public class Builder {
 	 * 
 	 * @see ActionController
 	 * @see Navigator
-	 * @see ObstacleAvoidance
+	 * @see ObstacleAvoider
 	 */
 	public void goToGreen()
 	{

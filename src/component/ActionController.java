@@ -13,6 +13,7 @@ package component;
 import algorithm.ClawController;
 import algorithm.LightLocalizer;
 import algorithm.Navigator;
+import algorithm.ObstacleAvoider;
 import algorithm.USLocalizer;
 import lejos.hardware.Button;
 import lejos.hardware.ev3.LocalEV3;
@@ -21,7 +22,7 @@ import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.utility.TimerListener;
 
 public class ActionController implements TimerListener {
-	private static  EV3LargeRegulatedMotor leftMotor;
+	private static EV3LargeRegulatedMotor leftMotor;
 	private static EV3LargeRegulatedMotor rightMotor;
 	private EV3LargeRegulatedMotor clawLift;
 	private EV3LargeRegulatedMotor clawClose;
@@ -32,12 +33,6 @@ public class ActionController implements TimerListener {
 
 	static Odometer odometer;
 	Navigator navigator;
-	
-	private final int CLAW_LIFT_FULL = 775;
-	private final int CLAW_LIFT_ONE_BLOCK = -700;
-	private final int CLAW_LIFT_TWO_BLOCK = 600;
-	private final int CLAW_LIFT_THREE_BLOCK = 500;
-
 	
 	public ActionController(
 			EV3LargeRegulatedMotor leftMotor,
@@ -185,13 +180,20 @@ public class ActionController implements TimerListener {
 	@Override
 	public void timedOut() {
 		// TODO EVERYTHING!!!
+		setWifiInfo();
 		
+		// just for testing, actually get the values from the wifi
+		double greenAreaX = 60;
+		double greenAreaY = 60;
+
 		startOdometer();
 		
 		// set up pollers
 		USPoller frontUSPoller = new USPoller(frontUsSensor);
 		LightPoller floorPoller = new LightPoller(lightSensor);
 		LightPoller colorPoller = new LightPoller(colorSensor);
+
+		Navigator navigator = new Navigator(odometer, frontUSPoller);
 
 		// localize
 		USLocalizer usLocalizer = new USLocalizer(odometer, frontUSPoller, leftMotor, rightMotor);
@@ -200,13 +202,30 @@ public class ActionController implements TimerListener {
 		lightLocalizer.localize();
 		
 		ClawController claw = new ClawController(clawLift, clawClose);
+		ObstacleAvoider avoider = new ObstacleAvoider();
 
-		claw.grab();
-		claw.lift(CLAW_LIFT_FULL);
-		while (Button.waitForAnyPress() != Button.ID_LEFT)
-			;
-		claw.lift(CLAW_LIFT_ONE_BLOCK);
-		claw.release();
-		claw.lift(CLAW_LIFT_ONE_BLOCK - CLAW_LIFT_FULL);
+		//start USPoller timelistener here?
+		
+		navigator.travelTo(greenAreaX, greenAreaY);
+		
+		// how to do this constantly? thread?
+		// constantly check if there is a block in front
+		if (frontUSPoller.isBlock()) {
+			ActionController.stopMotors();
+			//possibly slow down and approach block
+			
+			if (colorPoller.isBlue()) {
+				// pick up blue block
+				claw.pickUpBlock();
+			} else {
+				//avoid obstacle
+				avoider.avoidObstacle();
+			}
+		}
+		
+		
+		// place block down
+		claw.placeBlock(false);
+		
 	}
 }

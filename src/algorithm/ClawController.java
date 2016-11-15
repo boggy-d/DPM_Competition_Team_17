@@ -14,11 +14,45 @@ public class ClawController {
 	
 	EV3LargeRegulatedMotor clawLift, clawClose;
 	
+	private final int CLAW_LIFT_FULL = 775;
+	private final int CLAW_LIFT_ONE_BLOCK = -700;
+	private final int CLAW_LIFT_TWO_BLOCK = 600;
+	private final int CLAW_LIFT_THREE_BLOCK = 500;
 	private final int CLAW_CLOSE_ANGLE = 145;
 	
 	public ClawController(EV3LargeRegulatedMotor clawLift, EV3LargeRegulatedMotor clawClose) {
 		this.clawLift = clawLift;
 		this.clawClose = clawClose;
+	}
+	
+	//TODO fix constants for the lifting
+	/**
+	 * Picks up a blue foam block
+	 */
+	public void pickUpBlock()
+	{
+		// put claw down
+		lift(-CLAW_LIFT_FULL);
+		// grab block
+		grab();
+		// lift block up
+		lift(CLAW_LIFT_FULL);
+	}
+	
+	/**
+	 * Puts down a blue foam block
+	 */
+	public void placeBlock(boolean stackBlock)
+	{
+		if (stackBlock) {
+			lift(CLAW_LIFT_TWO_BLOCK);
+			release();
+			lift(CLAW_LIFT_TWO_BLOCK - CLAW_LIFT_FULL);
+		} else {
+			lift(CLAW_LIFT_ONE_BLOCK);
+			release();
+			lift(CLAW_LIFT_ONE_BLOCK - CLAW_LIFT_FULL);
+		}
 	}
 	
 	/**
@@ -52,4 +86,5 @@ public class ClawController {
 		
 		clawLift.rotate(angle, false);
 	}
+	
 }
