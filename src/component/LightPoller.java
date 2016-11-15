@@ -11,10 +11,18 @@
 
 package component;
 
+import lejos.hardware.sensor.EV3UltrasonicSensor;
+import lejos.robotics.SampleProvider;
 import lejos.utility.TimerListener;
 
 public class LightPoller implements TimerListener{
+	private EV3UltrasonicSensor lightSensor;
+	private SampleProvider lightSampler;
+	private float[] lightData;
 	
+	double BLACKINTENSITY = 0.2;
+	double BLUECOLOURID = 2;
+
 	// initializes color sensor.
 	// method with variable filters for different needs
 	// one filter for black gridlines
@@ -25,9 +33,10 @@ public class LightPoller implements TimerListener{
 	 * 
 	 * @since 0.1.0
 	 */
-	public LightPoller()
+	public LightPoller(EV3UltrasonicSensor lightSensor)
 	{
 		//TODO Modify constructor parameters. Create appropriate fields. Assigne params to fields
+		this.lightSensor = lightSensor;
 	}
 	
 	/**
@@ -37,8 +46,11 @@ public class LightPoller implements TimerListener{
 	 */
 	public double getLightData()
 	{
-		//TODO Poll and parse LightSensor1 data
-		return 0;
+		//TODO filter
+		lightSampler = lightSensor.getMode("Red");
+		lightData = new float[lightSampler.sampleSize()];
+		lightSensor.fetchSample(lightData, 0);
+		return lightData[0];
 		
 	}
 	
@@ -48,11 +60,13 @@ public class LightPoller implements TimerListener{
 	 * of each color
 	 * @return	an array containing the red, blue and green light values between 0 and 100, with 0 = low and 100 = high
 	 */
-	public double[] getColorData()
+	public double getColorData()
 	{
 		//TODO Poll and parse LightSensor2 data
-		return null;
-		
+		lightSampler = lightSensor.getMode("ColorID");			// colorValue provides samples from this instance
+		lightData = new float[lightSampler.sampleSize()];
+		lightSensor.fetchSample(lightData, 0);
+		return lightData[0];		
 	}
 	
 	/**
@@ -61,12 +75,9 @@ public class LightPoller implements TimerListener{
 	 * returns the result
 	 * @return <code>true</code> if the light value is smaller than the threshold, otherwise returns <code>false</code>
 	 */
-	public boolean isLine(double light)
-	{
-		//TODO Write algorithm for line detection (simple if-else). Implement filters
-		
-		return false;
-		
+	public boolean isLine() {
+		//TODO comparison filter
+		return getLightData() < BLACKINTENSITY;
 	}
 	
 	/**
@@ -77,10 +88,8 @@ public class LightPoller implements TimerListener{
 	 */
 	public boolean isBlue()
 	{
-		//TODO Write algorithm for blue block detection. Implement Filters
-		
-		return false;
-		
+		//TODO Implement Filters
+		return getColorData() == BLUECOLOURID;
 	}
 
 	@Override

@@ -10,6 +10,7 @@
 
 package algorithm;
 
+import component.ActionController;
 import component.LightPoller;
 import component.Odometer;
 import lejos.hardware.Sound;
@@ -68,11 +69,10 @@ public class LightLocalizer {
 		navigator.turnTo(45);
 		
 		//setting speed to forward speed
-		leftMotor.setSpeed(FORWARD_SPEED);
-		rightMotor.setSpeed(FORWARD_SPEED);
+		ActionController.setSpeeds(FORWARD_SPEED,FORWARD_SPEED, true);
 		
 		// drive forward until we detect a line
-		while (!lightPoller.isLine(lightPoller.getLightData())) {
+		while (!lightPoller.isLine()) {
 		    leftMotor.forward();
 		    rightMotor.forward();
 		}
@@ -80,45 +80,11 @@ public class LightLocalizer {
 		// black line detected
 		 Sound.beep(); 
 		
-		 //TODO testing to see if this way of stopping is actually better
-		/*
-		 * Stop motors.
-		 * We need to set speed to 0 before stopping the motor 
-		 * because stop() doesn't stop both motors at the same time
-		 * and leads to error (testing hardware issue).
-		 */
-		leftMotor.setSpeed(0);
-		rightMotor.setSpeed(0);
-		leftMotor.forward();
-		rightMotor.forward();
-		leftMotor.stop();
-		rightMotor.stop();
+		// move backward until we are in the negative XY quadrant
+		ActionController.goForward((float)(COLOR_DIST + BUFFER_DIST), -FORWARD_SPEED);
 		
-		//save position we are at after having moved forward and seen a line
-		double posX = odometer.getX();
-		double posY = odometer.getY();
-		
-		//setting speed to forward speed
-		leftMotor.setSpeed(FORWARD_SPEED);
-		rightMotor.setSpeed(FORWARD_SPEED);
-		
-		//TODO check with Eric/Fiona on this math dont completely understand
-		
-		//move backward until we are in the negative XY quadrant
-		// we want to end up at BUFFER_DIST behind the lines (to make sure test is done in the right spot)
-		while(odometer.getX() > ( posX  - ((COLOR_DIST/Math.sqrt(2)) + BUFFER_DIST )  ) && 
-				odometer.getY() > ( posY  - ((COLOR_DIST/Math.sqrt(2)) + BUFFER_DIST))) {
-			leftMotor.backward();
-			rightMotor.backward();
-		}
-		
-		//stop motor
-		leftMotor.setSpeed(0);
-		rightMotor.setSpeed(0);
-		leftMotor.forward();
-		rightMotor.forward();
-		leftMotor.stop();
-		rightMotor.stop();
+		// stop
+		ActionController.stopMotors();
 		
 		// start rotating clockwise
 		leftMotor.setSpeed(ROTATION_SPEED);
@@ -131,7 +97,7 @@ public class LightLocalizer {
 		//angles = {angleX negative, angleY positive, angleX positive, angleY negative}
 		double[] angles = new double[4] ;
 		while (lineCount < 4) {
-			if (lightPoller.isLine(lightPoller.getLightData())) {
+			if (lightPoller.isLine()) {
 				// store angle in array
 				angles[lineCount++] = odometer.getAng();
 				// play sound to confirm
@@ -142,8 +108,7 @@ public class LightLocalizer {
 		}
 
 		// stop motors
-		leftMotor.stop();
-        rightMotor.stop();
+		ActionController.stopMotors();
         
 		// do trig to compute (0,0) and 0 degrees
 

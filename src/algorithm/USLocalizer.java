@@ -15,7 +15,7 @@ import component.USPoller;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.robotics.SampleProvider;
 
-public class USLocalization {
+public class USLocalizer {
 	final static int ROTATE_SPEED = 100, CLIP = 45, WALL_DIST = 40, US_MARGIN = 2;
 
 	// for constructor
@@ -31,7 +31,7 @@ public class USLocalization {
 	 * @param odometer the Odometer object used
 	 * @param usPoller the USPoller object used
 	 */
-	public USLocalization(Odometer odometer, USPoller usPoller) {
+	public USLocalizer(Odometer odometer, USPoller usPoller) {
 		
 		this.odometer = odometer;
 		this.usPoller = usPoller;
