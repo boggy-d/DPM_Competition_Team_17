@@ -16,7 +16,7 @@ public class Builder {
 	 * while avoiding blocks
 	 * 
 	 * @see ActionController
-	 * @see Navigation
+	 * @see Navigator
 	 * @see ObstacleAvoidance
 	 */
 	public void goToGreen()

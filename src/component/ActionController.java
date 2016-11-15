@@ -11,30 +11,57 @@
 package component;
 
 import algorithm.ClawController;
+import algorithm.LightLocalizer;
+import algorithm.Navigator;
+import algorithm.USLocalizer;
 import lejos.hardware.Button;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.utility.TimerListener;
 
 public class ActionController implements TimerListener {
-	private final static EV3LargeRegulatedMotor clawLift = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
-	private final static EV3LargeRegulatedMotor clawClose = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("B"));
+	private static  EV3LargeRegulatedMotor leftMotor;
+	private static EV3LargeRegulatedMotor rightMotor;
+	private EV3LargeRegulatedMotor clawLift;
+	private EV3LargeRegulatedMotor clawClose;
+	private EV3UltrasonicSensor frontUsSensor;
+	private EV3UltrasonicSensor sideUsSensor;
+	private EV3UltrasonicSensor lightSensor;
+	private EV3UltrasonicSensor colorSensor;
 
+	static Odometer odometer;
+	Navigator navigator;
+	
 	private final int CLAW_LIFT_FULL = 775;
 	private final int CLAW_LIFT_ONE_BLOCK = -700;
 	private final int CLAW_LIFT_TWO_BLOCK = 600;
 	private final int CLAW_LIFT_THREE_BLOCK = 500;
 
-	private static Odometer odometer;
-	private static EV3LargeRegulatedMotor leftMotor;
-	private static EV3LargeRegulatedMotor rightMotor;
+	
+	public ActionController(
+			EV3LargeRegulatedMotor leftMotor,
+			EV3LargeRegulatedMotor rightMotor,
+			EV3LargeRegulatedMotor clawLiftMotor,
+			EV3LargeRegulatedMotor clawCloseMotor,
+			EV3UltrasonicSensor frontUsSensor,
+			EV3UltrasonicSensor sideUsSensor,
+			EV3UltrasonicSensor lightSensor,
+			EV3UltrasonicSensor colorSensor
+			)
+	{
+		this.leftMotor = leftMotor;
+		this.rightMotor = rightMotor;
+		this.clawLift = clawLiftMotor;
+		this.clawClose = clawCloseMotor;
+		this.frontUsSensor = frontUsSensor;
+		this.sideUsSensor = sideUsSensor;
+		this.lightSensor = lightSensor;
+		this.colorSensor = colorSensor;
 
-	/**
-	 * Class constructor
-	 */
-	public ActionController() {
-
+		odometer = new Odometer(leftMotor, rightMotor, 30, true);
 	}
+	
 
 	/**
 	 * Turns the left and right motors at
@@ -160,7 +187,18 @@ public class ActionController implements TimerListener {
 		// TODO EVERYTHING!!!
 		
 		startOdometer();
+		
+		// set up pollers
+		USPoller frontUSPoller = new USPoller(frontUsSensor);
+		LightPoller floorPoller = new LightPoller(lightSensor);
+		LightPoller colorPoller = new LightPoller(colorSensor);
 
+		// localize
+		USLocalizer usLocalizer = new USLocalizer(odometer, frontUSPoller, leftMotor, rightMotor);
+		usLocalizer.usLocalize();
+		LightLocalizer lightLocalizer = new LightLocalizer(odometer, navigator, floorPoller, leftMotor, rightMotor);
+		lightLocalizer.localize();
+		
 		ClawController claw = new ClawController(clawLift, clawClose);
 
 		claw.grab();

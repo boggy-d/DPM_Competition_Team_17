@@ -1,11 +1,12 @@
 package component;
 
+import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.robotics.SampleProvider;
 import lejos.utility.TimerListener;
 
 public class USPoller implements TimerListener{
-	
-	private SampleProvider usSensor;
+	private EV3UltrasonicSensor usSensor;
+	private SampleProvider distanceSampler;
 	private float[] usData;
 	
 	/**
@@ -14,10 +15,10 @@ public class USPoller implements TimerListener{
 	 * @param usSensor the USS sample feed
 	 * @param usData   the reading of the USS
 	 */
-	public USPoller(SampleProvider usSensor, float[] usData){
-		
+	public USPoller(EV3UltrasonicSensor usSensor){
 		this.usSensor = usSensor;
-		this.usData = usData;
+		distanceSampler = usSensor.getMode("Distance");
+		usData = new float[distanceSampler.sampleSize()];
 	}
 
 	/**

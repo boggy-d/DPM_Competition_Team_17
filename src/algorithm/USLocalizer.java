@@ -21,7 +21,6 @@ public class USLocalizer {
 	// for constructor
 	private Odometer odometer;
 	private USPoller usPoller;
-
 	private EV3LargeRegulatedMotor leftMotor;
 	private EV3LargeRegulatedMotor rightMotor;
 
@@ -31,14 +30,12 @@ public class USLocalizer {
 	 * @param odometer the Odometer object used
 	 * @param usPoller the USPoller object used
 	 */
-	public USLocalizer(Odometer odometer, USPoller usPoller) {
+	public USLocalizer(Odometer odometer, USPoller usPoller, EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor) {
 		
 		this.odometer = odometer;
 		this.usPoller = usPoller;
-		
-		EV3LargeRegulatedMotor[] motors = this.odometer.getMotors();
-		this.leftMotor = motors[0];
-		this.rightMotor = motors[1];
+		this.leftMotor = leftMotor;
+		this.rightMotor = rightMotor;
 	}
 
 	/**

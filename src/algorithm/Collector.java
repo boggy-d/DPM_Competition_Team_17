@@ -15,7 +15,7 @@ public class Collector {
 	 * while avoiding blocks
 	 * 
 	 * @see ActionController
-	 * @see Navigation
+	 * @see Navigator
 	 * @see ObstacleAvoidance
 	 */
 	public void goToRed()

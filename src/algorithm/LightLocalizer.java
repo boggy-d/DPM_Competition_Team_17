@@ -22,7 +22,7 @@ import lejos.utility.Delay;
 public class LightLocalizer {
 	//for the constructor
 	private Odometer odometer;
-	private Navigation navigator;
+	private Navigator navigator;
 	private LightPoller lightPoller;
 	private EV3LargeRegulatedMotor leftMotor, rightMotor;
 	
@@ -45,9 +45,9 @@ public class LightLocalizer {
 	 * @param rightMotor the right motor of the robot
 	 *
 	 * @see Odometer
-	 * @see Navigation
+	 * @see Navigator
 	 */
-	public LightLocalizer(Odometer odometer, Navigation navigator, LightPoller lightPoller,
+	public LightLocalizer(Odometer odometer, Navigator navigator, LightPoller lightPoller,
 			EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor) {
 		this.odometer = odometer;
 		this.navigator = navigator;
@@ -61,7 +61,7 @@ public class LightLocalizer {
 	 * using the LightSensor1 to detect floor lines while doing a full circle
 	 * 
 	 * @see LightPoller
-	 * @see Navigation
+	 * @see Navigator
 	 */
 	public void localize() {
 	

@@ -17,7 +17,7 @@ import component.USPoller;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.utility.TimerListener;
 
-public class Navigation implements TimerListener{
+public class Navigator implements TimerListener{
 
 	//Speed variables
 	
@@ -39,7 +39,7 @@ public class Navigation implements TimerListener{
 	 * @see Odometer
 	 * @see USPoller
 	 */
-	public Navigation(Odometer odometer, USPoller usPoller){
+	public Navigator(Odometer odometer, USPoller usPoller){
 		
 		this.odometer = odometer;
 		this.usPoller = usPoller;
