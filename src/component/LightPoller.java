@@ -19,9 +19,12 @@ public class LightPoller implements TimerListener{
 	private EV3UltrasonicSensor lightSensor;
 	private SampleProvider lightSampler;
 	private float[] lightData;
+	private SampleProvider colorSampler;
+	private float[] colorData;
 	
 	double BLACKINTENSITY = 0.2;
 	double BLUECOLOURID = 2;
+
 
 	// initializes color sensor.
 	// method with variable filters for different needs
@@ -37,6 +40,10 @@ public class LightPoller implements TimerListener{
 	{
 		//TODO Modify constructor parameters. Create appropriate fields. Assigne params to fields
 		this.lightSensor = lightSensor;
+		lightSampler = lightSensor.getMode("Red");
+		lightData = new float[lightSampler.sampleSize()];			
+		colorSampler = lightSensor.getMode("ColorID");	
+		colorData = new float[lightSampler.sampleSize()];
 	}
 	
 	/**
@@ -47,8 +54,6 @@ public class LightPoller implements TimerListener{
 	public double getLightData()
 	{
 		//TODO filter
-		lightSampler = lightSensor.getMode("Red");
-		lightData = new float[lightSampler.sampleSize()];
 		lightSensor.fetchSample(lightData, 0);
 		return lightData[0];
 		
@@ -63,8 +68,6 @@ public class LightPoller implements TimerListener{
 	public double getColorData()
 	{
 		//TODO Poll and parse LightSensor2 data
-		lightSampler = lightSensor.getMode("ColorID");			// colorValue provides samples from this instance
-		lightData = new float[lightSampler.sampleSize()];
 		lightSensor.fetchSample(lightData, 0);
 		return lightData[0];		
 	}
