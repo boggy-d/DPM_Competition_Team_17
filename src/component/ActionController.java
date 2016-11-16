@@ -19,6 +19,7 @@ import lejos.hardware.Button;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
+import lejos.utility.Delay;
 import lejos.utility.TimerListener;
 
 public class ActionController implements TimerListener {
@@ -199,17 +200,16 @@ public class ActionController implements TimerListener {
 		USLocalizer usLocalizer = new USLocalizer(odometer, frontUSPoller, leftMotor, rightMotor);
 		usLocalizer.usLocalize();
 		LightLocalizer lightLocalizer = new LightLocalizer(odometer, navigator, floorPoller, leftMotor, rightMotor);
-		lightLocalizer.localize();
+		lightLocalizer.lightlocalize();
 		
 		ClawController claw = new ClawController(clawLift, clawClose);
 		ObstacleAvoider avoider = new ObstacleAvoider();
 
 		//start USPoller timelistener here?
-		
-		navigator.travelTo(greenAreaX, greenAreaY);
-		
+				
 		// how to do this constantly? thread?
 		// constantly check if there is a block in front
+		boolean hasBlock = false;
 		if (frontUSPoller.isBlock()) {
 			ActionController.stopMotors();
 			//possibly slow down and approach block
@@ -217,11 +217,64 @@ public class ActionController implements TimerListener {
 			if (colorPoller.isBlue()) {
 				// pick up blue block
 				claw.pickUpBlock();
+				hasBlock = true;
 			} else {
 				//avoid obstacle
 				avoider.avoidObstacle();
 			}
 		}
+		
+		// travel to middle of green zone
+		navigator.travelTo(greenAreaX, greenAreaY);
+
+		// do a 360 deg scan of the blocks around you
+		double startingAngle = odometer.getAng();
+		
+		// start rotating clockwise
+		ActionController.setSpeeds(Constants.ROTATION_SPEED, -Constants.ROTATION_SPEED, true);
+		
+		// avoid getting into while right away
+        Delay.msDelay(1000);
+		
+		while (odometer.getAng() != startingAngle) {
+			// store angles of the blocks in an array
+			// sort blocks by the closest distance to you
+		}
+		// stop motors
+		ActionController.stopMotors();
+		
+		// calculate the position of the blocks from the array of angles and distances
+		// store in array
+		
+		// if you ran into a blue block on the way place it down
+		if (hasBlock) {
+			// TODO block placement algorithm
+			claw.placeBlock(false);
+			hasBlock = false;
+		}
+		
+		// navigate to the closest block
+		// remove that block position from the array
+		
+		// check if blue block or not
+		
+		// if it is a wooden block find the next closest block to you (avoid block if needed)
+		// if there is no block (in the case that the opponent took it) find the next closet block to you and navigate to it
+
+		// if it is a blue block pick it up
+		
+		// navigate back to the zone
+		// place block where you want it
+		// resort the positions of the blocks to the closest to you again
+		// make sure you avoid the areas where the previous blocks were placed in the zone (or just avoid the zone)
+		// navigate to that block and repeat
+		
+		// once you have finished checking all the blocks in the array
+		// move to a distance 2x what the first scan could see from the zone
+		// do a 360 scan and repeat
+		
+		
+		
 		
 		
 		// place block down
