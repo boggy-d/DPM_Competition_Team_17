@@ -49,7 +49,12 @@ public void Run(){
 			//hold distance between position relative to nearest gridline
 			double delta_x = Math.abs((int)norm_x - norm_x);
 			double delta_y = Math.abs((int)norm_y - norm_y);
-
+			
+			if (delta_x > 0.5)
+			{ delta_x = 1 - delta_x ; }
+			
+			if (delta_y > 0.5)
+			{ delta_y = 1 - delta_x ; }
 
 			//closest to horizontal gridline therefore y must be corrected 
 			//add in additional and statement with a margin to reduce errors (test)
