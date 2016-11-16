@@ -32,7 +32,7 @@ public void Run(){
 	while(true){
 
 		//if line is detected -> correct ---> make entire while an if statement?
-		while(lightPoller.isLine()){
+		if(lightPoller.isLine()){
 
 			position[0] = odometer.getX();
 			position[1] = odometer.getY();
@@ -50,11 +50,12 @@ public void Run(){
 			double delta_x = Math.abs((int)norm_x - norm_x);
 			double delta_y = Math.abs((int)norm_y - norm_y);
 			
+			//rescale for minimum distances
 			if (delta_x > 0.5)
 			{ delta_x = 1 - delta_x ; }
 			
 			if (delta_y > 0.5)
-			{ delta_y = 1 - delta_x ; }
+			{ delta_y = 1 - delta_y ; }
 
 			//closest to horizontal gridline therefore y must be corrected 
 			//add in additional and statement with a margin to reduce errors (test)
@@ -77,7 +78,7 @@ public void Run(){
 					{ position[0] = ((int)norm_x) * Constants.TILE_LENGTH; }
 
 			}
-			//logic must be verified (should x be swapped with y)
+			
 			// may break down near gridline intersections
 
 			//inverse transorm to scale correction from lightsensor position back to wheel contering
@@ -85,6 +86,8 @@ public void Run(){
 
 			//update odometer
 			odometer.setPosition(position, update);
+			
+			//sleep thread quickly to avoid adjusting multiple times when passing a single gridline
 		}
 	}
 }
