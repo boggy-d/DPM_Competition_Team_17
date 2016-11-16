@@ -63,39 +63,36 @@ public class LightLocalizer {
 	 * @see LightPoller
 	 * @see Navigator
 	 */
-	public void localize() {
+	public void lightlocalize() {
 	
 		//turn to approximate direction of lines
 		navigator.turnTo(45);
 		
-		//setting speed to forward speed
+		//setting speed and begin to move forward speed
 		ActionController.setSpeeds(FORWARD_SPEED,FORWARD_SPEED, true);
 		
 		// drive forward until we detect a line
 		while (!lightPoller.isLine()) {
-		    leftMotor.forward();
-		    rightMotor.forward();
+		    //keep moving forward
 		}
 		
 		// black line detected
-		 Sound.beep(); 
+		ActionController.stopMotors();
+		Sound.beep();
+		
 		
 		// move backward until we are in the negative XY quadrant
 		ActionController.goForward((float)(COLOR_DIST + BUFFER_DIST), -FORWARD_SPEED);
 		
-		// stop
-		ActionController.stopMotors();
-		
 		// start rotating clockwise
-		leftMotor.setSpeed(ROTATION_SPEED);
-        rightMotor.setSpeed(ROTATION_SPEED);
-	    leftMotor.forward();
-        rightMotor.backward();
+		ActionController.setSpeeds(ROTATION_SPEED, -ROTATION_SPEED, true);
 
-        // count lines crossed and store the orientation at each line
-        int lineCount = 0; 
+       		 // count lines crossed and store the orientation at each line
+       		 int lineCount = 0; 
+		
 		//angles = {angleX negative, angleY positive, angleX positive, angleY negative}
 		double[] angles = new double[4] ;
+		
 		while (lineCount < 4) {
 			if (lightPoller.isLine()) {
 				// store angle in array
@@ -110,7 +107,6 @@ public class LightLocalizer {
 		// stop motors
 		ActionController.stopMotors();
         
-		// do trig to compute (0,0) and 0 degrees
 
         // calculate correct x, y and theta differences
         // using formulas from the tutorial slides 
@@ -128,10 +124,12 @@ public class LightLocalizer {
 		boolean[] update = {true, true, true};
 		odometer.setPosition(correction, update);
 
-		//put this outside lightlocalizer?
+	//put this outside lightlocalizer?
         // travel to origin and face 0 degrees
 		navigator.travelTo(0,0);
 		navigator.turnTo(0);
+		
+		//beep when finished localizing
 	}
 }
 
