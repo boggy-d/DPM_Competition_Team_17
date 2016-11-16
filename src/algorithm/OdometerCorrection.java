@@ -51,39 +51,38 @@ public void Run(){
 			double delta_y = Math.abs((int)norm_y - norm_y);
 
 
-			//closest to horizontal gridline therefore y must be corrected
-			if(delta_y > delta_x){
+			//closest to horizontal gridline therefore y must be corrected 
+			//add in additional and statement with a margin to reduce errors (test)
+			if(delta_y < delta_x){
 				
-				if(norm_x + delta_x <= (int)norm_x + 1) // implies norm_x < position of horizontal gridline
-					{ position[1] = ((int)norm_x + 1) * Constants.TILE_LENGTH; }
+				if(norm_y + delta_y <= (int)norm_y + 1) // implies norm_y < position of horizontal gridline
+					{ position[1] = ((int)norm_y + 1) * Constants.TILE_LENGTH; }
 				
-				else //implies norm_x > position of horizontal gridline
-					{ position[1] = ((int)norm_x) * Constants.TILE_LENGTH; }
+				else //implies norm_y > position of horizontal gridline
+					{ position[1] = ((int)norm_y) * Constants.TILE_LENGTH; }
 			}
 
 			//closest to vertical gridline therefore x must be corrected
 			else{
 
-				if(norm_y + delta_y <= (int)norm_y + 1) // implies norm_y < position of vertical gridline
-					{ position[0] = ((int)norm_y + 1) * Constants.TILE_LENGTH; }
+				if(norm_x + delta_x <= (int)norm_x + 1) // implies norm_x < position of vertical gridline
+					{ position[0] = ((int)norm_x + 1) * Constants.TILE_LENGTH; }
 				
 				else //implies norm_x > position of vertical gridline
-					{ position[0] = ((int)norm_y) * Constants.TILE_LENGTH; }
+					{ position[0] = ((int)norm_x) * Constants.TILE_LENGTH; }
 
 			}
+			//logic must be verified (should x be swapped with y)
+			// may break down near gridline intersections
 
 			//inverse transorm to scale correction from lightsensor position back to wheel contering
 			inverseTransfrom(position);
 
 			//update odometer
 			odometer.setPosition(position, update);
-
 		}
 	}
-
 }
-
-
 
 
 // shifts position between wheels to position of color sensor
