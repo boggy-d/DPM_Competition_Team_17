@@ -72,14 +72,12 @@ public class LightLocalizer {
 		ActionController.setSpeeds(FORWARD_SPEED,FORWARD_SPEED, true);
 		
 		// drive forward until we detect a line
-		while (!lightPoller.isLine()) {
-		    //keep moving forward
+		if(lightPoller.isLine()) {
+		    
+			// black line detected
+			ActionController.stopMotors();
+			Sound.beep();
 		}
-		
-		// black line detected
-		ActionController.stopMotors();
-		Sound.beep();
-		
 		
 		// move backward until we are in the negative XY quadrant
 		ActionController.goForward((float)(COLOR_DIST + BUFFER_DIST), -FORWARD_SPEED);
