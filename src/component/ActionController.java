@@ -233,7 +233,7 @@ public class ActionController implements TimerListener {
 		// start rotating clockwise
 		ActionController.setSpeeds(Constants.ROTATION_SPEED, -Constants.ROTATION_SPEED, true);
 		
-		// avoid getting into while right away
+		// avoid getting into while loop right away
         Delay.msDelay(1000);
 		
 		while (odometer.getAng() != startingAngle) {

@@ -21,10 +21,6 @@ public class LightPoller implements TimerListener{
 	private float[] lightData;
 	private SampleProvider colorSampler;
 	private float[] colorData;
-	
-	double BLACKINTENSITY = 0.2;
-	double BLUECOLOURID = 2;
-
 
 	// initializes color sensor.
 	// method with variable filters for different needs
@@ -80,7 +76,7 @@ public class LightPoller implements TimerListener{
 	 */
 	public boolean isLine() {
 		//TODO comparison filter
-		return getLightData() < BLACKINTENSITY;
+		return getLightData() < Constants.BLACKINTENSITY;
 	}
 	
 	/**
@@ -92,7 +88,7 @@ public class LightPoller implements TimerListener{
 	public boolean isBlue()
 	{
 		//TODO Implement Filters
-		return getColorData() == BLUECOLOURID;
+		return getColorData() == Constants.BLUECOLOURID;
 	}
 
 	@Override
