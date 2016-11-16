@@ -6,6 +6,7 @@
  * 
  * @author Bogdan Dumitru
  * @author Eric Zimmermann
+ * @author Eva Suska
  */
 
 package algorithm;
@@ -13,6 +14,7 @@ package algorithm;
 import component.ActionController;
 import component.LightPoller;
 import component.Odometer;
+import component.Constants;
 import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
@@ -25,14 +27,6 @@ public class LightLocalizer {
 	private Navigator navigator;
 	private LightPoller lightPoller;
 	private EV3LargeRegulatedMotor leftMotor, rightMotor;
-	
-	//motor speeds
-	private final int FORWARD_SPEED = 100;
-	private final int ROTATION_SPEED = 60;
-	
-	//for doLocalization 
-	private final double COLOR_DIST = 13.7;									//distance between the center of rotation of robot and light sensor
-	private final double BUFFER_DIST = 6/Math.sqrt(2);						//buffer distance (where we want to be before rotating)
 	
 	/**
 	 * Class constructor specifying the different parameters this class
@@ -69,7 +63,7 @@ public class LightLocalizer {
 		navigator.turnTo(45);
 		
 		//setting speed and begin to move forward speed
-		ActionController.setSpeeds(FORWARD_SPEED,FORWARD_SPEED, true);
+		ActionController.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED, true);
 		
 		// drive forward until we detect a line
 		if(lightPoller.isLine()) {
@@ -80,10 +74,10 @@ public class LightLocalizer {
 		}
 		
 		// move backward until we are in the negative XY quadrant
-		ActionController.goForward((float)(COLOR_DIST + BUFFER_DIST), -FORWARD_SPEED);
+		ActionController.goForward((float)(Constants.COLOR_DIST + Constants.BUFFER_DIST), -Constants.FORWARD_SPEED);
 		
 		// start rotating clockwise
-		ActionController.setSpeeds(ROTATION_SPEED, -ROTATION_SPEED, true);
+		ActionController.setSpeeds(Constants.ROTATION_SPEED, -Constants.ROTATION_SPEED, true);
 
        		 // count lines crossed and store the orientation at each line
        		 int lineCount = 0; 
@@ -112,8 +106,8 @@ public class LightLocalizer {
         double deltaXTheta = angles[0] - angles[2];
         double deltaYTheta = angles[1] - angles[3];		// or 3-1? check
 
-        double deltaX = -COLOR_DIST * Math.cos(Math.toRadians(deltaYTheta) / 2);
-        double deltaY = -COLOR_DIST * Math.cos(Math.toRadians(deltaXTheta) / 2);
+        double deltaX = -Constants.COLOR_DIST * Math.cos(Math.toRadians(deltaYTheta) / 2);
+        double deltaY = -Constants.COLOR_DIST * Math.cos(Math.toRadians(deltaXTheta) / 2);
         double deltaTheta = 180 - negativeYTheta + deltaYTheta / 2;		//check math
 
         //TODO check if it is supposed to be added to or not

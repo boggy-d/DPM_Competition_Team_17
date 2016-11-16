@@ -8,7 +8,7 @@
 package algorithm;
 import component.Odometer;
 import component.LightPoller;
-
+import component.Constants;
 
 //to be started after localization!!!
 public class OdometerCorrection extends Thread{
@@ -16,8 +16,6 @@ public class OdometerCorrection extends Thread{
 private Odometer odometer;
 private LightPoller lightPoller;
 
-private final double SENSOR_DISTANCE = 0000;
-private final double TILE_LENGTH = 30.48; //odometer must be verified that values in x&y are scaled to cm with double precision 
 double position[] = new double[3]; 
 boolean update[] = {true, true, false};
 
@@ -45,8 +43,8 @@ public void Run(){
 			transformPosition(position);
 
 			//"normalize" positions by tile lengths
-			double norm_x = (position[0] / TILE_LENGTH);
-			double norm_y = (position[1] / TILE_LENGTH);
+			double norm_x = (position[0] / Constants.TILE_LENGTH);
+			double norm_y = (position[1] / Constants.TILE_LENGTH);
 
 			//hold distance between position relative to nearest gridline
 			double delta_x = Math.abs((int)norm_x - norm_x);
@@ -57,20 +55,20 @@ public void Run(){
 			if(delta_y > delta_x){
 				
 				if(norm_x + delta_x <= (int)norm_x + 1) // implies norm_x < position of horizontal gridline
-					{ position[1] = ((int)norm_x + 1) * TILE_LENGTH; }
+					{ position[1] = ((int)norm_x + 1) * Constants.TILE_LENGTH; }
 				
 				else //implies norm_x > position of horizontal gridline
-					{ position[1] = ((int)norm_x) * TILE_LENGTH; }
+					{ position[1] = ((int)norm_x) * Constants.TILE_LENGTH; }
 			}
 
 			//closest to vertical gridline therefore x must be corrected
 			else{
 
 				if(norm_y + delta_y <= (int)norm_y + 1) // implies norm_y < position of vertical gridline
-					{ position[0] = ((int)norm_y + 1) * TILE_LENGTH; }
+					{ position[0] = ((int)norm_y + 1) * Constants.TILE_LENGTH; }
 				
 				else //implies norm_x > position of vertical gridline
-					{ position[0] = ((int)norm_y) * TILE_LENGTH; }
+					{ position[0] = ((int)norm_y) * Constants.TILE_LENGTH; }
 
 			}
 
@@ -91,15 +89,15 @@ public void Run(){
 // shifts position between wheels to position of color sensor
 public static void transformPosition(double position[]){
 
-	position [0] -= SENSOR_DISTANCE * Math.cos(Math.toRadians(position[2]));
-	position [0] -= SENSOR_DISTANCE * Math.sin(Math.toRadians(position[2]));
+	position [0] -= Constants.SENSOR_DISTANCE * Math.cos(Math.toRadians(position[2]));
+	position [0] -= Constants.SENSOR_DISTANCE * Math.sin(Math.toRadians(position[2]));
 }
 
 //shifts position of color sensor to position between wheels
 public static void inverseTransfrom(double position[]){
 
-	position [0] += SENSOR_DISTANCE * Math.cos(Math.toRadians(position[2]));
-	position [0] += SENSOR_DISTANCE * Math.sin(Math.toRadians(position[2]));
+	position [0] += Constants.SENSOR_DISTANCE * Math.cos(Math.toRadians(position[2]));
+	position [0] += Constants.SENSOR_DISTANCE * Math.sin(Math.toRadians(position[2]));
 }
 
 }
