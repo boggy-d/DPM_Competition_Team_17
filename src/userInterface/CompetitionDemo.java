@@ -15,6 +15,7 @@ import component.ActionController;
 import lejos.hardware.Button;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 
 public class CompetitionDemo {
@@ -27,8 +28,8 @@ public class CompetitionDemo {
 	// get sensors
 	private static final EV3UltrasonicSensor frontUsSensor = new EV3UltrasonicSensor(LocalEV3.get().getPort("S1"));
 	private static final EV3UltrasonicSensor sideUsSensor = new EV3UltrasonicSensor(LocalEV3.get().getPort("S2"));
-	private static final EV3UltrasonicSensor lightSensor = new EV3UltrasonicSensor(LocalEV3.get().getPort("S3"));
-	private static final EV3UltrasonicSensor colorSensor = new EV3UltrasonicSensor(LocalEV3.get().getPort("S4"));
+	private static final EV3ColorSensor lightSensor = new EV3ColorSensor(LocalEV3.get().getPort("S3"));
+	private static final EV3ColorSensor colorSensor = new EV3ColorSensor(LocalEV3.get().getPort("S4"));
 
 	public static void main(String[] args) {
 		//TODO Print to the LCD. Set up ActionController thread

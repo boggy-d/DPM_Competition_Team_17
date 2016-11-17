@@ -16,6 +16,7 @@ public class Constants {
 	// light Poller
 	public final static double BLACKINTENSITY = 0.2;
 	public final static double BLUECOLOURID = 2;
+	public final static int LINE_DETECT_DIFF = 0;
 	
 	// odometer
 	public final static int DEFAULT_TIMEOUT_PERIOD = 20;

@@ -11,12 +11,13 @@
 
 package component;
 
+import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.robotics.SampleProvider;
 import lejos.utility.TimerListener;
 
 public class LightPoller implements TimerListener{
-	private EV3UltrasonicSensor lightSensor;
+	private EV3ColorSensor lightSensor;
 	private SampleProvider lightSampler;
 	private float[] lightData;
 	private SampleProvider colorSampler;
@@ -32,14 +33,14 @@ public class LightPoller implements TimerListener{
 	 * 
 	 * @since 0.1.0
 	 */
-	public LightPoller(EV3UltrasonicSensor lightSensor)
+	public LightPoller(EV3ColorSensor lightSensor)
 	{
 		//TODO Modify constructor parameters. Create appropriate fields. Assigne params to fields
 		this.lightSensor = lightSensor;
-		lightSampler = lightSensor.getMode("Red");
+		lightSampler = lightSensor.getRedMode();
 		lightData = new float[lightSampler.sampleSize()];			
-		colorSampler = lightSensor.getMode("ColorID");	
-		colorData = new float[lightSampler.sampleSize()];
+		colorSampler = lightSensor.getRGBMode();	
+		colorData = new float[colorSampler.sampleSize()];
 	}
 	
 	/**
@@ -61,11 +62,11 @@ public class LightPoller implements TimerListener{
 	 * of each color
 	 * @return	an array containing the red, blue and green light values between 0 and 100, with 0 = low and 100 = high
 	 */
-	public double getColorData()
+	public float[] getColorData()
 	{
 		//TODO Poll and parse LightSensor2 data
-		lightSensor.fetchSample(lightData, 0);
-		return lightData[0];		
+		lightSensor.fetchSample(colorData, 0);
+		return colorData;		
 	}
 	
 	/**
@@ -74,9 +75,22 @@ public class LightPoller implements TimerListener{
 	 * returns the result
 	 * @return <code>true</code> if the light value is smaller than the threshold, otherwise returns <code>false</code>
 	 */
-	public boolean isLine() {
+	public boolean isLine(double prevLightData) {
 		//TODO comparison filter
-		return getLightData() < Constants.BLACKINTENSITY;
+		//return getLightData() < Constants.BLACKINTENSITY;
+		
+		//get the current data
+		double currentLightData = getLightData();
+		
+		//Passed a black line (compare the previous and current light data)
+		//if the their difference is bigger than a threshold, we have passed a line
+		if( prevLightData - currentLightData > Constants.LINE_DETECT_DIFF){
+			return true;
+		}
+		
+		else{
+			return false;
+		}
 	}
 	
 	/**
@@ -88,7 +102,16 @@ public class LightPoller implements TimerListener{
 	public boolean isBlue()
 	{
 		//TODO Implement Filters
-		return getColorData() == Constants.BLUECOLOURID;
+		//return getColorData() == Constants.BLUECOLOURID;
+		
+		float[] colorData = getColorData();
+		
+		//block is blue (blue > red)
+		if(colorData[2]*1000 > colorData[0]*1000){
+			return true;
+		}
+		
+		return false;	
 	}
 
 	@Override
