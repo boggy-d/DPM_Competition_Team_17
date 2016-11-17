@@ -65,14 +65,20 @@ public class LightLocalizer {
 		//setting speed and begin to move forward speed
 		ActionController.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED, true);
 		
-		// drive forward until we detect a line
-		if(lightPoller.isLine()) {
-		    
-			// black line detected
-			ActionController.stopMotors();
-			Sound.beep();
+		//set the previous light data
+		double prevLightData = lightPoller.getLightData();
+		
+		// keeps driving forward until we detect a line
+		while(!(lightPoller.isLine(prevLightData))) {
+			
+			//change the previous light data
+			prevLightData = lightPoller.getLightData();
 		}
 		
+		// black line detected
+		ActionController.stopMotors();
+		Sound.beep();
+			
 		// move backward until we are in the negative XY quadrant
 		ActionController.goForward((float)(Constants.COLOR_DIST + Constants.BUFFER_DIST), -Constants.FORWARD_SPEED);
 		
@@ -86,14 +92,24 @@ public class LightLocalizer {
 		double[] angles = new double[4] ;
 		
 		while (lineCount < 4) {
-			if (lightPoller.isLine()) {
-				// store angle in array
-				angles[lineCount++] = odometer.getAng();
-				// play sound to confirm
-				Sound.beep();
-				// avoid counting same line several times
-                Delay.msDelay(2000);
+			
+			//set the previous light data
+			prevLightData = lightPoller.getLightData();
+			
+			// keeps rotating until line is detected
+			while(!(lightPoller.isLine(prevLightData))) {
+				
+				//change the previous light data
+				prevLightData = lightPoller.getLightData();
 			}
+			
+			// store angle in array
+			angles[lineCount++] = odometer.getAng();
+			// play sound to confirm
+			Sound.beep();
+			// avoid counting same line several times
+            Delay.msDelay(2000);
+		
 		}
 
 		// stop motors

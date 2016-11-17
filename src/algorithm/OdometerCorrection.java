@@ -30,16 +30,18 @@ public OdometerCorrection(Odometer odometer, LightPoller lightPoller){
 public void Run(){
 
 	while(true){
+		
+		double prevLightData = lightPoller.getLightData();
 
 		//if line is detected -> correct ---> make entire while an if statement?
-		if(lightPoller.isLine()){
+		if(lightPoller.isLine(prevLightData)){
 
 			position[0] = odometer.getX();
 			position[1] = odometer.getY();
 			position[2] = odometer.getAng();
 
 
-			//transform loction of point for correction from wheel center to color sensor
+			//transform location of point for correction from wheel center to color sensor
 			transformPosition(position);
 
 			//"normalize" positions by tile lengths

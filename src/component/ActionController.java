@@ -18,6 +18,7 @@ import algorithm.USLocalizer;
 import lejos.hardware.Button;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.utility.Delay;
 import lejos.utility.TimerListener;
@@ -29,8 +30,8 @@ public class ActionController implements TimerListener {
 	private EV3LargeRegulatedMotor clawClose;
 	private EV3UltrasonicSensor frontUsSensor;
 	private EV3UltrasonicSensor sideUsSensor;
-	private EV3UltrasonicSensor lightSensor;
-	private EV3UltrasonicSensor colorSensor;
+	private EV3ColorSensor lightSensor;
+	private EV3ColorSensor colorSensor;
 
 	static Odometer odometer;
 	Navigator navigator;
@@ -42,8 +43,8 @@ public class ActionController implements TimerListener {
 			EV3LargeRegulatedMotor clawCloseMotor,
 			EV3UltrasonicSensor frontUsSensor,
 			EV3UltrasonicSensor sideUsSensor,
-			EV3UltrasonicSensor lightSensor,
-			EV3UltrasonicSensor colorSensor
+			EV3ColorSensor lightSensor,
+			EV3ColorSensor colorSensor
 			)
 	{
 		this.leftMotor = leftMotor;
