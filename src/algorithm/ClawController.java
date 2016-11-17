@@ -9,16 +9,46 @@
 package algorithm;
 
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import component.Constants;
 
 public class ClawController {
 	
 	EV3LargeRegulatedMotor clawLift, clawClose;
-	
-	private final int CLAW_CLOSE_ANGLE = 145;
+
 	
 	public ClawController(EV3LargeRegulatedMotor clawLift, EV3LargeRegulatedMotor clawClose) {
 		this.clawLift = clawLift;
 		this.clawClose = clawClose;
+	}
+	
+	//TODO fix constants for the lifting
+	/**
+	 * Picks up a blue foam block
+	 */
+	public void pickUpBlock()
+	{
+		// put claw down
+		lift(-Constants.CLAW_LIFT_FULL);
+		// grab block
+		grab();
+		// lift block up
+		lift(Constants.CLAW_LIFT_FULL);
+	}
+	
+	/**
+	 * Puts down a blue foam block
+	 */
+	public void placeBlock(boolean stackBlock)
+	{
+		if (stackBlock) {
+			lift(Constants.CLAW_LIFT_TWO_BLOCK);
+			release();
+			lift(Constants.CLAW_LIFT_TWO_BLOCK - Constants.CLAW_LIFT_FULL);
+		} else {
+			lift(Constants.CLAW_LIFT_ONE_BLOCK);
+			release();
+			lift(Constants.CLAW_LIFT_ONE_BLOCK - Constants.CLAW_LIFT_FULL);
+		}
 	}
 	
 	/**
@@ -28,7 +58,7 @@ public class ClawController {
 	{
 		//TODO Test
 		
-		clawClose.rotate(-CLAW_CLOSE_ANGLE, false);
+		clawClose.rotate(-Constants.CLAW_CLOSE_ANGLE, false);
 	}
 	
 	/**
@@ -39,7 +69,7 @@ public class ClawController {
 		
 		//TODO Test
 		
-		clawClose.rotate(CLAW_CLOSE_ANGLE, false);
+		clawClose.rotate(Constants.CLAW_CLOSE_ANGLE, false);
 	}
 	
 	/**
@@ -52,4 +82,5 @@ public class ClawController {
 		
 		clawLift.rotate(angle, false);
 	}
+	
 }

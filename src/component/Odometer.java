@@ -35,7 +35,6 @@ public class Odometer implements TimerListener {
 
 	private Timer timer;
 	private EV3LargeRegulatedMotor leftMotor, rightMotor;
-	private final int DEFAULT_TIMEOUT_PERIOD = 20;
 	private double leftRadius, rightRadius, width;
 	private double x, y, theta;
 	private double[] oldDH, dDH;
@@ -67,7 +66,7 @@ public class Odometer implements TimerListener {
 
 		if (autostart) {
 			// if the timeout interval is given as <= 0, default to 20ms timeout 
-			this.timer = new Timer((INTERVAL <= 0) ? INTERVAL : DEFAULT_TIMEOUT_PERIOD, this);
+			this.timer = new Timer((INTERVAL <= 0) ? INTERVAL : Constants.DEFAULT_TIMEOUT_PERIOD, this);
 			this.timer.start();
 		} else
 			this.timer = null;

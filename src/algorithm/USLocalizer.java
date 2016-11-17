@@ -15,15 +15,13 @@ import component.USPoller;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.robotics.SampleProvider;
 
-public class USLocalization {
-	final static int ROTATE_SPEED = 100, CLIP = 55, WALL_DIST = 50, US_MARGIN = 3;
+public class USLocalizer {
+	final static int ROTATE_SPEED = 100, CLIP = 45, WALL_DIST = 40, US_MARGIN = 2;
 
 	// for constructor
 	private Odometer odometer;
 	private USPoller usPoller;
-
 	private EV3LargeRegulatedMotor leftMotor;
-
 	private EV3LargeRegulatedMotor rightMotor;
 
 	/**
@@ -32,21 +30,21 @@ public class USLocalization {
 	 * @param odometer the Odometer object used
 	 * @param usPoller the USPoller object used
 	 */
-	public USLocalization(Odometer odometer, USPoller usPoller) {
+	public USLocalizer(Odometer odometer, USPoller usPoller, EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor) {
 		
 		this.odometer = odometer;
 		this.usPoller = usPoller;
-		
-		EV3LargeRegulatedMotor[] motors = this.odometer.getMotors();
-		this.leftMotor = motors[0];
-		this.rightMotor = motors[1];
+		this.leftMotor = leftMotor;
+		this.rightMotor = rightMotor;
 	}
 
 	/**
 	 * Localize the robot to coordinate (0 , 0) with a heading of 0 by using the
 	 * USPoller to detect Rising Edge
 	 */
-	public void localize() {
+	
+	//Renamed in order to differentiate the type of localization: US vs Light
+	public void usLocalize() {
 		// TODO Use Eric's code with Bogdan's architecture for this method
 
 		double[] position = new double[3];
@@ -58,38 +56,33 @@ public class USLocalization {
 		boolean[] update = { false, false, true };
 		double cw_angle, ccw_angle;
 
-		ActionController.setSpeeds(ROTATE_SPEED, ROTATE_SPEED);
+		ActionController.setSpeeds(ROTATE_SPEED, -ROTATE_SPEED, true);
 
 		while (usPoller.getClippedData(CLIP) == WALL_DIST) {
 
-			leftMotor.forward();
-			rightMotor.backward();
+			//already moving cw
 		}
 
 		while (usPoller.getClippedData(CLIP) < WALL_DIST + US_MARGIN) {
 
-			leftMotor.forward();
-			rightMotor.backward();
+			//already moving cw
 		}
 
 		ActionController.stopMotors();
 		cw_angle = odometer.getAng();
-		ActionController.setSpeeds(ROTATE_SPEED, ROTATE_SPEED);
+		ActionController.setSpeeds(-ROTATE_SPEED, ROTATE_SPEED, true);
 
 		while (usPoller.getClippedData(CLIP) >= WALL_DIST) {
 
-			leftMotor.backward();
-			rightMotor.forward();
+			//already moving ccw
 		}
 
 		while (usPoller.getClippedData(CLIP) < WALL_DIST + US_MARGIN) {
 
-			leftMotor.backward();
-			rightMotor.forward();
+			//already moving ccw
 		}
 
 		ActionController.stopMotors();
-		ActionController.setSpeeds(ROTATE_SPEED, ROTATE_SPEED);
 		ccw_angle = odometer.getAng();
 
 		if (cw_angle > ccw_angle) {
@@ -102,16 +95,10 @@ public class USLocalization {
 
 		// set positions below
 		odometer.setPosition(position, update);
-
+		
+		//rotate robot to 45 degrees in order for light localization to be performed
+		//where should this be handled?
+		
 	}
 
-	private float getFilteredData() {
-
-		// TODO Remove this and use the USPoller class
-
-//		usSensor.fetchSample(usData, 0);
-//		float distance = usData[0] * 100;
-//
-		return 0;
-	}
 }

@@ -8,7 +8,7 @@
 
 package algorithm;
 
-public class ObstacleAvoidance {
+public class ObstacleAvoider {
 
 	/**
 	 * Checks how long the USS has been detecting values
