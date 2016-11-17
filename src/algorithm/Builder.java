@@ -7,7 +7,7 @@
  */
 
 
-package algorithm
+package algorithm;
 
 public class Builder {
 
