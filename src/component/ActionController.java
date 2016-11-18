@@ -51,7 +51,7 @@ public class ActionController implements TimerListener {
 	public ActionController(int INTERVAL, boolean autostart)
 	{
 		//Wifi "supposedly works (router is bad and it should feel bad)
-//		setWifiInfo();
+				setWifiInfo();
 		
 		odometer = new Odometer(30, true);
 		
@@ -64,6 +64,17 @@ public class ActionController implements TimerListener {
 		navigator = new Navigator();
 		
 		claw = new ClawController();
+		
+		// localize
+
+		USLocalizer usLocalizer = new USLocalizer();
+		usLocalizer.usLocalize();
+		while(Button.waitForAnyPress() != Button.ID_DOWN);
+
+		
+		LightLocalizer lightLocalizer = new LightLocalizer();
+		lightLocalizer.lightlocalize();
+		while(Button.waitForAnyPress() != Button.ID_DOWN);
 
 		if (autostart) {
 			// if the timeout interval is given as <= 0, default to 20ms timeout 
@@ -72,15 +83,7 @@ public class ActionController implements TimerListener {
 		} else
 			this.acTimer = null;		
 		
-		// localize
-
-		USLocalizer usLocalizer = new USLocalizer();
-		usLocalizer.usLocalize();
-
-		//navigator.turnTo(45);
-		
-		LightLocalizer lightLocalizer = new LightLocalizer();
-		lightLocalizer.lightlocalize();
+	
 
 	}
 	

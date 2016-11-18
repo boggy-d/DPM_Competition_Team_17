@@ -37,8 +37,8 @@ public class Constants {
 	public final static int ACCELERATION = 3000;
 	
 	//navigator
-	public final static double TRACK = 14.3;
-	public final static double RADIUS = 2;
+	public final static double TRACK = 14.2;
+	public final static double RADIUS = 2.04;
 	public final static int DIST_ERR = 0000;
 	
 	//us localization
@@ -75,7 +75,7 @@ public class Constants {
 	// searching
 	public final static int SEARCH_DISTANCE_THRESHOLD = 200;
 
-	public final static String SERVER_IP = "192.168.2.15";
+	public final static String SERVER_IP = "192.168.2.3";
 	public final static int TEAM_NUMBER = 17;
 }
  

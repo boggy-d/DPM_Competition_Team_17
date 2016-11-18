@@ -144,8 +144,8 @@ public class LightLocalizer {
 
 	//put this outside lightlocalizer?
         // travel to origin and face 0 degrees
-		//ActionController.navigator.travelTo(0,0);
-		//ActionController.navigator.turnTo(0);
+		ActionController.navigator.travelTo(0,0);
+		ActionController.navigator.turnTo(0);
 		
 	}
 }
