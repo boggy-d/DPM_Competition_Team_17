@@ -28,6 +28,7 @@ import lejos.hardware.sensor.SensorModes;
 import lejos.utility.Delay;
 import lejos.utility.Timer;
 import lejos.utility.TimerListener;
+import userInterface.LCDInfo;
 import wifi.WifiConnection;
 
 public class ActionController implements TimerListener {
@@ -51,33 +52,42 @@ public class ActionController implements TimerListener {
 		//Wifi "supposedly works (router is bad and it should feel bad)
 //		setWifiInfo();
 		
+
 		if (autostart) {
 			// if the timeout interval is given as <= 0, default to 20ms timeout 
 			this.acTimer = new Timer((INTERVAL <= 0) ? INTERVAL : Constants.DEFAULT_TIMEOUT_PERIOD, this);
 			this.acTimer.start();
 		} else
 			this.acTimer = null;
+
 		
 		odometer = new Odometer(Constants.leftMotor, Constants.rightMotor, 30, true);
+
+		LCDInfo lcd = new LCDInfo();
 		
 		usPoller = new USPoller(Constants.frontUsSensor, /* sideUsSensor, */ Constants.DEFAULT_TIMEOUT_PERIOD, true);
 		
 		lightPoller = new LightPoller(Constants.lightSensor, Constants.colorSensor, Constants.DEFAULT_TIMEOUT_PERIOD, true);
 		
+		
+
+		
 		navigator = new Navigator();
+		
+		
 
 		// localize
+
 		USLocalizer usLocalizer = new USLocalizer();
 		usLocalizer.usLocalize();
 
-		navigator.turnTo(90);
-		/*
-		 * LightLocalizer lightLocalizer = new LightLocalizer(odometer,
-		 * navigator, floorPoller, leftMotor, rightMotor);
-		 * lightLocalizer.lightlocalize();
-		 * 
-		 * 
-		 */
+		navigator.turnTo(0);
+		
+		 LightLocalizer lightLocalizer = new LightLocalizer(odometer,
+		 navigator, lightPoller, Constants.leftMotor, Constants.rightMotor);
+		 lightLocalizer.lightlocalize();
+		
+
 	}
 	
 	

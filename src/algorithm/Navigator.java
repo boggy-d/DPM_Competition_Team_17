@@ -16,15 +16,17 @@ import component.Constants;
 import component.Odometer;
 import component.USPoller;
 import lejos.utility.TimerListener;
+import userInterface.CompetitionDemo;
 
 public class Navigator implements TimerListener{
 
 	//Speed variables
 	
 	final static int ACCELERATION = 3000, FORWARD_SPEED = 200, ROTATION_SPEED = 100;
-	final static int TRACK = 0000;
-	final static int RADIUS = 0000;
+	final static double TRACK = 14.3;
+	final static double RADIUS = 2;
 	final static int DIST_ERR = 0000;
+
 	
 	/**
 	 * Class constructor specifying the Odometer and the USPoller to be used
@@ -35,11 +37,10 @@ public class Navigator implements TimerListener{
 	 * @see Odometer
 	 * @see USPoller
 	 */
+
 	public Navigator(){
-//		
-//		EV3LargeRegulatedMotor[] motors = this.odometer.getMotors();
-//		this.leftMotor = motors[0];
-//		this.rightMotor = motors[1];
+
+
 		
 		Constants.leftMotor.setAcceleration(ACCELERATION);
 		Constants.rightMotor.setAcceleration(ACCELERATION);
@@ -75,7 +76,7 @@ public class Navigator implements TimerListener{
 	 */
 	public int convertAngle( double radius, double width, double angle){
 
-		return (int)Math.toDegrees(((width * angle / 2.0) / (radius)));
+		return (int) ((width * angle / 2.0) / (radius));
 	}
 
 	/**
@@ -114,22 +115,34 @@ public class Navigator implements TimerListener{
 	public void turnTo(double target_angle){
 
 		ActionController.stopMotors();
-		ActionController.setSpeeds(ROTATION_SPEED, ROTATION_SPEED, false); //SETSPEEDS CAUSES BOT TO MOVE FORWARD *ERROR*
+		ActionController.setSpeeds(ROTATION_SPEED, ROTATION_SPEED, false); 
+
 
 		double delta_theta = target_angle - ActionController.odometer.getAng();
 		int turning_angle =convertAngle(RADIUS, TRACK, delta_theta);
-
+		System.out.println("target_angle:" + target_angle);
+		System.out.println("delta_theta:"+ delta_theta);
+		System.out.println("odo ang:"+ ActionController.odometer.getAng());
+		System.out.println("turning angle:"+ turning_angle);
+		
+		
 		double adjusted_theta = 360 - delta_theta;
 		int adjusted_turning_angle = convertAngle(RADIUS, TRACK, adjusted_theta);
-
+		
+		
+		System.out.println("adjusted theta:"+ adjusted_theta);
+		System.out.println("adjusted turning angle:" + adjusted_turning_angle);
 
 		if (-180 < delta_theta && delta_theta < 180){
+
+			System.out.println("1");
 
 			Constants.rightMotor.rotate(-turning_angle, true);
 			Constants.leftMotor.rotate(turning_angle, false);
 		}
 
 		else if (delta_theta < -180){
+			System.out.println("2");
 
 			Constants.rightMotor.rotate(-adjusted_turning_angle, true);
 			Constants.leftMotor.rotate(adjusted_turning_angle, false);
@@ -137,9 +150,13 @@ public class Navigator implements TimerListener{
 
 		else{
 
+			System.out.println("3");
+
 			Constants.rightMotor.rotate(adjusted_turning_angle, true);
 			Constants.leftMotor.rotate(-adjusted_turning_angle, false);
 		}
+		
+		
 	}
 	
 	/**
