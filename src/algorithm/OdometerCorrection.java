@@ -6,51 +6,51 @@
  */
 
 package algorithm;
-import component.Odometer;
-import component.LightPoller;
+import lejos.utility.Timer;
+import lejos.utility.TimerListener;
+import component.ActionController;
 import component.Constants;
 
 //to be started after localization!!!
-public class OdometerCorrection extends Thread{
+public class OdometerCorrection implements TimerListener{
 
-private Odometer odometer;
-private LightPoller lightPoller;
+private double position[] = new double[3]; 
+private boolean update[] = {true, true, false};
+private double norm_x, norm_y;
+private double delta_x, delta_y;
+private Timer ocTimer;
 
-double position[] = new double[3]; 
-boolean update[] = {true, true, false};
-
-//constructor
-public OdometerCorrection(Odometer odometer, LightPoller lightPoller){
-	
-	this.odometer = odometer;
-	this.lightPoller = lightPoller;
+public OdometerCorrection(int INTERVAL, boolean autostart)
+{
+	if (autostart) {
+		// if the timeout interval is given as <= 0, default to 20ms timeout 
+		ocTimer = new Timer((INTERVAL <= 0) ? INTERVAL : Constants.DEFAULT_TIMEOUT_PERIOD, this);
+		ocTimer.start();
+	} else
+		ocTimer = null;
 }
 
 
-public void Run(){
-
-	while(true){
-		
-		double prevLightData = lightPoller.getLightData();
+public void timedOut(){
 
 		//if line is detected -> correct ---> make entire while an if statement?
-		if(lightPoller.isLine(prevLightData)){
+		if(ActionController.lightPoller.isLine()){
 
-			position[0] = odometer.getX();
-			position[1] = odometer.getY();
-			position[2] = odometer.getAng();
+			position[0] = ActionController.odometer.getX();
+			position[1] = ActionController.odometer.getY();
+			position[2] = ActionController.odometer.getAng();
 
 
 			//transform location of point for correction from wheel center to color sensor
 			transformPosition(position);
 
 			//"normalize" positions by tile lengths
-			double norm_x = (position[0] / Constants.TILE_LENGTH);
-			double norm_y = (position[1] / Constants.TILE_LENGTH);
+			norm_x = (position[0] / Constants.TILE_LENGTH);
+			norm_y = (position[1] / Constants.TILE_LENGTH);
 
 			//hold distance between position relative to nearest gridline
-			double delta_x = Math.abs((int)norm_x - norm_x);
-			double delta_y = Math.abs((int)norm_y - norm_y);
+			delta_x = Math.abs((int)norm_x - norm_x);
+			delta_y = Math.abs((int)norm_y - norm_y);
 			
 			//rescale for minimum distances
 			if (delta_x > 0.5)
@@ -87,11 +87,10 @@ public void Run(){
 			inverseTransfrom(position);
 
 			//update odometer
-			odometer.setPosition(position, update);
+			ActionController.odometer.setPosition(position, update);
 			
 			//sleep thread quickly to avoid adjusting multiple times when passing a single gridline
 		}
-	}
 }
 
 

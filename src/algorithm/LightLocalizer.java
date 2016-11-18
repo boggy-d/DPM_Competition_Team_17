@@ -16,17 +16,11 @@ import component.LightPoller;
 import component.Odometer;
 import component.Constants;
 import lejos.hardware.Sound;
-import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import lejos.hardware.sensor.EV3UltrasonicSensor;
-import lejos.robotics.SampleProvider;
 import lejos.utility.Delay;
 
 public class LightLocalizer {
 	//for the constructor
-	private Odometer odometer;
-	private Navigator navigator;
-	private LightPoller lightPoller;
-	private EV3LargeRegulatedMotor leftMotor, rightMotor;
+
 	
 	/**
 	 * Class constructor specifying the different parameters this class
@@ -41,13 +35,8 @@ public class LightLocalizer {
 	 * @see Odometer
 	 * @see Navigator
 	 */
-	public LightLocalizer(Odometer odometer, Navigator navigator, LightPoller lightPoller,
-			EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor) {
-		this.odometer = odometer;
-		this.navigator = navigator;
-		this.lightPoller = lightPoller;
-		this.leftMotor = leftMotor;
-		this.rightMotor = rightMotor;
+	public LightLocalizer() {
+
 	}
 	
 	/**
@@ -60,19 +49,21 @@ public class LightLocalizer {
 	public void lightlocalize() {
 	
 		//turn to approximate direction of lines
-		navigator.turnTo(45);
+		ActionController.navigator.turnTo(45);
 		
 		//setting speed and begin to move forward speed
 		ActionController.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED, true);
 		
+		
+		//TODO Check if we actually need prevLightData
 		//set the previous light data
-		double prevLightData = lightPoller.getLightData();
+		double prevLightData = ActionController.lightPoller.getLightData();
 		
 		// keeps driving forward until we detect a line
-		while(!(lightPoller.isLine(prevLightData))) {
+		while(!(ActionController.lightPoller.isLine())) {
 			
 			//change the previous light data
-			prevLightData = lightPoller.getLightData();
+			prevLightData = ActionController.lightPoller.getLightData();
 		}
 		
 		// black line detected
@@ -94,17 +85,17 @@ public class LightLocalizer {
 		while (lineCount < 4) {
 			
 			//set the previous light data
-			prevLightData = lightPoller.getLightData();
+			prevLightData = ActionController.lightPoller.getLightData();
 			
 			// keeps rotating until line is detected
-			while(!(lightPoller.isLine(prevLightData))) {
+			while(!(ActionController.lightPoller.isLine())) {
 				
 				//change the previous light data
-				prevLightData = lightPoller.getLightData();
+				prevLightData = ActionController.lightPoller.getLightData();
 			}
 			
 			// store angle in array
-			angles[lineCount++] = odometer.getAng();
+			angles[lineCount++] = ActionController.odometer.getAng();
 			// play sound to confirm
 			Sound.beep();
 			// avoid counting same line several times
@@ -128,14 +119,14 @@ public class LightLocalizer {
 
         //TODO check if it is supposed to be added to or not
         // correct coordinates and orientation
-		double[] correction = {odometer.getX() + deltaX, odometer.getY() + deltaY, odometer.getAng() + deltaTheta};
+		double[] correction = {ActionController.odometer.getX() + deltaX, ActionController.odometer.getY() + deltaY, ActionController.odometer.getAng() + deltaTheta};
 		boolean[] update = {true, true, true};
-		odometer.setPosition(correction, update);
+		ActionController.odometer.setPosition(correction, update);
 
 	//put this outside lightlocalizer?
         // travel to origin and face 0 degrees
-		navigator.travelTo(0,0);
-		navigator.turnTo(0);
+		ActionController.navigator.travelTo(0,0);
+		ActionController.navigator.turnTo(0);
 		
 		//beep when finished localizing
 	}

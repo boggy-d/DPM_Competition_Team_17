@@ -18,9 +18,8 @@ import lejos.hardware.Button;
 public class CompetitionDemo {
 
 	public static void main(String[] args) {
-		//TODO Print to the LCD. Set up ActionController thread
 		
-		//isEnter();
+		isEnter();
 		ActionController ac = new ActionController(Constants.DEFAULT_TIMEOUT_PERIOD, true);
 		
 		

@@ -34,8 +34,6 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 public class Odometer implements TimerListener {
 
 	private Timer timer;
-	private EV3LargeRegulatedMotor leftMotor, rightMotor;
-	private double leftRadius, rightRadius, width;
 	private double x, y, theta;
 	private double[] oldDH, dDH;
 	
@@ -48,15 +46,9 @@ public class Odometer implements TimerListener {
 	 * @see Timer
 	 * @see TimerListener
 	 */
-	public Odometer (EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor, int INTERVAL, boolean autostart) {
-		
-		this.leftMotor = leftMotor;
-		this.rightMotor = rightMotor;
+	public Odometer (int INTERVAL, boolean autostart) {
 		
 		// default values, modify for your robot
-		this.rightRadius = 2.178; 
-		this.leftRadius = 2.178; 
-		this.width = 16.18;
 		
 		this.x = 0.0;
 		this.y = 0.0;
@@ -102,11 +94,11 @@ public class Odometer implements TimerListener {
 	 */
 	private void getDisplacementAndHeading(double[] data) {
 		int leftTacho, rightTacho;
-		leftTacho = leftMotor.getTachoCount();
-		rightTacho = rightMotor.getTachoCount();
+		leftTacho = Constants.leftMotor.getTachoCount();
+		rightTacho = Constants.rightMotor.getTachoCount();
 
-		data[0] = (leftTacho * leftRadius + rightTacho * rightRadius) * Math.PI / 360.0;
-		data[1] = (rightTacho * rightRadius - leftTacho * leftRadius) / width;
+		data[0] = (leftTacho * Constants.RADIUS + rightTacho * Constants.RADIUS) * Math.PI / 360.0;
+		data[1] = (rightTacho * Constants.RADIUS - leftTacho * Constants.RADIUS) / Constants.TRACK;
 	}
 	
 	@Override 
@@ -201,7 +193,7 @@ public class Odometer implements TimerListener {
 	 * @return the robot's motors
 	 */
 	public EV3LargeRegulatedMotor [] getMotors() {
-		return new EV3LargeRegulatedMotor[] {this.leftMotor, this.rightMotor};
+		return new EV3LargeRegulatedMotor[] {Constants.leftMotor, Constants.rightMotor};
 	}
 	
 	/**
@@ -209,7 +201,7 @@ public class Odometer implements TimerListener {
 	 * @return the robot's left motor
 	 */
 	public EV3LargeRegulatedMotor getLeftMotor() {
-		return this.leftMotor;
+		return Constants.leftMotor;
 	}
 	
 	/**
@@ -217,7 +209,7 @@ public class Odometer implements TimerListener {
 	 * @return the robot's right motor
 	 */
 	public EV3LargeRegulatedMotor getRightMotor() {
-		return this.rightMotor;
+		return Constants.rightMotor;
 	}
 
 	/**

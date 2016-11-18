@@ -23,6 +23,9 @@ public class LightPoller implements TimerListener{
 	private float[] lightData, colorData;
 	private MedianFilter medianFilter;
 	private Timer lightPollerTimer;
+	private double ambientLight;
+	private boolean isLine, isBlue;
+	private Object lock;
 
 	// initializes color sensor.
 	// method with variable filters for different needs
@@ -44,6 +47,9 @@ public class LightPoller implements TimerListener{
 		this.colorSensor = colorSensor;
 		colorSampler = colorSensor.getMode("RGB");	
 		colorData = new float[colorSampler.sampleSize()];
+		
+		lightSampler.fetchSample(lightData, 0);
+		ambientLight = lightData[0];
 		
 		this.medianFilter = new MedianFilter(lightSampler, 5);
 		
@@ -84,7 +90,9 @@ public class LightPoller implements TimerListener{
 	public double getLightData()
 	{
 		//TODO filter
-		medianFilter.fetchSample(lightData, 0);
+		
+		lightSensor.fetchSample(lightData, 0);
+//		medianFilter.fetchSample(lightData, 0);
 		return lightData[0];
 		
 	}
@@ -97,8 +105,7 @@ public class LightPoller implements TimerListener{
 	 */
 	public float[] getColorData()
 	{
-		//TODO Poll and parse LightSensor2 data
-		lightSensor.fetchSample(colorData, 0);
+		colorSensor.fetchSample(colorData, 0);
 		return colorData;		
 	}
 	
@@ -108,21 +115,10 @@ public class LightPoller implements TimerListener{
 	 * returns the result
 	 * @return <code>true</code> if the light value is smaller than the threshold, otherwise returns <code>false</code>
 	 */
-	public boolean isLine(double prevLightData) {
-		//TODO comparison filter
-		//return getLightData() < Constants.BLACKINTENSITY;
-		
-		//get the current data
-		double currentLightData = getLightData();
-		
-		//Passed a black line (compare the previous and current light data)
-		//if the their difference is bigger than a threshold, we have passed a line
-		if( prevLightData - currentLightData > Constants.LINE_DETECT_DIFF){
-			return true;
-		}
-		
-		else{
-			return false;
+	public boolean isLine() {
+		synchronized(lock)
+		{
+			return isLine;
 		}
 	}
 	
@@ -134,25 +130,32 @@ public class LightPoller implements TimerListener{
 	 */
 	public boolean isBlue()
 	{
-		//TODO Implement Filters
-		//return getColorData() == Constants.BLUECOLOURID;
-		
-		float[] colorData = getColorData();
-		
-		//block is blue (blue > red)
-		if(colorData[2]*1000 > colorData[0]*1000){
-			return true;
+		synchronized(lock)
+		{
+			return isBlue;
 		}
-		
-		return false;	
 	}
 
 	@Override
 	public void timedOut() {
+		//TODO Implement Filters
+		if(Math.abs(ambientLight - getLightData()) >= Constants.LINE_DETECT_DIFF)
+		{
+			isLine = true;
+		}
+		else
+		{
+			isLine = false;
+		}
 		
-		
-		
-		//TODO Get data. Check thresholds (basically use the above methods)
+		if(getColorData()[2] > getColorData()[0])
+		{
+			isBlue = true;
+		}
+		else
+		{
+			isBlue = false;
+		}
 		
 	}
 }

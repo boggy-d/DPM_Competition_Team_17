@@ -11,11 +11,7 @@ package algorithm;
 
 import component.ActionController;
 import component.Constants;
-import component.Odometer;
-import component.USPoller;
 import lejos.hardware.Sound;
-import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import lejos.robotics.SampleProvider;
 
 public class USLocalizer {
 
@@ -67,7 +63,8 @@ public class USLocalizer {
 		ActionController.stopMotors();
 		ccw_angle = ActionController.odometer.getAng();
 		Sound.beep();
-
+		
+		//TODO add constants
 		if (cw_angle > ccw_angle) {
 			position[2] = (ActionController.odometer.getAng() + (45 - (cw_angle + ccw_angle) / 2));
 		}

@@ -30,8 +30,16 @@ public class Constants {
 	
 	
 	//motor speeds
+	public final static int FAST_FORWARD_SPEED = 200;
 	public final static int FORWARD_SPEED = 100;
+	public final static int FAST_ROTATION_SPEED = 100;
 	public final static int ROTATION_SPEED = 60;
+	public final static int ACCELERATION = 3000;
+	
+	//navigator
+	public final static double TRACK = 14.3;
+	public final static double RADIUS = 2;
+	public final static int DIST_ERR = 0000;
 	
 	//us localization
 	public final static int ROTATE_SPEED = 100, CLIP = 45, WALL_DIST = 42, US_MARGIN = 2;

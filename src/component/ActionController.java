@@ -61,7 +61,7 @@ public class ActionController implements TimerListener {
 			this.acTimer = null;
 
 		
-		odometer = new Odometer(Constants.leftMotor, Constants.rightMotor, 30, true);
+		odometer = new Odometer(30, true);
 
 		LCDInfo lcd = new LCDInfo();
 		
@@ -83,8 +83,7 @@ public class ActionController implements TimerListener {
 
 		navigator.turnTo(0);
 		
-		 LightLocalizer lightLocalizer = new LightLocalizer(odometer,
-		 navigator, lightPoller, Constants.leftMotor, Constants.rightMotor);
+		 LightLocalizer lightLocalizer = new LightLocalizer();
 		 lightLocalizer.lightlocalize();
 		
 
@@ -184,8 +183,6 @@ public class ActionController implements TimerListener {
 	 * @see WifiConnection
 	 */
 	public void setWifiInfo() {
-		
-		//TODO Figure out how to get the wifi info
 		
 		//Tries to connect to wifi
 		WifiConnection conn = null;

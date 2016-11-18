@@ -15,19 +15,8 @@ import component.ActionController;
 import component.Constants;
 import component.Odometer;
 import component.USPoller;
-import lejos.utility.TimerListener;
-import userInterface.CompetitionDemo;
 
-public class Navigator implements TimerListener{
-
-	//Speed variables
-	
-	final static int ACCELERATION = 3000, FORWARD_SPEED = 200, ROTATION_SPEED = 100;
-	final static double TRACK = 14.3;
-	final static double RADIUS = 2;
-	final static int DIST_ERR = 0000;
-
-	
+public class Navigator{
 	/**
 	 * Class constructor specifying the Odometer and the USPoller to be used
 	 * 
@@ -39,11 +28,8 @@ public class Navigator implements TimerListener{
 	 */
 
 	public Navigator(){
-
-
-		
-		Constants.leftMotor.setAcceleration(ACCELERATION);
-		Constants.rightMotor.setAcceleration(ACCELERATION);
+		Constants.leftMotor.setAcceleration(Constants.ACCELERATION);
+		Constants.rightMotor.setAcceleration(Constants.ACCELERATION);
 	}
 	
 	/**
@@ -115,11 +101,11 @@ public class Navigator implements TimerListener{
 	public void turnTo(double target_angle){
 
 		ActionController.stopMotors();
-		ActionController.setSpeeds(ROTATION_SPEED, ROTATION_SPEED, false); 
+		ActionController.setSpeeds(Constants.FAST_ROTATION_SPEED, Constants.FAST_ROTATION_SPEED, false); 
 
 
 		double delta_theta = target_angle - ActionController.odometer.getAng();
-		int turning_angle =convertAngle(RADIUS, TRACK, delta_theta);
+		int turning_angle =convertAngle(Constants.RADIUS, Constants.TRACK, delta_theta);
 		System.out.println("target_angle:" + target_angle);
 		System.out.println("delta_theta:"+ delta_theta);
 		System.out.println("odo ang:"+ ActionController.odometer.getAng());
@@ -127,7 +113,7 @@ public class Navigator implements TimerListener{
 		
 		
 		double adjusted_theta = 360 - delta_theta;
-		int adjusted_turning_angle = convertAngle(RADIUS, TRACK, adjusted_theta);
+		int adjusted_turning_angle = convertAngle(Constants.RADIUS, Constants.TRACK, adjusted_theta);
 		
 		
 		System.out.println("adjusted theta:"+ adjusted_theta);
@@ -169,9 +155,9 @@ public class Navigator implements TimerListener{
 	public void travelTo(double destination_x, double destination_y){
 
 		turnTo(calculateAngle(ActionController.odometer.getX(), ActionController.odometer.getY(), destination_x, destination_y));
-		ActionController.setSpeeds(FORWARD_SPEED, FORWARD_SPEED, true);
+		ActionController.setSpeeds(Constants.FAST_FORWARD_SPEED, Constants.FAST_FORWARD_SPEED, true);
 
-		while ((Math.abs(ActionController.odometer.getX() - destination_x) > DIST_ERR) || (Math.abs(ActionController.odometer.getY() - destination_y) > DIST_ERR)){
+		while ((Math.abs(ActionController.odometer.getX() - destination_x) > Constants.DIST_ERR) || (Math.abs(ActionController.odometer.getY() - destination_y) > Constants.DIST_ERR)){
 
 			//already moving forward -- do nothing
 		}
@@ -179,11 +165,6 @@ public class Navigator implements TimerListener{
 		ActionController.stopMotors();
 	}
 
-	@Override
-	public void timedOut() {
-		// TODO Auto-generated method stub
-		
-	}
 
-	//might have to convert all methods to work in degrees
+	//TODO might have to convert all methods to work in degrees
 }

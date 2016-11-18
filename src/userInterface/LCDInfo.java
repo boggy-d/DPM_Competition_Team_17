@@ -12,7 +12,6 @@ package userInterface;
 
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
-import lejos.robotics.SampleProvider;
 import lejos.utility.Timer;
 import lejos.utility.TimerListener;
 import component.ActionController;
@@ -28,9 +27,6 @@ public class LCDInfo implements TimerListener{
 
 	// arrays for displaying data
 	private double [] pos;
-	private double dist;
-	private float[] usData;
-	private SampleProvider usSensor;
 	
 	public LCDInfo() {
 		this.lcdTimer = new Timer(LCD_REFRESH, this);
@@ -52,12 +48,7 @@ public class LCDInfo implements TimerListener{
 	 */
 	public void printDisplay()
 	{
-		//TODO Draw String
-		
-	}
-
-	public void timedOut() { 
-		ActionController.odometer.getPosition(pos);
+		//TODO add constants
 		LCD.clear();
 		LCD.drawString("X: ", 0, 0);
 		LCD.drawString("Y: ", 0, 1);
@@ -67,6 +58,12 @@ public class LCDInfo implements TimerListener{
 		LCD.drawInt((int)(pos[1] * 10), 3, 1);
 		LCD.drawInt((int)pos[2], 3, 2);
 		LCD.drawInt((int)ActionController.usPoller.getClippedData(255), 3, 3);
+		
+	}
+
+	public void timedOut() { 
+		ActionController.odometer.getPosition(pos);
+		printDisplay();
 	}
 	
 }
