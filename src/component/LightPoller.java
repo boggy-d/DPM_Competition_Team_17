@@ -12,9 +12,9 @@
 package component;
 
 import lejos.hardware.sensor.EV3ColorSensor;
-import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.robotics.SampleProvider;
 import lejos.utility.TimerListener;
+import lejos.robotics.filter.MedianFilter;
 
 public class LightPoller implements TimerListener{
 	private EV3ColorSensor lightSensor;
@@ -22,6 +22,7 @@ public class LightPoller implements TimerListener{
 	private float[] lightData;
 	private SampleProvider colorSampler;
 	private float[] colorData;
+	private MedianFilter medianFilter;
 
 	// initializes color sensor.
 	// method with variable filters for different needs
@@ -41,6 +42,8 @@ public class LightPoller implements TimerListener{
 		lightData = new float[lightSampler.sampleSize()];			
 		colorSampler = lightSensor.getRGBMode();	
 		colorData = new float[colorSampler.sampleSize()];
+		this.medianFilter = new MedianFilter(lightSampler, 5);
+		
 	}
 	
 	/**
@@ -51,7 +54,7 @@ public class LightPoller implements TimerListener{
 	public double getLightData()
 	{
 		//TODO filter
-		lightSensor.fetchSample(lightData, 0);
+		medianFilter.fetchSample(lightData, 0);
 		return lightData[0];
 		
 	}

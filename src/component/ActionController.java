@@ -20,6 +20,7 @@ import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
+import lejos.hardware.sensor.SensorModes;
 import lejos.utility.Delay;
 import lejos.utility.TimerListener;
 
@@ -28,7 +29,7 @@ public class ActionController implements TimerListener {
 	private static EV3LargeRegulatedMotor rightMotor;
 	private EV3LargeRegulatedMotor clawLift;
 	private EV3LargeRegulatedMotor clawClose;
-	private EV3UltrasonicSensor frontUsSensor;
+	private SensorModes frontUsSensor;
 	private EV3UltrasonicSensor sideUsSensor;
 	private EV3ColorSensor lightSensor;
 	private EV3ColorSensor colorSensor;
@@ -41,8 +42,8 @@ public class ActionController implements TimerListener {
 			EV3LargeRegulatedMotor rightMotor,
 			EV3LargeRegulatedMotor clawLiftMotor,
 			EV3LargeRegulatedMotor clawCloseMotor,
-			EV3UltrasonicSensor frontUsSensor,
-			EV3UltrasonicSensor sideUsSensor,
+			SensorModes frontUsSensor,
+			//EV3UltrasonicSensor sideUsSensor,
 			EV3ColorSensor lightSensor,
 			EV3ColorSensor colorSensor
 			)
@@ -57,6 +58,28 @@ public class ActionController implements TimerListener {
 		this.colorSensor = colorSensor;
 
 		odometer = new Odometer(leftMotor, rightMotor, 30, true);
+		
+		System.out.println("Start of Action Controller");
+		// set up pollers
+		USPoller frontUSPoller = new USPoller(frontUsSensor);
+		LightPoller floorPoller = new LightPoller(lightSensor);
+	//	LightPoller colorPoller = new LightPoller(colorSensor);
+
+		Navigator navigator = new Navigator(odometer, frontUSPoller);
+
+		// localize
+		USLocalizer usLocalizer = new USLocalizer(odometer, frontUSPoller, leftMotor, rightMotor);
+		usLocalizer.usLocalize();
+		
+		navigator.turnTo(90);
+		/*
+		LightLocalizer lightLocalizer = new LightLocalizer(odometer, navigator, floorPoller, leftMotor, rightMotor);
+		lightLocalizer.lightlocalize();
+		
+		
+		*/
+		
+		
 	}
 	
 
@@ -182,32 +205,20 @@ public class ActionController implements TimerListener {
 	@Override
 	public void timedOut() {
 		// TODO EVERYTHING!!!
-		setWifiInfo();
+	//	setWifiInfo();
 		
 		// just for testing, actually get the values from the wifi
-		double greenAreaX = 60;
-		double greenAreaY = 60;
+	//	double greenAreaX = 60;
+	//	double greenAreaY = 60;
 
-		startOdometer();
+		//startOdometer();
 		
-		// set up pollers
-		USPoller frontUSPoller = new USPoller(frontUsSensor);
-		LightPoller floorPoller = new LightPoller(lightSensor);
-		LightPoller colorPoller = new LightPoller(colorSensor);
-
-		Navigator navigator = new Navigator(odometer, frontUSPoller);
-
-		// localize
-		USLocalizer usLocalizer = new USLocalizer(odometer, frontUSPoller, leftMotor, rightMotor);
-		usLocalizer.usLocalize();
-		LightLocalizer lightLocalizer = new LightLocalizer(odometer, navigator, floorPoller, leftMotor, rightMotor);
-		lightLocalizer.lightlocalize();
 		
-		ClawController claw = new ClawController(clawLift, clawClose);
-		ObstacleAvoider avoider = new ObstacleAvoider();
+	//	ClawController claw = new ClawController(clawLift, clawClose);
+	//	ObstacleAvoider avoider = new ObstacleAvoider();
 
 		//start USPoller timelistener here?
-				
+		/*		
 		// how to do this constantly? thread?
 		// constantly check if there is a block in front
 		boolean hasBlock = false;
@@ -279,7 +290,7 @@ public class ActionController implements TimerListener {
 		
 		
 		// place block down
-		claw.placeBlock(false);
+		claw.placeBlock(false);*/
 		
 	}
 }

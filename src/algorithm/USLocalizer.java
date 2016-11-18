@@ -10,14 +10,15 @@
 package algorithm;
 
 import component.ActionController;
+import component.Constants;
 import component.Odometer;
 import component.USPoller;
+import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.robotics.SampleProvider;
 
 public class USLocalizer {
-	final static int ROTATE_SPEED = 100, CLIP = 45, WALL_DIST = 40, US_MARGIN = 2;
-
+	
 	// for constructor
 	private Odometer odometer;
 	private USPoller usPoller;
@@ -56,34 +57,36 @@ public class USLocalizer {
 		boolean[] update = { false, false, true };
 		double cw_angle, ccw_angle;
 
-		ActionController.setSpeeds(ROTATE_SPEED, -ROTATE_SPEED, true);
+		ActionController.setSpeeds(Constants.ROTATE_SPEED, -Constants.ROTATE_SPEED, true);
 
-		while (usPoller.getClippedData(CLIP) == WALL_DIST) {
+		while (usPoller.getClippedData(Constants.CLIP) == Constants.WALL_DIST) {
 
 			//already moving cw
 		}
 
-		while (usPoller.getClippedData(CLIP) < WALL_DIST + US_MARGIN) {
+		while (usPoller.getClippedData(Constants.CLIP) < Constants.WALL_DIST + Constants.US_MARGIN) {
 
 			//already moving cw
 		}
 
 		ActionController.stopMotors();
 		cw_angle = odometer.getAng();
-		ActionController.setSpeeds(-ROTATE_SPEED, ROTATE_SPEED, true);
+		Sound.beep();
+		ActionController.setSpeeds(-Constants.ROTATE_SPEED, Constants.ROTATE_SPEED, true);
 
-		while (usPoller.getClippedData(CLIP) >= WALL_DIST) {
+		while (usPoller.getClippedData(Constants.CLIP) >= Constants.WALL_DIST) {
 
 			//already moving ccw
 		}
 
-		while (usPoller.getClippedData(CLIP) < WALL_DIST + US_MARGIN) {
+		while (usPoller.getClippedData(Constants.CLIP) < Constants.WALL_DIST + Constants.US_MARGIN) {
 
 			//already moving ccw
 		}
 
 		ActionController.stopMotors();
 		ccw_angle = odometer.getAng();
+		Sound.beep();
 
 		if (cw_angle > ccw_angle) {
 			position[2] = (odometer.getAng() + (45 - (cw_angle + ccw_angle) / 2));

@@ -5,6 +5,9 @@ public class Constants {
 	public final static int FORWARD_SPEED = 100;
 	public final static int ROTATION_SPEED = 60;
 	
+	//us localization
+	public final static int ROTATE_SPEED = 100, CLIP = 45, WALL_DIST = 42, US_MARGIN = 3;
+	
 	//for lightLocalization 
 	public final static double COLOR_DIST = 13.7;									//distance between the center of rotation of robot and light sensor
 	public final static double BUFFER_DIST = 6/Math.sqrt(2);						//buffer distance (where we want to be before rotating)
