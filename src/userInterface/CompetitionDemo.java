@@ -20,23 +20,26 @@ import lejos.hardware.sensor.EV3UltrasonicSensor;
 
 public class CompetitionDemo {
 	// get motors
-	private final static EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
-	private final static EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("B"));
-	private final static EV3LargeRegulatedMotor clawLift = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("C"));
-	private final static EV3LargeRegulatedMotor clawClose = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
-	
-	// get sensors
-	private static final EV3UltrasonicSensor frontUsSensor = new EV3UltrasonicSensor(LocalEV3.get().getPort("S1"));
-	private static final EV3UltrasonicSensor sideUsSensor = new EV3UltrasonicSensor(LocalEV3.get().getPort("S2"));
-	private static final EV3ColorSensor lightSensor = new EV3ColorSensor(LocalEV3.get().getPort("S3"));
-	private static final EV3ColorSensor colorSensor = new EV3ColorSensor(LocalEV3.get().getPort("S4"));
+//	private final static EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
+//	private final static EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("B"));
+//	private final static EV3LargeRegulatedMotor clawLift = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("C"));
+//	private final static EV3LargeRegulatedMotor clawClose = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
+//	
+//	// get sensors
+//	private static final EV3UltrasonicSensor frontUsSensor = new EV3UltrasonicSensor(LocalEV3.get().getPort("S1"));
+//	private static final EV3UltrasonicSensor sideUsSensor = new EV3UltrasonicSensor(LocalEV3.get().getPort("S2"));
+//	private static final EV3ColorSensor lightSensor = new EV3ColorSensor(LocalEV3.get().getPort("S3"));
+//	private static final EV3ColorSensor colorSensor = new EV3ColorSensor(LocalEV3.get().getPort("S4"));
 
 	public static void main(String[] args) {
 		//TODO Print to the LCD. Set up ActionController thread
-		
-		isEnter();
-		ActionController ac = new ActionController(leftMotor,rightMotor, clawLift, clawClose, frontUsSensor, sideUsSensor, lightSensor, colorSensor);
-		while(Button.waitForAnyPress() != Button.ID_LEFT);
+		System.out.println("Start");
+//		isEnter();
+//		ActionController ac = new ActionController(leftMotor,rightMotor, clawLift, clawClose, frontUsSensor, sideUsSensor, lightSensor, colorSensor);
+		ActionController ac = new ActionController(2000, true);
+//		ac.start();
+		while(Button.waitForAnyPress() != Button.ID_ESCAPE);
+		System.exit(0);
 	}
 	
 	

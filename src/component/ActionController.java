@@ -10,6 +10,10 @@
 
 package component;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.StringTokenizer;
+
 import algorithm.ClawController;
 import algorithm.LightLocalizer;
 import algorithm.Navigator;
@@ -21,7 +25,9 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.utility.Delay;
+import lejos.utility.Timer;
 import lejos.utility.TimerListener;
+import wifi.WifiConnection;
 
 public class ActionController implements TimerListener {
 	private static EV3LargeRegulatedMotor leftMotor;
@@ -35,6 +41,24 @@ public class ActionController implements TimerListener {
 
 	static Odometer odometer;
 	Navigator navigator;
+	
+	private Timer timer;
+	
+	public int[] wifiInfo = new int[12];
+	public int SC, ROLE, LRZx, LRZy, URZx, URZy, LGZx, LGZy, UGZx, UGZy;
+	
+	public ActionController(int INTERVAL, boolean autostart)
+	{
+		//Wifi "supposedly works (router is bad and it should feel bad)
+//		setWifiInfo();
+//		if (autostart) {
+//			// if the timeout interval is given as <= 0, default to 20ms timeout 
+//			this.timer = new Timer((INTERVAL <= 0) ? INTERVAL : Constants.DEFAULT_TIMEOUT_PERIOD, this);
+//			this.timer.start();
+//		} else
+//			this.timer = null;
+	}
+	
 	
 	public ActionController(
 			EV3LargeRegulatedMotor leftMotor,
@@ -59,7 +83,26 @@ public class ActionController implements TimerListener {
 		odometer = new Odometer(leftMotor, rightMotor, 30, true);
 	}
 	
-
+	
+	/**
+	 * Stops the Timer
+	 * @see Timer
+	 * @see TimerListener
+	 */
+	public void stop() {
+		if (this.timer != null)
+			this.timer.stop();
+	}
+	
+	/**
+	 * Starts the Timer
+	 * @see Timer
+	 * @see TimerListener
+	 */
+	public void start() {
+		if (this.timer != null)
+			this.timer.start();
+	}
 	/**
 	 * Turns the left and right motors at
 	 * the specified speeds
@@ -136,6 +179,48 @@ public class ActionController implements TimerListener {
 	public void setWifiInfo() {
 		
 		//TODO Figure out how to get the wifi info
+		
+		//Tries to connect to wifi
+		WifiConnection conn = null;
+		try {
+			System.out.println("Connecting...");
+			conn = new WifiConnection(Constants.SERVER_IP, Constants.TEAM_NUMBER, true);
+		} catch (IOException e) {
+			System.out.println("Connection failed");
+		}
+		
+		if (conn != null) {
+			HashMap<String, Integer> t = conn.StartData; //Get competition data
+			
+			if (t == null) {
+				System.out.println("Failed to read transmission");
+			} else {
+				LGZy = t.get("LGZy");
+				LGZx = t.get("LGZx");
+				
+				UGZy = t.get("LGZy");
+				UGZx = t.get("LGZx");
+				
+				LRZy = t.get("LRZy");
+				LRZx = t.get("LRZx");
+				
+				URZy = t.get("URZy");
+				URZx = t.get("URZx");
+				
+				if(t.get("CTN") == Constants.TEAM_NUMBER)
+				{
+					SC = t.get("CSC");
+					ROLE = 1;
+				}
+				else
+				{
+					SC = t.get("BSC");
+					ROLE = 0;
+				}
+				
+				System.out.println(LGZy + " " + LGZx + " " + UGZy + " " + UGZx + " " + LRZy + " " + LRZx + " " + URZy + " " + URZx + " " + SC + " " + ROLE);
+			}
+		}
 	}
 
 	/**
@@ -181,105 +266,105 @@ public class ActionController implements TimerListener {
 
 	@Override
 	public void timedOut() {
-		// TODO EVERYTHING!!!
-		setWifiInfo();
-		
-		// just for testing, actually get the values from the wifi
-		double greenAreaX = 60;
-		double greenAreaY = 60;
-
-		startOdometer();
-		
-		// set up pollers
-		USPoller frontUSPoller = new USPoller(frontUsSensor);
-		LightPoller floorPoller = new LightPoller(lightSensor);
-		LightPoller colorPoller = new LightPoller(colorSensor);
-
-		Navigator navigator = new Navigator(odometer, frontUSPoller);
-
-		// localize
-		USLocalizer usLocalizer = new USLocalizer(odometer, frontUSPoller, leftMotor, rightMotor);
-		usLocalizer.usLocalize();
-		LightLocalizer lightLocalizer = new LightLocalizer(odometer, navigator, floorPoller, leftMotor, rightMotor);
-		lightLocalizer.lightlocalize();
-		
-		ClawController claw = new ClawController(clawLift, clawClose);
-		ObstacleAvoider avoider = new ObstacleAvoider();
-
-		//start USPoller timelistener here?
-				
-		// how to do this constantly? thread?
-		// constantly check if there is a block in front
-		boolean hasBlock = false;
-		if (frontUSPoller.isBlock()) {
-			ActionController.stopMotors();
-			//possibly slow down and approach block
-			
-			if (colorPoller.isBlue()) {
-				// pick up blue block
-				claw.pickUpBlock();
-				hasBlock = true;
-			} else {
-				//avoid obstacle
-				avoider.avoidObstacle();
-			}
-		}
-		
-		// travel to middle of green zone
-		navigator.travelTo(greenAreaX, greenAreaY);
-
-		// do a 360 deg scan of the blocks around you
-		double startingAngle = odometer.getAng();
-		
-		// start rotating clockwise
-		ActionController.setSpeeds(Constants.ROTATION_SPEED, -Constants.ROTATION_SPEED, true);
-		
-		// avoid getting into while loop right away
-        Delay.msDelay(1000);
-		
-		while (odometer.getAng() != startingAngle) {
-			// store angles of the blocks in an array
-			// sort blocks by the closest distance to you
-		}
-		// stop motors
-		ActionController.stopMotors();
-		
-		// calculate the position of the blocks from the array of angles and distances
-		// store in array
-		
-		// if you ran into a blue block on the way place it down
-		if (hasBlock) {
-			// TODO block placement algorithm
-			claw.placeBlock(false);
-			hasBlock = false;
-		}
-		
-		// navigate to the closest block
-		// remove that block position from the array
-		
-		// check if blue block or not
-		
-		// if it is a wooden block find the next closest block to you (avoid block if needed)
-		// if there is no block (in the case that the opponent took it) find the next closet block to you and navigate to it
-
-		// if it is a blue block pick it up
-		
-		// navigate back to the zone
-		// place block where you want it
-		// resort the positions of the blocks to the closest to you again
-		// make sure you avoid the areas where the previous blocks were placed in the zone (or just avoid the zone)
-		// navigate to that block and repeat
-		
-		// once you have finished checking all the blocks in the array
-		// move to a distance 2x what the first scan could see from the zone
-		// do a 360 scan and repeat
-		
-		
-		
-		
-		
-		// place block down
-		claw.placeBlock(false);
+//		// TODO EVERYTHING!!!
+//		setWifiInfo();
+//		
+//		// just for testing, actually get the values from the wifi
+//		double greenAreaX = 60;
+//		double greenAreaY = 60;
+//
+//		startOdometer();
+//		
+//		// set up pollers
+//		USPoller frontUSPoller = new USPoller(frontUsSensor);
+//		LightPoller floorPoller = new LightPoller(lightSensor);
+//		LightPoller colorPoller = new LightPoller(colorSensor);
+//
+//		Navigator navigator = new Navigator(odometer, frontUSPoller);
+//
+//		// localize
+//		USLocalizer usLocalizer = new USLocalizer(odometer, frontUSPoller, leftMotor, rightMotor);
+//		usLocalizer.usLocalize();
+//		LightLocalizer lightLocalizer = new LightLocalizer(odometer, navigator, floorPoller, leftMotor, rightMotor);
+//		lightLocalizer.lightlocalize();
+//		
+//		ClawController claw = new ClawController(clawLift, clawClose);
+//		ObstacleAvoider avoider = new ObstacleAvoider();
+//
+//		//start USPoller timelistener here?
+//				
+//		// how to do this constantly? thread?
+//		// constantly check if there is a block in front
+//		boolean hasBlock = false;
+//		if (frontUSPoller.isBlock()) {
+//			ActionController.stopMotors();
+//			//possibly slow down and approach block
+//			
+//			if (colorPoller.isBlue()) {
+//				// pick up blue block
+//				claw.pickUpBlock();
+//				hasBlock = true;
+//			} else {
+//				//avoid obstacle
+//				avoider.avoidObstacle();
+//			}
+//		}
+//		
+//		// travel to middle of green zone
+//		navigator.travelTo(greenAreaX, greenAreaY);
+//
+//		// do a 360 deg scan of the blocks around you
+//		double startingAngle = odometer.getAng();
+//		
+//		// start rotating clockwise
+//		ActionController.setSpeeds(Constants.ROTATION_SPEED, -Constants.ROTATION_SPEED, true);
+//		
+//		// avoid getting into while loop right away
+//        Delay.msDelay(1000);
+//		
+//		while (odometer.getAng() != startingAngle) {
+//			// store angles of the blocks in an array
+//			// sort blocks by the closest distance to you
+//		}
+//		// stop motors
+//		ActionController.stopMotors();
+//		
+//		// calculate the position of the blocks from the array of angles and distances
+//		// store in array
+//		
+//		// if you ran into a blue block on the way place it down
+//		if (hasBlock) {
+//			// TODO block placement algorithm
+//			claw.placeBlock(false);
+//			hasBlock = false;
+//		}
+//		
+//		// navigate to the closest block
+//		// remove that block position from the array
+//		
+//		// check if blue block or not
+//		
+//		// if it is a wooden block find the next closest block to you (avoid block if needed)
+//		// if there is no block (in the case that the opponent took it) find the next closet block to you and navigate to it
+//
+//		// if it is a blue block pick it up
+//		
+//		// navigate back to the zone
+//		// place block where you want it
+//		// resort the positions of the blocks to the closest to you again
+//		// make sure you avoid the areas where the previous blocks were placed in the zone (or just avoid the zone)
+//		// navigate to that block and repeat
+//		
+//		// once you have finished checking all the blocks in the array
+//		// move to a distance 2x what the first scan could see from the zone
+//		// do a 360 scan and repeat
+//		
+//		
+//		
+//		
+//		
+//		// place block down
+//		claw.placeBlock(false);
 		
 	}
 }
