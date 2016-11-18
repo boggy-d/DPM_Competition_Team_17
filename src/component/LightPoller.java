@@ -26,7 +26,6 @@ public class LightPoller implements TimerListener{
 	private Timer lightPollerTimer;
 	private double ambientLight;
 	private boolean isLine, isBlue;
-	private Object lock;
 
 	// initializes color sensor.
 	// method with variable filters for different needs
@@ -41,6 +40,7 @@ public class LightPoller implements TimerListener{
 	public LightPoller(SensorModes lightSensor, SensorModes colorSensor, int INTERVAL, boolean autostart)
 	{
 		//TODO Modify constructor parameters. Create appropriate fields. Assigne params to fields
+		
 		this.lightSensor = lightSensor;
 		this.lightSampler = this.lightSensor.getMode("Red");
 		this.lightData = new float[lightSampler.sampleSize()];
@@ -117,7 +117,7 @@ public class LightPoller implements TimerListener{
 	 * @return <code>true</code> if the light value is smaller than the threshold, otherwise returns <code>false</code>
 	 */
 	public boolean isLine() {
-		synchronized(lock)
+		synchronized(this)
 		{
 			return isLine;
 		}
@@ -131,7 +131,7 @@ public class LightPoller implements TimerListener{
 	 */
 	public boolean isBlue()
 	{
-		synchronized(lock)
+		synchronized(this)
 		{
 			return isBlue;
 		}
