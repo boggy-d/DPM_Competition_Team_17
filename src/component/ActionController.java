@@ -270,6 +270,34 @@ public class ActionController implements TimerListener {
 
 	@Override
 	public void timedOut() {
+		
+		//Navigation mode
+		if(!lightPoller.isLine())
+		{
+			//Block detected mode
+			if(usPoller.isBlock())
+			{
+				if(lightPoller.isBlue())
+				{
+					//Claw pickup routine
+				}
+				else
+				{
+					//Obstacle avoidance
+				}
+			}
+			//Navigation mode
+			else
+			{
+//				navigator.travelTo(LGZx, LGZy); //Goes to greenzone
+			}
+		}
+		else
+		{
+			//Odometry correction mode
+		}
+
+		
 
 		// TODO EVERYTHING!!!
 	//	setWifiInfo();

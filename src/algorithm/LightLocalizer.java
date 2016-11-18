@@ -36,7 +36,7 @@ public class LightLocalizer {
 	 * @see Navigator
 	 */
 	public LightLocalizer() {
-
+		
 	}
 	
 	/**

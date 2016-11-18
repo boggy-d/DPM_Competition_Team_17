@@ -11,7 +11,7 @@ public class USPoller implements TimerListener{
 	private float[] usData;
 	private Timer usPollerTimer;
 	private boolean isBlock;
-	private Object lock;
+
 	
 	/**
 	 * Class constructor specifying the USS sample feed and sample
@@ -92,7 +92,7 @@ public class USPoller implements TimerListener{
 	public boolean isBlock()
 	{
 		//TODO Write algorithm for block detection. Implement filters.
-		synchronized(lock)
+		synchronized(this)
 		{
 			return isBlock;
 		}	
