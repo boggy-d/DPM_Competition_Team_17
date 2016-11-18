@@ -65,12 +65,16 @@ public class Constants {
 
 	// claw controller
 	public final static int CLAW_LIFT_FULL = (int) (360 * 2.25);
-//	public final static int CLAW_LIFT_FULL = 775;
 	public final static int CLAW_LIFT_ONE_BLOCK = -700;
 	public final static int CLAW_LIFT_TWO_BLOCK = 600;
 	public final static int CLAW_LIFT_THREE_BLOCK = 500;
-	public final static int CLAW_CLOSE_ANGLE = 145;
+	public final static int CLAW_CLOSE_ANGLE = 75;
+	public final static int CLAW_OPEN_ANGLE = 60;
+
 	
+	// searching
+	public final static int SEARCH_DISTANCE_THRESHOLD = 200;
+
 	public final static String SERVER_IP = "192.168.2.15";
 	public final static int TEAM_NUMBER = 17;
 }

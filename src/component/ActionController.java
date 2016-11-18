@@ -41,7 +41,8 @@ public class ActionController implements TimerListener {
 	public static Navigator navigator;
 	public static USPoller usPoller;
 	public static LightPoller lightPoller;
-	
+	public static ClawController claw;
+
 	private Timer acTimer;
 	
 	//Create competition variables
@@ -59,23 +60,18 @@ public class ActionController implements TimerListener {
 		LCDInfo lcd = new LCDInfo();
 		
 		lightPoller = new LightPoller(Constants.lightSensor, Constants.colorSensor, Constants.DEFAULT_TIMEOUT_PERIOD, true);
-		
-		
-
-		
+	
 		navigator = new Navigator();
+		
+		claw = new ClawController();
+
 		if (autostart) {
 			// if the timeout interval is given as <= 0, default to 20ms timeout 
 			this.acTimer = new Timer((INTERVAL <= 0) ? INTERVAL : Constants.DEFAULT_TIMEOUT_PERIOD, this);
 			this.acTimer.start();
 		} else
-			this.acTimer = null;
-
+			this.acTimer = null;		
 		
-		
-		
-		
-
 		// localize
 
 		USLocalizer usLocalizer = new USLocalizer();
@@ -83,9 +79,8 @@ public class ActionController implements TimerListener {
 
 		//navigator.turnTo(45);
 		
-		 LightLocalizer lightLocalizer = new LightLocalizer();
-		 lightLocalizer.lightlocalize();
-		
+		LightLocalizer lightLocalizer = new LightLocalizer();
+		lightLocalizer.lightlocalize();
 
 	}
 	
@@ -213,11 +208,13 @@ public class ActionController implements TimerListener {
 				
 				if(t.get("CTN") == Constants.TEAM_NUMBER)
 				{
+					// garbage collector
 					SC = t.get("CSC");
 					ROLE = 1;
 				}
 				else
 				{
+					// tower builder
 					SC = t.get("BSC");
 					ROLE = 0;
 				}
@@ -267,19 +264,41 @@ public class ActionController implements TimerListener {
 	public void goToStart() {
 		//TODO Write algorithm to go back to starting position while avoiding blocks
 	}
+	
+	/**
+	 * Search for blocks
+	 */
+	public void search() {
+		// for lower left corner start at 30 degree angle
+		navigator.turnTo(30);
+		// start rotating clockwise
+		ActionController.setSpeeds(Constants.ROTATION_SPEED, -Constants.ROTATION_SPEED, true);
+		
+		while (odometer.getAng() != 240) {
+			double distance = usPoller.getClippedData(255);
+			double angleStopped;
+			if (distance < Constants.SEARCH_DISTANCE_THRESHOLD) {
+				angleStopped = odometer.getAng();
+				ActionController.stopMotors();
+				ActionController.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED, true);
+			}
+
+		}
+	}
 
 	@Override
 	public void timedOut() {
 		
-		//Navigation mode
-		if(!lightPoller.isLine())
-		{
+//		//Navigation mode
+//		if(!lightPoller.isLine())
+//		{
 			//Block detected mode
 			if(usPoller.isBlock())
 			{
 				if(lightPoller.isBlue())
 				{
 					//Claw pickup routine
+					claw.pickUpBlock();
 				}
 				else
 				{
@@ -287,16 +306,26 @@ public class ActionController implements TimerListener {
 				}
 			}
 			//Navigation mode
-			else
-			{
-//				navigator.travelTo(LGZx, LGZy); //Goes to greenzone
-			}
-		}
-		else
-		{
-			//Odometry correction mode
-		}
+//			else
+//			{
+////				navigator.travelTo(LGZx, LGZy); //Goes to greenzone
+//			}
+//		}
+//		else
+//		{
+//			//Odometry correction mode
+//		}
 
+			else {
+		if (ROLE == 0) {
+			// tower builder go to left lower corner green zone
+			navigator.travelTo(LGZx, LGZy);
+		} else {
+			// garbage collector go to left lower corner red zone
+			navigator.travelTo(LRZx, LRZy);
+
+		}
+			}
 		
 
 		// TODO EVERYTHING!!!
