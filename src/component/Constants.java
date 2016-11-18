@@ -67,7 +67,7 @@ public class Constants {
 	public final static int CLAW_LIFT_THREE_BLOCK = 500;
 	public final static int CLAW_CLOSE_ANGLE = 145;
 	
-	public final static String SERVER_IP = "192.168.2.15";
+	public final static String SERVER_IP = "192.168.2.3";
 	public final static int TEAM_NUMBER = 17;
 }
  
