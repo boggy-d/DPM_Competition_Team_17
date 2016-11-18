@@ -51,19 +51,21 @@ public class LightLocalizer {
 		//turn to approximate direction of lines
 		ActionController.navigator.turnTo(45);
 		
+		ActionController.stopMotors();
+		
 		//setting speed and begin to move forward speed
 		ActionController.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED, true);
 		
 		
 		//TODO Check if we actually need prevLightData
 		//set the previous light data
-		double prevLightData = ActionController.lightPoller.getLightData();
+		//double prevLightData = ActionController.lightPoller.getLightData();
 		
 		// keeps driving forward until we detect a line
 		while(!(ActionController.lightPoller.isLine())) {
 			
 			//change the previous light data
-			prevLightData = ActionController.lightPoller.getLightData();
+			//prevLightData = ActionController.lightPoller.getLightData();
 		}
 		
 		// black line detected
@@ -85,13 +87,13 @@ public class LightLocalizer {
 		while (lineCount < 4) {
 			
 			//set the previous light data
-			prevLightData = ActionController.lightPoller.getLightData();
+			//prevLightData = ActionController.lightPoller.getLightData();
 			
 			// keeps rotating until line is detected
 			while(!(ActionController.lightPoller.isLine())) {
 				
 				//change the previous light data
-				prevLightData = ActionController.lightPoller.getLightData();
+				//prevLightData = ActionController.lightPoller.getLightData();
 			}
 			
 			// store angle in array

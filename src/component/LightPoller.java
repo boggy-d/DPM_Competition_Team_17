@@ -12,6 +12,7 @@
 package component;
 
 import lejos.hardware.sensor.SensorModes;
+import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.robotics.SampleProvider;
 import lejos.utility.Timer;
 import lejos.utility.TimerListener;
@@ -41,12 +42,12 @@ public class LightPoller implements TimerListener{
 	{
 		//TODO Modify constructor parameters. Create appropriate fields. Assigne params to fields
 		this.lightSensor = lightSensor;
-		lightSampler = lightSensor.getMode("Red");
-		lightData = new float[lightSampler.sampleSize()];
+		this.lightSampler = this.lightSensor.getMode("Red");
+		this.lightData = new float[lightSampler.sampleSize()];
 		
 		this.colorSensor = colorSensor;
-		colorSampler = colorSensor.getMode("RGB");	
-		colorData = new float[colorSampler.sampleSize()];
+		this.colorSampler = this.colorSensor.getMode("RGB");	
+		this.colorData = new float[colorSampler.sampleSize()];
 		
 		lightSampler.fetchSample(lightData, 0);
 		ambientLight = lightData[0];

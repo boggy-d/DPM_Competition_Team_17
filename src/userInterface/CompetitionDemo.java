@@ -19,7 +19,7 @@ public class CompetitionDemo {
 
 	public static void main(String[] args) {
 		
-		isEnter();
+		//isEnter();
 		ActionController ac = new ActionController(Constants.DEFAULT_TIMEOUT_PERIOD, true);
 		
 		

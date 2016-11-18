@@ -112,7 +112,7 @@ public class Navigator{
 		System.out.println("turning angle:"+ turning_angle);
 		
 		
-		double adjusted_theta = 360 - delta_theta;
+		double adjusted_theta = 360 - Math.abs(delta_theta);
 		int adjusted_turning_angle = convertAngle(Constants.RADIUS, Constants.TRACK, adjusted_theta);
 		
 		
@@ -130,18 +130,18 @@ public class Navigator{
 		else if (delta_theta < -180){
 			System.out.println("2");
 
-			Constants.rightMotor.rotate(-adjusted_turning_angle, true);
-			Constants.leftMotor.rotate(adjusted_turning_angle, false);
+			Constants.rightMotor.rotate(adjusted_turning_angle, true);
+			Constants.leftMotor.rotate(-adjusted_turning_angle, false);
 		}
 
 		else{
 
 			System.out.println("3");
 
-			Constants.rightMotor.rotate(adjusted_turning_angle, true);
-			Constants.leftMotor.rotate(-adjusted_turning_angle, false);
+			Constants.rightMotor.rotate(-adjusted_turning_angle, true);
+			Constants.leftMotor.rotate(adjusted_turning_angle, false);
 		}
-		
+	System.out.println("final ang:"+ ActionController.odometer.getAng());	
 		
 	}
 	

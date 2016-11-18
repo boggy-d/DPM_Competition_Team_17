@@ -62,10 +62,10 @@ public class ActionController implements TimerListener {
 
 		
 		odometer = new Odometer(30, true);
-
-		LCDInfo lcd = new LCDInfo();
 		
 		usPoller = new USPoller(Constants.frontUsSensor, /* sideUsSensor, */ Constants.DEFAULT_TIMEOUT_PERIOD, true);
+		
+		LCDInfo lcd = new LCDInfo();
 		
 		lightPoller = new LightPoller(Constants.lightSensor, Constants.colorSensor, Constants.DEFAULT_TIMEOUT_PERIOD, true);
 		
@@ -81,7 +81,7 @@ public class ActionController implements TimerListener {
 		USLocalizer usLocalizer = new USLocalizer();
 		usLocalizer.usLocalize();
 
-		navigator.turnTo(0);
+		//navigator.turnTo(45);
 		
 		 LightLocalizer lightLocalizer = new LightLocalizer();
 		 lightLocalizer.lightlocalize();
