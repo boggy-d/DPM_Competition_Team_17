@@ -10,6 +10,10 @@
 
 package component;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.StringTokenizer;
+
 import algorithm.ClawController;
 import algorithm.LightLocalizer;
 import algorithm.Navigator;
@@ -22,7 +26,9 @@ import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.hardware.sensor.SensorModes;
 import lejos.utility.Delay;
+import lejos.utility.Timer;
 import lejos.utility.TimerListener;
+import wifi.WifiConnection;
 
 public class ActionController implements TimerListener {
 	private static EV3LargeRegulatedMotor leftMotor;
@@ -36,6 +42,24 @@ public class ActionController implements TimerListener {
 
 	static Odometer odometer;
 	Navigator navigator;
+	
+	private Timer timer;
+	
+	public int[] wifiInfo = new int[12];
+	public int SC, ROLE, LRZx, LRZy, URZx, URZy, LGZx, LGZy, UGZx, UGZy;
+	
+	public ActionController(int INTERVAL, boolean autostart)
+	{
+		//Wifi "supposedly works (router is bad and it should feel bad)
+//		setWifiInfo();
+//		if (autostart) {
+//			// if the timeout interval is given as <= 0, default to 20ms timeout 
+//			this.timer = new Timer((INTERVAL <= 0) ? INTERVAL : Constants.DEFAULT_TIMEOUT_PERIOD, this);
+//			this.timer.start();
+//		} else
+//			this.timer = null;
+	}
+	
 	
 	public ActionController(
 			EV3LargeRegulatedMotor leftMotor,
@@ -82,7 +106,26 @@ public class ActionController implements TimerListener {
 		
 	}
 	
-
+	
+	/**
+	 * Stops the Timer
+	 * @see Timer
+	 * @see TimerListener
+	 */
+	public void stop() {
+		if (this.timer != null)
+			this.timer.stop();
+	}
+	
+	/**
+	 * Starts the Timer
+	 * @see Timer
+	 * @see TimerListener
+	 */
+	public void start() {
+		if (this.timer != null)
+			this.timer.start();
+	}
 	/**
 	 * Turns the left and right motors at
 	 * the specified speeds
@@ -159,6 +202,48 @@ public class ActionController implements TimerListener {
 	public void setWifiInfo() {
 		
 		//TODO Figure out how to get the wifi info
+		
+		//Tries to connect to wifi
+		WifiConnection conn = null;
+		try {
+			System.out.println("Connecting...");
+			conn = new WifiConnection(Constants.SERVER_IP, Constants.TEAM_NUMBER, true);
+		} catch (IOException e) {
+			System.out.println("Connection failed");
+		}
+		
+		if (conn != null) {
+			HashMap<String, Integer> t = conn.StartData; //Get competition data
+			
+			if (t == null) {
+				System.out.println("Failed to read transmission");
+			} else {
+				LGZy = t.get("LGZy");
+				LGZx = t.get("LGZx");
+				
+				UGZy = t.get("LGZy");
+				UGZx = t.get("LGZx");
+				
+				LRZy = t.get("LRZy");
+				LRZx = t.get("LRZx");
+				
+				URZy = t.get("URZy");
+				URZx = t.get("URZx");
+				
+				if(t.get("CTN") == Constants.TEAM_NUMBER)
+				{
+					SC = t.get("CSC");
+					ROLE = 1;
+				}
+				else
+				{
+					SC = t.get("BSC");
+					ROLE = 0;
+				}
+				
+				System.out.println(LGZy + " " + LGZx + " " + UGZy + " " + UGZx + " " + LRZy + " " + LRZx + " " + URZy + " " + URZx + " " + SC + " " + ROLE);
+			}
+		}
 	}
 
 	/**
@@ -204,6 +289,7 @@ public class ActionController implements TimerListener {
 
 	@Override
 	public void timedOut() {
+
 		// TODO EVERYTHING!!!
 	//	setWifiInfo();
 		
@@ -291,6 +377,7 @@ public class ActionController implements TimerListener {
 		
 		// place block down
 		claw.placeBlock(false);*/
+
 		
 	}
 }

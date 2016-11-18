@@ -22,6 +22,7 @@ import lejos.hardware.sensor.SensorModes;
 
 public class CompetitionDemo {
 	// get motors
+
 	private final static EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
 	private final static EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
 	private final static EV3LargeRegulatedMotor clawLift = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("C"));
@@ -43,6 +44,7 @@ public class CompetitionDemo {
 		
 		
 		while(Button.waitForAnyPress() != Button.ID_LEFT);
+
 	}
 	
 	
