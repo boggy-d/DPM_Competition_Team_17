@@ -71,7 +71,7 @@ public class Constants {
 	public final static int CLAW_CLOSE_ANGLE = 75;
 	public final static int CLAW_OPEN_ANGLE = 60;
 
-	
+
 	// searching
 	public final static int SEARCH_DISTANCE_THRESHOLD = 200;
 
