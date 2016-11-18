@@ -90,45 +90,62 @@ public class LightLocalizer {
 			//prevLightData = ActionController.lightPoller.getLightData();
 			
 			// keeps rotating until line is detected
-			while(!(ActionController.lightPoller.isLine())) {
+			if(ActionController.lightPoller.isLine()) {
 				
-				//change the previous light data
-				//prevLightData = ActionController.lightPoller.getLightData();
+				// store angle in array
+				angles[lineCount] = ActionController.odometer.getAng();
+				lineCount++;
+				// play sound to confirm
+				Sound.beep();
+				// avoid counting same line several times
+	            Delay.msDelay(2000);
+				
 			}
 			
-			// store angle in array
-			angles[lineCount++] = ActionController.odometer.getAng();
-			// play sound to confirm
-			Sound.beep();
-			// avoid counting same line several times
-            Delay.msDelay(2000);
+			
 		
 		}
 
 		// stop motors
 		ActionController.stopMotors();
-        
-
+        /*System.out.println("x: "+ ActionController.odometer.getX());
+        System.out.println("y: "+ ActionController.odometer.getY());
+        System.out.println("Th: "+ ActionController.odometer.getAng());
+		*/
         // calculate correct x, y and theta differences
         // using formulas from the tutorial slides 
         double negativeYTheta = angles[3];
-        double deltaXTheta = angles[0] - angles[2];
-        double deltaYTheta = angles[1] - angles[3];		// or 3-1? check
-
+        double deltaXTheta = angles[2] - angles[0];
+        double deltaYTheta = angles[3] - angles[1];		// or 3-1? check
+        
         double deltaX = -Constants.COLOR_DIST * Math.cos(Math.toRadians(deltaYTheta) / 2);
         double deltaY = -Constants.COLOR_DIST * Math.cos(Math.toRadians(deltaXTheta) / 2);
-        double deltaTheta = 180 - negativeYTheta + deltaYTheta / 2;		//check math
-
+        double deltaTheta = 270 - negativeYTheta + deltaYTheta / 2;		//check math
+        /*	
+        System.out.println("deltaX: "+ deltaX);
+        System.out.println("deltaY: "+ deltaY);
+        System.out.println("deltaTheta: "+ deltaTheta);
+        */
+        if(deltaTheta > 180){
+        	deltaTheta += 180;
+        }
+        //System.out.println("wrapped deltaTheta: "+ deltaTheta);
+        
         //TODO check if it is supposed to be added to or not
         // correct coordinates and orientation
-		double[] correction = {ActionController.odometer.getX() + deltaX, ActionController.odometer.getY() + deltaY, ActionController.odometer.getAng() + deltaTheta};
+		double[] correction = {deltaX, deltaY, ActionController.odometer.getAng() + deltaTheta};
 		boolean[] update = {true, true, true};
 		ActionController.odometer.setPosition(correction, update);
+		/*
+		System.out.println("x: "+ ActionController.odometer.getX());
+        System.out.println("y: "+ ActionController.odometer.getY());
+        System.out.println("Th: "+ ActionController.odometer.getAng());
+		*/
 
 	//put this outside lightlocalizer?
         // travel to origin and face 0 degrees
-		ActionController.navigator.travelTo(0,0);
-		ActionController.navigator.turnTo(0);
+		//ActionController.navigator.travelTo(0,0);
+		//ActionController.navigator.turnTo(0);
 		
 		//beep when finished localizing
 	}

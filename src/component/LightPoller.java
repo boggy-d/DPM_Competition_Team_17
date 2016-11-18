@@ -43,6 +43,7 @@ public class LightPoller implements TimerListener{
 		
 		this.lightSensor = lightSensor;
 		this.lightSampler = this.lightSensor.getMode("Red");
+		this.lightSensor.setCurrentMode("Red");
 		this.lightData = new float[lightSampler.sampleSize()];
 		
 		this.colorSensor = colorSensor;

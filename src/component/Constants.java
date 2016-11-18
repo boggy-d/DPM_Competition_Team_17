@@ -45,7 +45,7 @@ public class Constants {
 	public final static int ROTATE_SPEED = 100, CLIP = 45, WALL_DIST = 42, US_MARGIN = 2;
 	
 	//for lightLocalization 
-	public final static double COLOR_DIST = 13.7;									//distance between the center of rotation of robot and light sensor
+	public final static double COLOR_DIST = 14.5;									//distance between the center of rotation of robot and light sensor
 	public final static double BUFFER_DIST = 6/Math.sqrt(2);						//buffer distance (where we want to be before rotating)
 	
 	// odometery correction
@@ -55,7 +55,7 @@ public class Constants {
 	// light Poller
 	public final static double BLACKINTENSITY = 0.2;
 	public final static double BLUECOLOURID = 2;
-	public final static int LINE_DETECT_DIFF = 0;
+	public final static double LINE_DETECT_DIFF = 0.3;
 	
 	// odometer
 	public final static int DEFAULT_TIMEOUT_PERIOD = 20;
