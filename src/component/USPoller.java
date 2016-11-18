@@ -103,7 +103,7 @@ public class USPoller implements TimerListener{
 	public void timedOut() {
 		//TODO Get data. Check thresholds (basically use the above methods)
 		//TODO add constants
-		if(getClippedData(255) < 5)
+		if(getClippedData(255) < Constants.BLOCK_INFRONT)
 		{
 			isBlock = true;
 		}

@@ -57,6 +57,9 @@ public class Constants {
 	public final static double BLUECOLOURID = 2;
 	public final static double LINE_DETECT_DIFF = 0.3;
 	
+	// us poller
+	public final static double BLOCK_INFRONT = 3;
+
 	// odometer
 	public final static int DEFAULT_TIMEOUT_PERIOD = 20;
 
