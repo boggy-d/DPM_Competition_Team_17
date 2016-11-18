@@ -12,7 +12,6 @@ package component;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.StringTokenizer;
 
 import algorithm.ClawController;
 import algorithm.LightLocalizer;
@@ -37,10 +36,10 @@ public class ActionController implements TimerListener {
 //	private static final SensorModes sideUsSensor = new EV3UltrasonicSensor(sideUsPort);
 
 	//Instantiate more objects
-	static Odometer odometer;
-	static Navigator navigator;
-	static USPoller usPoller;
-	static LightPoller lightPoller;
+	public static Odometer odometer;
+	public static Navigator navigator;
+	public static USPoller usPoller;
+	public static LightPoller lightPoller;
 	
 	private Timer acTimer;
 	
@@ -52,7 +51,6 @@ public class ActionController implements TimerListener {
 		//Wifi "supposedly works (router is bad and it should feel bad)
 //		setWifiInfo();
 		
-		
 		if (autostart) {
 			// if the timeout interval is given as <= 0, default to 20ms timeout 
 			this.acTimer = new Timer((INTERVAL <= 0) ? INTERVAL : Constants.DEFAULT_TIMEOUT_PERIOD, this);
@@ -61,27 +59,25 @@ public class ActionController implements TimerListener {
 			this.acTimer = null;
 		
 		odometer = new Odometer(Constants.leftMotor, Constants.rightMotor, 30, true);
-		odometer.start();
 		
 		usPoller = new USPoller(Constants.frontUsSensor, /* sideUsSensor, */ Constants.DEFAULT_TIMEOUT_PERIOD, true);
-		usPoller.start();
 		
 		lightPoller = new LightPoller(Constants.lightSensor, Constants.colorSensor, Constants.DEFAULT_TIMEOUT_PERIOD, true);
-		lightPoller.start();
 		
-//		navigator = new Navigator(odometer, frontUSPoller);
-		
+		navigator = new Navigator();
+
 		// localize
-				USLocalizer usLocalizer = new USLocalizer(odometer, usPoller, Constants.leftMotor, Constants.rightMotor);
-				usLocalizer.usLocalize();
-				
-				navigator.turnTo(90);
-				/*
-				LightLocalizer lightLocalizer = new LightLocalizer(odometer, navigator, floorPoller, leftMotor, rightMotor);
-				lightLocalizer.lightlocalize();
-				
-				
-				*/
+		USLocalizer usLocalizer = new USLocalizer();
+		usLocalizer.usLocalize();
+
+		navigator.turnTo(90);
+		/*
+		 * LightLocalizer lightLocalizer = new LightLocalizer(odometer,
+		 * navigator, floorPoller, leftMotor, rightMotor);
+		 * lightLocalizer.lightlocalize();
+		 * 
+		 * 
+		 */
 	}
 	
 	

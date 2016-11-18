@@ -12,9 +12,9 @@
 package algorithm;
 
 import component.ActionController;
+import component.Constants;
 import component.Odometer;
 import component.USPoller;
-import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.utility.TimerListener;
 
 public class Navigator implements TimerListener{
@@ -26,10 +26,6 @@ public class Navigator implements TimerListener{
 	final static int RADIUS = 0000;
 	final static int DIST_ERR = 0000;
 	
-	private Odometer odometer;
-	private USPoller usPoller;
-	private EV3LargeRegulatedMotor leftMotor, rightMotor;
-	
 	/**
 	 * Class constructor specifying the Odometer and the USPoller to be used
 	 * 
@@ -39,17 +35,14 @@ public class Navigator implements TimerListener{
 	 * @see Odometer
 	 * @see USPoller
 	 */
-	public Navigator(Odometer odometer, USPoller usPoller){
+	public Navigator(){
+//		
+//		EV3LargeRegulatedMotor[] motors = this.odometer.getMotors();
+//		this.leftMotor = motors[0];
+//		this.rightMotor = motors[1];
 		
-		this.odometer = odometer;
-		this.usPoller = usPoller;
-		
-		EV3LargeRegulatedMotor[] motors = this.odometer.getMotors();
-		this.leftMotor = motors[0];
-		this.rightMotor = motors[1];
-		
-		this.leftMotor.setAcceleration(ACCELERATION);
-		this.rightMotor.setAcceleration(ACCELERATION);
+		Constants.leftMotor.setAcceleration(ACCELERATION);
+		Constants.rightMotor.setAcceleration(ACCELERATION);
 	}
 	
 	/**
@@ -123,7 +116,7 @@ public class Navigator implements TimerListener{
 		ActionController.stopMotors();
 		ActionController.setSpeeds(ROTATION_SPEED, ROTATION_SPEED, false); //SETSPEEDS CAUSES BOT TO MOVE FORWARD *ERROR*
 
-		double delta_theta = target_angle - odometer.getAng();
+		double delta_theta = target_angle - ActionController.odometer.getAng();
 		int turning_angle =convertAngle(RADIUS, TRACK, delta_theta);
 
 		double adjusted_theta = 360 - delta_theta;
@@ -132,20 +125,20 @@ public class Navigator implements TimerListener{
 
 		if (-180 < delta_theta && delta_theta < 180){
 
-			rightMotor.rotate(-turning_angle, true);
-			leftMotor.rotate(turning_angle, false);
+			Constants.rightMotor.rotate(-turning_angle, true);
+			Constants.leftMotor.rotate(turning_angle, false);
 		}
 
 		else if (delta_theta < -180){
 
-			rightMotor.rotate(-adjusted_turning_angle, true);
-			leftMotor.rotate(adjusted_turning_angle, false);
+			Constants.rightMotor.rotate(-adjusted_turning_angle, true);
+			Constants.leftMotor.rotate(adjusted_turning_angle, false);
 		}
 
 		else{
 
-			rightMotor.rotate(adjusted_turning_angle, true);
-			leftMotor.rotate(-adjusted_turning_angle, false);
+			Constants.rightMotor.rotate(adjusted_turning_angle, true);
+			Constants.leftMotor.rotate(-adjusted_turning_angle, false);
 		}
 	}
 	
@@ -158,10 +151,10 @@ public class Navigator implements TimerListener{
 	 */
 	public void travelTo(double destination_x, double destination_y){
 
-		turnTo(calculateAngle(odometer.getX(), odometer.getY(), destination_x, destination_y));
+		turnTo(calculateAngle(ActionController.odometer.getX(), ActionController.odometer.getY(), destination_x, destination_y));
 		ActionController.setSpeeds(FORWARD_SPEED, FORWARD_SPEED, true);
 
-		while ((Math.abs(odometer.getX() - destination_x) > DIST_ERR) || (Math.abs(odometer.getY() - destination_y) > DIST_ERR)){
+		while ((Math.abs(ActionController.odometer.getX() - destination_x) > DIST_ERR) || (Math.abs(ActionController.odometer.getY() - destination_y) > DIST_ERR)){
 
 			//already moving forward -- do nothing
 		}

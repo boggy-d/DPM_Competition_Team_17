@@ -14,17 +14,8 @@ package userInterface;
 import component.ActionController;
 import component.Constants;
 import lejos.hardware.Button;
-import lejos.hardware.ev3.LocalEV3;
-import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import lejos.hardware.port.Port;
-import lejos.hardware.sensor.EV3ColorSensor;
-import lejos.hardware.sensor.EV3UltrasonicSensor;
-import lejos.hardware.sensor.SensorModes;
 
 public class CompetitionDemo {
-	
-	
-	
 
 	public static void main(String[] args) {
 		//TODO Print to the LCD. Set up ActionController thread
