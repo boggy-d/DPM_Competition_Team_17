@@ -11,18 +11,18 @@
 
 package component;
 
-import lejos.hardware.sensor.EV3ColorSensor;
+import lejos.hardware.sensor.SensorModes;
 import lejos.robotics.SampleProvider;
+import lejos.utility.Timer;
 import lejos.utility.TimerListener;
 import lejos.robotics.filter.MedianFilter;
 
 public class LightPoller implements TimerListener{
-	private EV3ColorSensor lightSensor;
-	private SampleProvider lightSampler;
-	private float[] lightData;
-	private SampleProvider colorSampler;
-	private float[] colorData;
+	private SensorModes lightSensor, colorSensor;
+	private SampleProvider lightSampler, colorSampler;
+	private float[] lightData, colorData;
 	private MedianFilter medianFilter;
+	private Timer lightPollerTimer;
 
 	// initializes color sensor.
 	// method with variable filters for different needs
@@ -34,16 +34,46 @@ public class LightPoller implements TimerListener{
 	 * 
 	 * @since 0.1.0
 	 */
-	public LightPoller(EV3ColorSensor lightSensor)
+	public LightPoller(SensorModes lightSensor, SensorModes colorSensor, int INTERVAL, boolean autostart)
 	{
 		//TODO Modify constructor parameters. Create appropriate fields. Assigne params to fields
 		this.lightSensor = lightSensor;
-		lightSampler = lightSensor.getRedMode();
-		lightData = new float[lightSampler.sampleSize()];			
-		colorSampler = lightSensor.getRGBMode();	
+		lightSampler = lightSensor.getMode("Red");
+		lightData = new float[lightSampler.sampleSize()];
+		
+		this.colorSensor = colorSensor;
+		colorSampler = colorSensor.getMode("RGB");	
 		colorData = new float[colorSampler.sampleSize()];
+		
 		this.medianFilter = new MedianFilter(lightSampler, 5);
 		
+		if (autostart) {
+			// if the timeout interval is given as <= 0, default to 20ms timeout 
+			lightPollerTimer = new Timer((INTERVAL <= 0) ? INTERVAL : Constants.DEFAULT_TIMEOUT_PERIOD, this);
+			lightPollerTimer.start();
+		} else
+			lightPollerTimer = null;
+		
+	}
+	
+	/**
+	 * Stops the Timer
+	 * @see Timer
+	 * @see TimerListener
+	 */
+	public void stop() {
+		if (lightPollerTimer != null)
+			lightPollerTimer.stop();
+	}
+	
+	/**
+	 * Starts the Timer
+	 * @see Timer
+	 * @see TimerListener
+	 */
+	public void start() {
+		if (lightPollerTimer != null)
+			lightPollerTimer.start();
 	}
 	
 	/**
@@ -120,9 +150,8 @@ public class LightPoller implements TimerListener{
 	@Override
 	public void timedOut() {
 		
-		while (true) {
-
-			}
+		
+		
 		//TODO Get data. Check thresholds (basically use the above methods)
 		
 	}

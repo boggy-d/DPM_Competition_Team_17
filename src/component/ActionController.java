@@ -22,6 +22,7 @@ import algorithm.USLocalizer;
 import lejos.hardware.Button;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.hardware.sensor.SensorModes;
@@ -31,79 +32,56 @@ import lejos.utility.TimerListener;
 import wifi.WifiConnection;
 
 public class ActionController implements TimerListener {
-	private static EV3LargeRegulatedMotor leftMotor;
-	private static EV3LargeRegulatedMotor rightMotor;
-	private EV3LargeRegulatedMotor clawLift;
-	private EV3LargeRegulatedMotor clawClose;
-	private SensorModes frontUsSensor;
-	private EV3UltrasonicSensor sideUsSensor;
-	private EV3ColorSensor lightSensor;
-	private EV3ColorSensor colorSensor;
+	
+//	private static final Port sideUsPort = LocalEV3.get().getPort("S4");
+//	private static final SensorModes sideUsSensor = new EV3UltrasonicSensor(sideUsPort);
 
+	//Instantiate more objects
 	static Odometer odometer;
-	Navigator navigator;
+	static Navigator navigator;
+	static USPoller usPoller;
+	static LightPoller lightPoller;
 	
-	private Timer timer;
+	private Timer acTimer;
 	
-	public int[] wifiInfo = new int[12];
-	public int SC, ROLE, LRZx, LRZy, URZx, URZy, LGZx, LGZy, UGZx, UGZy;
+	//Create competition variables
+	static int SC, ROLE, LRZx, LRZy, URZx, URZy, LGZx, LGZy, UGZx, UGZy;
 	
 	public ActionController(int INTERVAL, boolean autostart)
 	{
 		//Wifi "supposedly works (router is bad and it should feel bad)
 //		setWifiInfo();
-//		if (autostart) {
-//			// if the timeout interval is given as <= 0, default to 20ms timeout 
-//			this.timer = new Timer((INTERVAL <= 0) ? INTERVAL : Constants.DEFAULT_TIMEOUT_PERIOD, this);
-//			this.timer.start();
-//		} else
-//			this.timer = null;
-	}
-	
-	
-	public ActionController(
-			EV3LargeRegulatedMotor leftMotor,
-			EV3LargeRegulatedMotor rightMotor,
-			EV3LargeRegulatedMotor clawLiftMotor,
-			EV3LargeRegulatedMotor clawCloseMotor,
-			SensorModes frontUsSensor,
-			//EV3UltrasonicSensor sideUsSensor,
-			EV3ColorSensor lightSensor,
-			EV3ColorSensor colorSensor
-			)
-	{
-		this.leftMotor = leftMotor;
-		this.rightMotor = rightMotor;
-		this.clawLift = clawLiftMotor;
-		this.clawClose = clawCloseMotor;
-		this.frontUsSensor = frontUsSensor;
-		this.sideUsSensor = sideUsSensor;
-		this.lightSensor = lightSensor;
-		this.colorSensor = colorSensor;
-
-		odometer = new Odometer(leftMotor, rightMotor, 30, true);
 		
-		System.out.println("Start of Action Controller");
-		// set up pollers
-		USPoller frontUSPoller = new USPoller(frontUsSensor);
-		LightPoller floorPoller = new LightPoller(lightSensor);
-	//	LightPoller colorPoller = new LightPoller(colorSensor);
-
-		Navigator navigator = new Navigator(odometer, frontUSPoller);
-
+		
+		if (autostart) {
+			// if the timeout interval is given as <= 0, default to 20ms timeout 
+			this.acTimer = new Timer((INTERVAL <= 0) ? INTERVAL : Constants.DEFAULT_TIMEOUT_PERIOD, this);
+			this.acTimer.start();
+		} else
+			this.acTimer = null;
+		
+		odometer = new Odometer(Constants.leftMotor, Constants.rightMotor, 30, true);
+		odometer.start();
+		
+		usPoller = new USPoller(Constants.frontUsSensor, /* sideUsSensor, */ Constants.DEFAULT_TIMEOUT_PERIOD, true);
+		usPoller.start();
+		
+		lightPoller = new LightPoller(Constants.lightSensor, Constants.colorSensor, Constants.DEFAULT_TIMEOUT_PERIOD, true);
+		lightPoller.start();
+		
+//		navigator = new Navigator(odometer, frontUSPoller);
+		
 		// localize
-		USLocalizer usLocalizer = new USLocalizer(odometer, frontUSPoller, leftMotor, rightMotor);
-		usLocalizer.usLocalize();
-		
-		navigator.turnTo(90);
-		/*
-		LightLocalizer lightLocalizer = new LightLocalizer(odometer, navigator, floorPoller, leftMotor, rightMotor);
-		lightLocalizer.lightlocalize();
-		
-		
-		*/
-		
-		
+				USLocalizer usLocalizer = new USLocalizer(odometer, usPoller, Constants.leftMotor, Constants.rightMotor);
+				usLocalizer.usLocalize();
+				
+				navigator.turnTo(90);
+				/*
+				LightLocalizer lightLocalizer = new LightLocalizer(odometer, navigator, floorPoller, leftMotor, rightMotor);
+				lightLocalizer.lightlocalize();
+				
+				
+				*/
 	}
 	
 	
@@ -113,8 +91,8 @@ public class ActionController implements TimerListener {
 	 * @see TimerListener
 	 */
 	public void stop() {
-		if (this.timer != null)
-			this.timer.stop();
+		if (acTimer != null)
+			acTimer.stop();
 	}
 	
 	/**
@@ -123,8 +101,8 @@ public class ActionController implements TimerListener {
 	 * @see TimerListener
 	 */
 	public void start() {
-		if (this.timer != null)
-			this.timer.start();
+		if (acTimer != null)
+			acTimer.start();
 	}
 	/**
 	 * Turns the left and right motors at
@@ -144,19 +122,19 @@ public class ActionController implements TimerListener {
 	
 	public static void setSpeeds(int lSpd, int rSpd, boolean move) {
 
-		leftMotor.setSpeed(Math.abs(lSpd));
-		rightMotor.setSpeed(Math.abs(rSpd));
+		Constants.leftMotor.setSpeed(Math.abs(lSpd));
+		Constants.rightMotor.setSpeed(Math.abs(rSpd));
 		
 		if(move){
 			
 		if (lSpd < 0)
-			leftMotor.backward();
+			Constants.leftMotor.backward();
 		else
-			leftMotor.forward();
+			Constants.leftMotor.forward();
 		if (rSpd < 0)
-			rightMotor.backward();
+			Constants.rightMotor.backward();
 		else
-			rightMotor.forward();
+			Constants.rightMotor.forward();
 		}
 	}
 
@@ -167,8 +145,8 @@ public class ActionController implements TimerListener {
 
 		setSpeeds(0,0,true);
 
-		leftMotor.stop();
-		rightMotor.stop();
+		Constants.leftMotor.stop();
+		Constants.rightMotor.stop();
 	}
 
 	/**

@@ -1,14 +1,17 @@
 package component;
 
-import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.hardware.sensor.SensorModes;
 import lejos.robotics.SampleProvider;
+import lejos.utility.Timer;
 import lejos.utility.TimerListener;
 
 public class USPoller implements TimerListener{
 	private SensorModes usSensor;
 	private SampleProvider distanceSampler;
 	private float[] usData;
+	private Timer usPollerTimer;
+	private boolean isBlock;
+	private Object lock;
 	
 	/**
 	 * Class constructor specifying the USS sample feed and sample
@@ -16,10 +19,38 @@ public class USPoller implements TimerListener{
 	 * @param usSensor the USS sample feed
 	 * @param usData   the reading of the USS
 	 */
-	public USPoller(SensorModes usSensor){
+	public USPoller(SensorModes usSensor, int INTERVAL, boolean autostart){
 		this.usSensor = usSensor;
 		distanceSampler = usSensor.getMode("Distance");
 		usData = new float[distanceSampler.sampleSize()];
+		
+		if (autostart) {
+			// if the timeout interval is given as <= 0, default to 20ms timeout 
+			usPollerTimer = new Timer((INTERVAL <= 0) ? INTERVAL : Constants.DEFAULT_TIMEOUT_PERIOD, this);
+			usPollerTimer.start();
+		} else
+			usPollerTimer = null;
+		
+	}
+	
+	/**
+	 * Stops the Timer
+	 * @see Timer
+	 * @see TimerListener
+	 */
+	public void stop() {
+		if (usPollerTimer != null)
+			usPollerTimer.stop();
+	}
+	
+	/**
+	 * Starts the Timer
+	 * @see Timer
+	 * @see TimerListener
+	 */
+	public void start() {
+		if (usPollerTimer != null)
+			usPollerTimer.start();
 	}
 
 	/**
@@ -61,19 +92,24 @@ public class USPoller implements TimerListener{
 	public boolean isBlock()
 	{
 		//TODO Write algorithm for block detection. Implement filters.
-		return (getClippedData(255) < 5);
-
-		
+		synchronized(lock)
+		{
+			return isBlock;
+		}	
 	}
 	
 
 	@Override
 	public void timedOut() {
 		//TODO Get data. Check thresholds (basically use the above methods)
-		while(true){
-			if (isBlock()) {
-				
-			}
+		
+		if(getClippedData(255) < 5)
+		{
+			isBlock = true;
+		}
+		else
+		{
+			isBlock = false;
 		}
 	}
 }

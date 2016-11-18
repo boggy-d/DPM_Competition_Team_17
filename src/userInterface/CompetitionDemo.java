@@ -12,6 +12,7 @@
 package userInterface;
 
 import component.ActionController;
+import component.Constants;
 import lejos.hardware.Button;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
@@ -21,26 +22,15 @@ import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.hardware.sensor.SensorModes;
 
 public class CompetitionDemo {
-	// get motors
-
-	private final static EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
-	private final static EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
-	private final static EV3LargeRegulatedMotor clawLift = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("C"));
-	private final static EV3LargeRegulatedMotor clawClose = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("B"));
 	
-	// get sensors
-	//private static final EV3UltrasonicSensor frontUsSensor = new EV3UltrasonicSensor(LocalEV3.get().getPort("S2"));
-	private static final Port usPort = LocalEV3.get().getPort("S2");
-	private static final SensorModes frontUsSensor = new EV3UltrasonicSensor(usPort);
-	//private static final EV3UltrasonicSensor sideUsSensor = new EV3UltrasonicSensor(LocalEV3.get().getPort("S2"));
-	private static final EV3ColorSensor lightSensor = new EV3ColorSensor(LocalEV3.get().getPort("S1"));
-	private static final EV3ColorSensor colorSensor = new EV3ColorSensor(LocalEV3.get().getPort("S3"));
+	
+	
 
 	public static void main(String[] args) {
 		//TODO Print to the LCD. Set up ActionController thread
 		
 		//isEnter();
-		ActionController ac = new ActionController(leftMotor,rightMotor, clawLift, clawClose, frontUsSensor, /*sideUsSensor,*/ lightSensor, colorSensor);
+		ActionController ac = new ActionController(Constants.DEFAULT_TIMEOUT_PERIOD, true);
 		
 		
 		while(Button.waitForAnyPress() != Button.ID_LEFT);
