@@ -57,11 +57,15 @@ public class Constants {
 	public final static double BLUECOLOURID = 2;
 	public final static double LINE_DETECT_DIFF = 0.3;
 	
+	// us poller
+	public final static double BLOCK_INFRONT = 3;
+
 	// odometer
 	public final static int DEFAULT_TIMEOUT_PERIOD = 20;
 
 	// claw controller
-	public final static int CLAW_LIFT_FULL = 775;
+	public final static int CLAW_LIFT_FULL = (int) (360 * 2.25);
+//	public final static int CLAW_LIFT_FULL = 775;
 	public final static int CLAW_LIFT_ONE_BLOCK = -700;
 	public final static int CLAW_LIFT_TWO_BLOCK = 600;
 	public final static int CLAW_LIFT_THREE_BLOCK = 500;

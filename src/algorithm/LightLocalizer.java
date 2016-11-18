@@ -147,7 +147,6 @@ public class LightLocalizer {
 		ActionController.navigator.travelTo(0,0);
 		ActionController.navigator.turnTo(0);
 		
-		//beep when finished localizing
 	}
 }
 
