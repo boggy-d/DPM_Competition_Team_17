@@ -11,7 +11,9 @@
 package component;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import algorithm.ClawController;
 import algorithm.LightLocalizer;
@@ -25,6 +27,7 @@ import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.hardware.sensor.SensorModes;
+import lejos.robotics.geometry.Point;
 import lejos.utility.Delay;
 import lejos.utility.Timer;
 import lejos.utility.TimerListener;
@@ -51,7 +54,7 @@ public class ActionController implements TimerListener {
 	public ActionController(int INTERVAL, boolean autostart)
 	{
 		//Wifi "supposedly works (router is bad and it should feel bad)
-				setWifiInfo();
+		setWifiInfo();
 		
 		odometer = new Odometer(30, true);
 		
@@ -260,6 +263,89 @@ public class ActionController implements TimerListener {
 		return false;
 
 	}
+	
+	/**
+	 * Given the lower left and upper right corners of a zone
+	 * @return an array of points of all the corners of the zone
+	 */
+	public Point[] getZoneCorners(double lowerLeftX, double lowerLeftY, double upperRightX, double upperRightY) {
+		Point[] corners = new Point[4];
+		// lower left
+		corners[0].x = (float) lowerLeftX;
+		corners[0].y = (float) lowerLeftY;
+
+		// lower right
+		corners[1].x = (float) upperRightX;
+		corners[1].y = (float) lowerLeftY;
+
+		// upper left
+		corners[1].x = (float) lowerLeftX;
+		corners[1].y = (float) upperRightY;
+		
+		// upper right
+		corners[3].x = (float) upperRightX;
+		corners[3].y = (float) upperRightY;
+		
+		return corners;
+	}
+	
+	/**
+	 * Scan for blocks
+	 */
+	public void scanForBlocks(double endingAngle, int cornerX, int cornerY) {		
+		// scan until it reaches ending angle
+		while (odometer.getAng() < endingAngle) {
+			// start rotating counter clockwise
+			ActionController.setSpeeds(-Constants.ROTATION_SPEED, Constants.ROTATION_SPEED, true);
+			
+			double distance = usPoller.getClippedData(255);
+			if (distance < Constants.SEARCH_DISTANCE_THRESHOLD) {
+				// once it sees a block stop
+				ActionController.stopMotors();
+				// check what block it is 
+				getBlock(endingAngle, odometer.getAng(), cornerX, cornerY);
+				return;
+			}
+		}
+		// no block found, return 
+		return;
+	}
+	
+	public void getBlock(double endingAngle, double angleOfBlock, int cornerX, int cornerY) {
+		boolean hasBlock = false;
+
+		// go forward towards block
+		ActionController.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED, true);
+		
+		// keep checking if there is a block ahead
+		while (true) {
+			// when there is a block ahead break out of the loop
+			if (usPoller.isBlock()) {
+				break;
+			}
+		}
+		
+		// if it is a blue block pick it up
+		if (lightPoller.isBlue()) {
+			//Claw pickup routine
+			claw.pickUpBlock();
+			hasBlock = true;
+		}
+		
+		// go back to the corner
+		navigator.travelTo(cornerX, cornerY);
+		
+		// if it has a block place it
+		if (hasBlock) {
+			// TODO block placing algorithm
+		} else {
+			// if it doesn't have block continue scanning where it left off
+			navigator.turnTo(angleOfBlock);
+			scanForBlocks(endingAngle, cornerX, cornerY);
+		}
+		
+	}
+	
 
 	/**
 	 * Moves the robot to the starting corner
@@ -271,22 +357,57 @@ public class ActionController implements TimerListener {
 	/**
 	 * Search for blocks
 	 */
-	public void search() {
-		// for lower left corner start at 30 degree angle
-		navigator.turnTo(30);
-		// start rotating clockwise
-		ActionController.setSpeeds(Constants.ROTATION_SPEED, -Constants.ROTATION_SPEED, true);
-		
-		while (odometer.getAng() != 240) {
-			double distance = usPoller.getClippedData(255);
-			double angleStopped;
-			if (distance < Constants.SEARCH_DISTANCE_THRESHOLD) {
-				angleStopped = odometer.getAng();
-				ActionController.stopMotors();
-				ActionController.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED, true);
-			}
+	public void search(Point[] corners) {
+	     HashMap<String, HashMap<String, Integer>> cornersAndAngles = new HashMap<String, HashMap<String, Integer>>();
 
-		}
+	     HashMap<String, Integer> lowerLeft = new HashMap<String, Integer>();
+	     lowerLeft.put("x", (int)corners[0].x);
+	     lowerLeft.put("y", (int)corners[0].y);
+	     lowerLeft.put("angle", 90 + Constants.STARTING_SCANNING_ANGLE);
+
+	     HashMap<String, Integer> lowerRight = new HashMap<String, Integer>();
+	     lowerRight.put("x", (int)corners[1].x);
+	     lowerRight.put("y", (int)corners[1].y);
+	     lowerRight.put("angle", 180 + Constants.STARTING_SCANNING_ANGLE);
+
+	     HashMap<String, Integer> upperLeft = new HashMap<String, Integer>();
+	     upperLeft.put("x", (int)corners[2].x);
+	     upperLeft.put("y", (int)corners[2].y);
+	     upperLeft.put("angle", Constants.STARTING_SCANNING_ANGLE);
+
+	     HashMap<String, Integer> upperRight = new HashMap<String, Integer>();
+	     upperRight.put("x", (int)corners[3].x);
+	     upperRight.put("y", (int)corners[3].y);
+	     upperRight.put("angle", 270 + Constants.STARTING_SCANNING_ANGLE);
+	     
+	     cornersAndAngles.put("lowerLeft", lowerLeft);
+	     cornersAndAngles.put("lowerRight", lowerRight);
+	     cornersAndAngles.put("upperLeft", upperLeft);
+	     cornersAndAngles.put("upperRight", upperRight);
+	     
+	     double degreesToScan = 270 - (2 * Constants.STARTING_SCANNING_ANGLE);
+
+	     // for each corner of the zone search for blocks
+	     for (HashMap<String, Integer> corner : cornersAndAngles.values()) {
+	    	 // travel to the corner
+	    	 navigator.travelTo(corner.get("x"), corner.get("y"));
+
+	    	 // turn to starting angle of that corner
+	    	 navigator.turnTo(corner.get("angle"));
+
+	    	 // wrap ending angle
+	    	 double endingAngle = corner.get("angle") + degreesToScan;
+	    	 if (endingAngle > 360) {
+	    		 endingAngle = endingAngle - 360;
+	    	 }
+
+	    	 // start scanning for blocks
+	    	 scanForBlocks(endingAngle, corner.get("x"), corner.get("y"));
+
+	     }
+
+		// once it scanned all the corners
+		// TODO implement secondary searching steps here
 	}
 
 	@Override
@@ -320,16 +441,21 @@ public class ActionController implements TimerListener {
 //		}
 
 			else {
-		if (ROLE == 0) {
-			// tower builder go to left lower corner green zone
-			navigator.travelTo(LGZx, LGZy);
-		} else {
-			// garbage collector go to left lower corner red zone
-			navigator.travelTo(LRZx, LRZy);
-
+				
+				Point[] zone;	
+				if (ROLE == 0) {
+					// tower builder get green zone
+					zone = getZoneCorners(LGZx, LGZy, UGZx, UGZy);
+				} else {
+					// garbage collector get red zone
+					zone = getZoneCorners(LRZx, LRZy, URZx, URZy);
+				}
+				
+				// search for blocks
+				search(zone);
 		}
-			}
 		
+			
 
 		// TODO EVERYTHING!!!
 	//	setWifiInfo();

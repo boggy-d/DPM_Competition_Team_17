@@ -74,6 +74,7 @@ public class Constants {
 
 	// searching
 	public final static int SEARCH_DISTANCE_THRESHOLD = 200;
+	public final static int STARTING_SCANNING_ANGLE = 30;
 
 	public final static String SERVER_IP = "192.168.2.3";
 	public final static int TEAM_NUMBER = 17;
