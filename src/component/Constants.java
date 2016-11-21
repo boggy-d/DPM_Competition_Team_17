@@ -42,7 +42,7 @@ public class Constants {
 	public final static int DIST_ERR = 0000;
 	
 	//us localization
-	public final static int ROTATE_SPEED = 100, CLIP = 45, WALL_DIST = 42, US_MARGIN = 2;
+	public final static int ROTATE_SPEED = 300, CLIP = 45, WALL_DIST = 42, US_MARGIN = 2;
 	
 	//for lightLocalization 
 	public final static double COLOR_DIST = 14.5;									//distance between the center of rotation of robot and light sensor
