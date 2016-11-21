@@ -302,6 +302,35 @@ public class ActionController implements TimerListener {
 	}
 	
 	/**
+	 * Calculates the position of something at a distance from the current position
+	 * @param double array of the x coordinate, y coordinate, and the angle of the current position
+	 * @param the distance of the object from the current position
+	 * @return the position of the the object
+	 */
+	Point calculatePosition(double[] currentPosition, double distanceAway) {
+		// using trig calculate difference in x and y
+		double deltaX = (distanceAway * Math.cos(currentPosition[2]));
+		double deltaY = (distanceAway * Math.sin(currentPosition[2]));
+		
+		// add the difference in x and y to the current position
+		Point position = new Point((float) (currentPosition[0] + deltaX), (float) (currentPosition[1] + deltaY));
+		return position;
+	}
+	
+	/**
+	 * @param the coordinates of a position
+	 * @return true if it is in the arena, false if it is outside
+	 */
+	boolean inBounds(Point position){
+		if (position.x < -Constants.TILE_LENGTH || position.x > convertTilesToCm(11) 
+				|| position.y < -Constants.TILE_LENGTH || position.y > convertTilesToCm(11)) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	/**
 	 * Given the lower left and upper right corners of a zone
 	 * @return an array of points of all the corners of the zone
 	 */
@@ -336,10 +365,14 @@ public class ActionController implements TimerListener {
 			ActionController.setSpeeds(-Constants.ROTATION_SPEED, Constants.ROTATION_SPEED, true);
 			
 			double distance = frontUsPoller.getClippedData(255);
-			if (distance < Constants.SEARCH_DISTANCE_THRESHOLD) {
+			Point blockPosition = calculatePosition(odometer.getPosition(), distance);
+			
+			// if the distance is less than the distance the sensor can see and the block is not out of bounds (a wall)
+			if (distance < Constants.SEARCH_DISTANCE_THRESHOLD & inBounds(blockPosition)) {
 				// once it sees a block stop
 				ActionController.stopMotors();
-				// check what block it is 
+				
+				// is is a block, check what block it is 
 				getBlock(endingAngle, odometer.getAng(), cornerX, cornerY);
 				return;
 			}
@@ -348,6 +381,11 @@ public class ActionController implements TimerListener {
 		return;
 	}
 	
+	/**
+	 * Approach the block and check if it is a wooden or foam block,
+	 * if it is a wooden block go back and continue scanning for blocks
+	 * if it is a blue block, pick it up and place or stack it
+	 */
 	public void getBlock(double endingAngle, double angleOfBlock, int cornerX, int cornerY) {
 		boolean hasBlock = false;
 
@@ -362,25 +400,44 @@ public class ActionController implements TimerListener {
 			}
 		}
 		
-		// if it is a blue block pick it up
-		if (lightPoller.isBlue()) {
+		// if it is a blue block pick it up /
 			//Claw pickup routine
 			claw.pickUpBlock();
 			hasBlock = true;
-		}
-		
-		// go back to the corner
-		navigator.travelTo(cornerX, cornerY);
 		
 		// if it has a block place it
 		if (hasBlock) {
 			// TODO block placing algorithm
+			
+			// go back to the corner
+			navigator.travelTo(cornerX, cornerY);
 		} else {
+			// go back to the corner
+			navigator.travelTo(cornerX, cornerY);
+			
 			// if it doesn't have block continue scanning where it left off
 			navigator.turnTo(angleOfBlock);
-			scanForBlocks(endingAngle, cornerX, cornerY);
+			
+			// don't start scanning until you've passed the obstacle
+			while (true) {
+				// start rotating counter clockwise
+				ActionController.setSpeeds(-Constants.ROTATION_SPEED, Constants.ROTATION_SPEED, true);
+				
+				double distance1 = frontUsPoller.getClippedData(255);
+				
+				// delay for a bit
+		        Delay.msDelay(Constants.DELAY_MS);
+				
+				double distance2 = frontUsPoller.getClippedData(255);
+				
+				// check if the scan has passed the obstacle
+				if (distance2 > distance1 + Constants.DISTANCE_DIFFERENCE) {
+					break;
+				}
+			}
 		}
-		
+		//start scanning again
+		scanForBlocks(endingAngle, cornerX, cornerY);
 	}
 	
 
@@ -422,6 +479,7 @@ public class ActionController implements TimerListener {
 	     cornersAndAngles.put("upperLeft", upperLeft);
 	     cornersAndAngles.put("upperRight", upperRight);
 	     
+	     // calculate the degrees to scan
 	     double degreesToScan = 270 - (2 * Constants.STARTING_SCANNING_ANGLE);
 
 	     // for each corner of the zone search for blocks
@@ -432,11 +490,10 @@ public class ActionController implements TimerListener {
 	    	 // turn to starting angle of that corner
 	    	 navigator.turnTo(corner.get("angle"));
 
-	    	 // wrap ending angle
+	    	 // get the angle to stop scanning at
 	    	 double endingAngle = corner.get("angle") + degreesToScan;
-	    	 if (endingAngle > 360) {
-	    		 endingAngle = endingAngle - 360;
-	    	 }
+	    	 // wrap ending angle to not be over 360 degrees
+	    	 endingAngle = navigator.wrapAngle(endingAngle);
 
 	    	 // start scanning for blocks
 	    	 scanForBlocks(endingAngle, corner.get("x"), corner.get("y"));
@@ -479,17 +536,7 @@ public class ActionController implements TimerListener {
 
 			else {
 				
-				Point[] zone;	
-				if (ROLE == 0) {
-					// tower builder get green zone
-					zone = getZoneCorners(LGZx, LGZy, UGZx, UGZy);
-				} else {
-					// garbage collector get red zone
-					zone = getZoneCorners(LRZx, LRZy, URZx, URZy);
-				}
-				
-				// search for blocks
-				search(zone);
+
 		}
 		
 			
