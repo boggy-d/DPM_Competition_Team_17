@@ -42,7 +42,7 @@ public class ActionController implements TimerListener {
 	//Instantiate more objects
 	public static Odometer odometer;
 	public static Navigator navigator;
-	public static USPoller usPoller;
+	public static USPoller frontUsPoller;
 	public static LightPoller lightPoller;
 	public static ClawController claw;
 
@@ -56,9 +56,24 @@ public class ActionController implements TimerListener {
 		//Wifi "supposedly works (router is bad and it should feel bad)
 		setWifiInfo();
 		
-		odometer = new Odometer(30, true);
+		// used to intialize odometer to starting corner
+//		if (SC == 1) {
+//			// Initialize to bottom left corner
+//			odometer = new Odometer(30, true, 0, 0, 90);	
+//		} else if (SC == 2) {
+//			// Initialize to bottom right corner
+//			odometer = new Odometer(30, true, 0, convertTilesToCm(11), 90);	
+//		} else if (SC == 3) {	
+//			// Initialize to upper right corner
+//			odometer = new Odometer(30, true, convertTilesToCm(11), convertTilesToCm(11), 270);	
+//		} else {
+//			// Initialize to upper left corner
+//			odometer = new Odometer(30, true, convertTilesToCm(11), 0, 270);	
+//		}
 		
-		usPoller = new USPoller(Constants.frontUsSensor, /* sideUsSensor, */ Constants.DEFAULT_TIMEOUT_PERIOD, true);
+		odometer = new Odometer(30, true, 0, 0, 90);	
+
+		frontUsPoller = new USPoller(Constants.frontUsSensor, /* sideUsSensor, */ Constants.DEFAULT_TIMEOUT_PERIOD, true);
 		
 		LCDInfo lcd = new LCDInfo();
 		
@@ -69,24 +84,42 @@ public class ActionController implements TimerListener {
 		claw = new ClawController();
 		
 		// localize
-
 		USLocalizer usLocalizer = new USLocalizer();
 		usLocalizer.usLocalize();
-		while(Button.waitForAnyPress() != Button.ID_DOWN);
 
-		
 		LightLocalizer lightLocalizer = new LightLocalizer();
 		lightLocalizer.lightlocalize();
-		while(Button.waitForAnyPress() != Button.ID_DOWN);
 
+        // travel to origin and face 0 degrees
+		ActionController.navigator.travelTo(0,0);
+		ActionController.navigator.turnTo(90);
+		
+		// update position to the actual corner it starts in
+		double[] position;
+		boolean[] update = {true, true, true};
+		if (SC == 1) {
+			// Initialize to bottom left corner
+			position = new double[] {0, 0, 90};	
+		} else if (SC == 2) {
+			// Initialize to bottom right corner
+			position = new double[] {0, convertTilesToCm(11), 90};	
+		} else if (SC == 3) {	
+			// Initialize to upper right corner
+			position = new double[] {convertTilesToCm(11), convertTilesToCm(11), 270};	
+		} else {
+			// Initialize to upper left corner
+			position = new double[] {convertTilesToCm(11), 0, 270};	
+		}
+		
+		ActionController.odometer.setPosition(position, update);
+
+		
 		if (autostart) {
 			// if the timeout interval is given as <= 0, default to 20ms timeout 
 			this.acTimer = new Timer((INTERVAL <= 0) ? INTERVAL : Constants.DEFAULT_TIMEOUT_PERIOD, this);
 			this.acTimer.start();
 		} else
 			this.acTimer = null;		
-		
-	
 
 	}
 	
@@ -229,6 +262,10 @@ public class ActionController implements TimerListener {
 			}
 		}
 	}
+	
+	public double convertTilesToCm(int numberOfTiles) {
+		return numberOfTiles * Constants.TILE_LENGTH;
+	}
 
 	/**
 	 * Sets up the odometer thread
@@ -268,23 +305,23 @@ public class ActionController implements TimerListener {
 	 * Given the lower left and upper right corners of a zone
 	 * @return an array of points of all the corners of the zone
 	 */
-	public Point[] getZoneCorners(double lowerLeftX, double lowerLeftY, double upperRightX, double upperRightY) {
+	public Point[] getZoneCorners(int lowerLeftX, int lowerLeftY, int upperRightX, int upperRightY) {
 		Point[] corners = new Point[4];
 		// lower left
-		corners[0].x = (float) lowerLeftX;
-		corners[0].y = (float) lowerLeftY;
+		corners[0].x = (float) convertTilesToCm(lowerLeftX);
+		corners[0].y = (float) convertTilesToCm(lowerLeftY);
 
 		// lower right
-		corners[1].x = (float) upperRightX;
-		corners[1].y = (float) lowerLeftY;
+		corners[1].x = (float) convertTilesToCm(upperRightX);
+		corners[1].y = (float) convertTilesToCm(lowerLeftY);
 
 		// upper left
-		corners[1].x = (float) lowerLeftX;
-		corners[1].y = (float) upperRightY;
+		corners[1].x = (float) convertTilesToCm(lowerLeftX);
+		corners[1].y = (float) convertTilesToCm(upperRightY);
 		
 		// upper right
-		corners[3].x = (float) upperRightX;
-		corners[3].y = (float) upperRightY;
+		corners[3].x = (float) convertTilesToCm(upperRightX);
+		corners[3].y = (float) convertTilesToCm(upperRightY);
 		
 		return corners;
 	}
@@ -298,7 +335,7 @@ public class ActionController implements TimerListener {
 			// start rotating counter clockwise
 			ActionController.setSpeeds(-Constants.ROTATION_SPEED, Constants.ROTATION_SPEED, true);
 			
-			double distance = usPoller.getClippedData(255);
+			double distance = frontUsPoller.getClippedData(255);
 			if (distance < Constants.SEARCH_DISTANCE_THRESHOLD) {
 				// once it sees a block stop
 				ActionController.stopMotors();
@@ -320,7 +357,7 @@ public class ActionController implements TimerListener {
 		// keep checking if there is a block ahead
 		while (true) {
 			// when there is a block ahead break out of the loop
-			if (usPoller.isBlock()) {
+			if (frontUsPoller.isBlock()) {
 				break;
 			}
 		}
@@ -417,7 +454,7 @@ public class ActionController implements TimerListener {
 //		if(!lightPoller.isLine())
 //		{
 			//Block detected mode
-			if(usPoller.isBlock())
+			if(frontUsPoller.isBlock())
 			{
 				if(lightPoller.isBlue())
 				{

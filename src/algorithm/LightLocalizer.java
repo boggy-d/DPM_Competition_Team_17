@@ -141,12 +141,6 @@ public class LightLocalizer {
         System.out.println("y: "+ ActionController.odometer.getY());
         System.out.println("Th: "+ ActionController.odometer.getAng());
 		*/
-
-	//put this outside lightlocalizer?
-        // travel to origin and face 0 degrees
-		ActionController.navigator.travelTo(0,0);
-		ActionController.navigator.turnTo(0);
-		
 	}
 }
 

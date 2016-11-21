@@ -46,13 +46,16 @@ public class Odometer implements TimerListener {
 	 * @see Timer
 	 * @see TimerListener
 	 */
-	public Odometer (int INTERVAL, boolean autostart) {
+	public Odometer (int INTERVAL, boolean autostart, double x, double y, double theta) {
 		
 		// default values, modify for your robot
 		
-		this.x = 0.0;
-		this.y = 0.0;
-		this.theta = 90.0;
+//		this.x = 0.0;
+//		this.y = 0.0;
+//		this.theta = 90.0;
+		this.x = x;
+		this.y = y;
+		this.theta = theta;
 		this.oldDH = new double[2];
 		this.dDH = new double[2];
 
