@@ -79,18 +79,22 @@ public class Navigator{
 
 		double delta_x = (final_x - initial_x);
 		double delta_y = (final_y - initial_y);
-		double return_angle = Math.atan(delta_y / delta_x);  //edited for efficiency such that minimal work is required
+		double return_angle = Math.atan(delta_y / delta_x);  //first quadrant angle wrt x-axis
 		
 		if (delta_x < 0){
 
-			if (delta_y > 0)
+			if (delta_y > 0) // 2nd quadrant angle wrt x-axis
 				{ return_angle += Math.PI; }
 
-			else
-				{ return_angle -= Math.PI; }
+			else	// 3rd quadrant anfle wrt x-axis
+				{ return_angle += Math.PI; }
 		}
 		
-		return Math.toDegrees(return_angle);
+		//if(delta_y < 0 && delta_x > 0)	//4th quadrant wrt x-axis --> will be handles by wraping angle
+			//{ return_angle += 2*Math.PI; }
+		   
+		
+		return wrapAngle(Math.toDegrees(return_angle)); //wrapping wastes time unless 4th quadrant
 	}
 
 	/**

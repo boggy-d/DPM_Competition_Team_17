@@ -22,7 +22,6 @@ public class USLocalizer {
 	
 	//Renamed in order to differentiate the type of localization: US vs Light
 	public void usLocalize() {
-		// TODO Use Eric's code with Bogdan's architecture for this method
 
 		double[] position = new double[3];
 		position[0] = ActionController.odometer.getX();
@@ -35,12 +34,12 @@ public class USLocalizer {
 
 		ActionController.setSpeeds(Constants.ROTATE_SPEED, -Constants.ROTATE_SPEED, true);
 
-		while (ActionController.usPoller.getClippedData(Constants.CLIP) == Constants.WALL_DIST) {
+		while (ActionController.frontUsPoller.getClippedData(Constants.CLIP) == Constants.WALL_DIST) {
 
 			//already moving cw
 		}
 
-		while (ActionController.usPoller.getClippedData(Constants.CLIP) < Constants.WALL_DIST + Constants.US_MARGIN) {
+		while (ActionController.frontUsPoller.getClippedData(Constants.CLIP) < Constants.WALL_DIST + Constants.US_MARGIN) {
 
 			//already moving cw
 		}
@@ -50,12 +49,12 @@ public class USLocalizer {
 		Sound.beep();
 		ActionController.setSpeeds(-Constants.ROTATE_SPEED, Constants.ROTATE_SPEED, true);
 
-		while (ActionController.usPoller.getClippedData(Constants.CLIP) >= Constants.WALL_DIST) {
+		while (ActionController.frontUsPoller.getClippedData(Constants.CLIP) >= Constants.WALL_DIST) {
 
 			//already moving ccw
 		}
 
-		while (ActionController.usPoller.getClippedData(Constants.CLIP) < Constants.WALL_DIST + Constants.US_MARGIN) {
+		while (ActionController.frontUsPoller.getClippedData(Constants.CLIP) < Constants.WALL_DIST + Constants.US_MARGIN) {
 
 			//already moving ccw
 		}
@@ -75,9 +74,6 @@ public class USLocalizer {
 
 		// set positions below
 		ActionController.odometer.setPosition(position, update);
-		
-		//rotate robot to 45 degrees in order for light localization to be performed
-		//where should this be handled?
 		
 	}
 
