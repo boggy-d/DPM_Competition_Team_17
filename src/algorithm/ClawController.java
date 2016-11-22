@@ -12,13 +12,10 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import component.Constants;
 
 public class ClawController {
-	
-	EV3LargeRegulatedMotor clawLift, clawClose;
 
 	
-	public ClawController(EV3LargeRegulatedMotor clawLift, EV3LargeRegulatedMotor clawClose) {
-		this.clawLift = clawLift;
-		this.clawClose = clawClose;
+	public ClawController() {
+
 	}
 	
 	//TODO fix constants for the lifting
@@ -27,12 +24,14 @@ public class ClawController {
 	 */
 	public void pickUpBlock()
 	{
+		// open claw
+		release();
 		// put claw down
-		lift(-Constants.CLAW_LIFT_FULL);
+		lift(Constants.CLAW_LIFT_FULL);
 		// grab block
 		grab();
 		// lift block up
-		lift(Constants.CLAW_LIFT_FULL);
+		lift(-Constants.CLAW_LIFT_FULL);
 	}
 	
 	/**
@@ -58,7 +57,7 @@ public class ClawController {
 	{
 		//TODO Test
 		
-		clawClose.rotate(-Constants.CLAW_CLOSE_ANGLE, false);
+		Constants.clawClose.rotate(-Constants.CLAW_CLOSE_ANGLE, false);
 	}
 	
 	/**
@@ -69,7 +68,7 @@ public class ClawController {
 		
 		//TODO Test
 		
-		clawClose.rotate(Constants.CLAW_CLOSE_ANGLE, false);
+		Constants.clawClose.rotate(Constants.CLAW_OPEN_ANGLE, false);
 	}
 	
 	/**
@@ -80,7 +79,7 @@ public class ClawController {
 	{
 		//TODO Test
 		
-		clawLift.rotate(angle, false);
+		Constants.clawLift.rotate(angle, false);
 	}
 	
 }

@@ -62,7 +62,7 @@ public class Navigator{
 	 */
 	public int convertAngle( double radius, double width, double angle){
 
-		return (int) ((width * angle / 2.0) / (radius));
+		return (int)((width * angle / 2.0) / (radius));
 	}
 
 	/**
@@ -79,18 +79,22 @@ public class Navigator{
 
 		double delta_x = (final_x - initial_x);
 		double delta_y = (final_y - initial_y);
-		double return_angle = Math.atan(delta_y / delta_x);  //edited for efficiency such that minimal work is required
+		double return_angle = Math.atan(delta_y / delta_x);  //first quadrant angle wrt x-axis
 		
 		if (delta_x < 0){
 
-			if (delta_y > 0)
+			if (delta_y > 0) // 2nd quadrant angle wrt x-axis
 				{ return_angle += Math.PI; }
 
-			else
-				{ return_angle -= Math.PI; }
+			else	// 3rd quadrant anfle wrt x-axis
+				{ return_angle += Math.PI; }
 		}
 		
-		return Math.toDegrees(return_angle);
+		if(delta_y < 0 && delta_x > 0)	//4th quadrant wrt x-axis --> will be handles by wraping angle
+			{ return_angle += 2*Math.PI; }
+		   
+		
+		return Math.toDegrees(return_angle); 
 	}
 
 	/**
@@ -105,26 +109,33 @@ public class Navigator{
 
 
 		double delta_theta = target_angle - ActionController.odometer.getAng();
-		int turning_angle =convertAngle(Constants.RADIUS, Constants.TRACK, delta_theta);
-		System.out.println("target_angle:" + target_angle);
+		int turning_angle = convertAngle(Constants.RADIUS, Constants.TRACK, delta_theta);
+		/*System.out.println("target_angle:" + target_angle);
 		System.out.println("delta_theta:"+ delta_theta);
 		System.out.println("odo ang:"+ ActionController.odometer.getAng());
 		System.out.println("turning angle:"+ turning_angle);
-		
+		*/
 		
 		double adjusted_theta = 360 - Math.abs(delta_theta);
 		int adjusted_turning_angle = convertAngle(Constants.RADIUS, Constants.TRACK, adjusted_theta);
 		
-		
+		/*
 		System.out.println("adjusted theta:"+ adjusted_theta);
 		System.out.println("adjusted turning angle:" + adjusted_turning_angle);
-
+		*/
+		/*if ( delta_theta < 0){
+			
+			turning_angle *= -1;
+			adjusted_turning_angle *= -1;
+			
+		}*/
+		
 		if (-180 < delta_theta && delta_theta < 180){
 
 			System.out.println("1");
 
-			Constants.rightMotor.rotate(-turning_angle, true);
-			Constants.leftMotor.rotate(turning_angle, false);
+			Constants.rightMotor.rotate(turning_angle, true);
+			Constants.leftMotor.rotate(-turning_angle, false);
 		}
 
 		else if (delta_theta < -180){
@@ -141,7 +152,7 @@ public class Navigator{
 			Constants.rightMotor.rotate(-adjusted_turning_angle, true);
 			Constants.leftMotor.rotate(adjusted_turning_angle, false);
 		}
-	System.out.println("final ang:"+ ActionController.odometer.getAng());	
+	//System.out.println("final ang:"+ ActionController.odometer.getAng());	
 		
 	}
 	

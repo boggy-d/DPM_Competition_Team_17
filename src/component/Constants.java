@@ -23,6 +23,9 @@ public class Constants {
 	public static final Port usPort = LocalEV3.get().getPort("S2");
 	public static final SensorModes frontUsSensor = new EV3UltrasonicSensor(usPort);
 
+	public static final Port us2Port = LocalEV3.get().getPort("S4");
+	public static final SensorModes sideUsSensor = new EV3UltrasonicSensor(usPort);
+	
 	public static final Port lightPort = LocalEV3.get().getPort("S1");
 	public static final SensorModes lightSensor = new EV3ColorSensor(lightPort);
 	
@@ -34,21 +37,24 @@ public class Constants {
 	//motor speeds
 	public final static int FAST_FORWARD_SPEED = 200;
 	public final static int FORWARD_SPEED = 100;
-	public final static int FAST_ROTATION_SPEED = 100;
-	public final static int ROTATION_SPEED = 60;
+	public final static int FAST_ROTATION_SPEED = 150;
+	public final static int ROTATION_SPEED = 80;
 	public final static int ACCELERATION = 3000;
 	
 	//navigator
-	public final static double TRACK = 14.3;
-	public final static double RADIUS = 2;
-	public final static int DIST_ERR = 0000;
+	public final static double TRACK = 14.2;
+	public final static double RADIUS = 2.04;
+	public final static double DIST_ERR = 1.5;
 	
 	//us localization
-	public final static int ROTATE_SPEED = 100, CLIP = 45, WALL_DIST = 42, US_MARGIN = 2;
+	public final static int ROTATE_SPEED = 300;
+	public final static int CLIP = 45;
+	public final static int WALL_DIST = 42;
+	public final static int US_MARGIN = 2;
 	
 	//for lightLocalization 
-	public final static double COLOR_DIST = 13.7;									//distance between the center of rotation of robot and light sensor
-	public final static double BUFFER_DIST = 6/Math.sqrt(2);						//buffer distance (where we want to be before rotating)
+	public final static double COLOR_DIST = 14.5;									//distance between the center of rotation of robot and light sensor
+	public final static double BUFFER_DIST = 6.5;										//buffer distance (where we want to be before rotating)
 	
 	// odometery correction
 	public final static double SENSOR_DISTANCE = 0000;
@@ -57,19 +63,30 @@ public class Constants {
 	// light Poller
 	public final static double BLACKINTENSITY = 0.2;
 	public final static double BLUECOLOURID = 2;
-	public final static int LINE_DETECT_DIFF = 0;
+	public final static double LINE_DETECT_DIFF = 0.3;
 	
+	// us poller
+	public final static double BLOCK_INFRONT = 3;
+
 	// odometer
 	public final static int DEFAULT_TIMEOUT_PERIOD = 20;
 
 	// claw controller
-	public final static int CLAW_LIFT_FULL = 775;
+	public final static int CLAW_LIFT_FULL = (int) (360 * 2.25);
 	public final static int CLAW_LIFT_ONE_BLOCK = -700;
 	public final static int CLAW_LIFT_TWO_BLOCK = 600;
 	public final static int CLAW_LIFT_THREE_BLOCK = 500;
-	public final static int CLAW_CLOSE_ANGLE = 145;
-	
-	public final static String SERVER_IP = "192.168.2.15";
+	public final static int CLAW_CLOSE_ANGLE = 75;
+	public final static int CLAW_OPEN_ANGLE = 60;
+
+
+	// searching
+	public final static int SEARCH_DISTANCE_THRESHOLD = 200;
+	public final static int STARTING_SCANNING_ANGLE = 30;
+	public final static int DELAY_MS = 500;
+	public final static int DISTANCE_DIFFERENCE = 5;
+
+	public final static String SERVER_IP = "192.168.2.3";
 	public final static int TEAM_NUMBER = 17;
 }
  

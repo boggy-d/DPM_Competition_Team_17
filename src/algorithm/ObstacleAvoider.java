@@ -8,6 +8,9 @@
 
 package algorithm;
 
+import component.ActionController;
+import component.Constants;
+
 public class ObstacleAvoider {
 
 	/**
@@ -43,6 +46,59 @@ public class ObstacleAvoider {
 	 */
 	public void avoidObstacle()
 	{
+		//ASSUMING THAT THE 2ND US IS ON THE LEFT
+		
+		//second us sensor is at 90 degrees
+		//problem with this method: doesn't work if we are close to the corner of the block
+		//after probing is done, back up
+		ActionController.goForward(5, Constants.FORWARD_SPEED);
+		
+		//rotate (both direction) until we get the smallest distance on front US (forms a 90 degree with block)
+		//like rising/falling edge
+		
+		//rotates the robot clockwise at speed: ROTATE_SPEED
+		ActionController.setSpeeds(Constants.ROTATE_SPEED, -Constants.ROTATE_SPEED, true);
+		
+		//rotate clockwise until don't see block
+		while (ActionController.frontUsPoller.getClippedData(Constants.CLIP) < Constants.WALL_DIST) {
+			//save the smallest us distance we see
+			
+		}
+		ActionController.stopMotors();
+		
+		//rotates the robot counterclockwise at speed: ROTATE_SPEED
+		ActionController.setSpeeds(-Constants.ROTATE_SPEED, Constants.ROTATE_SPEED, true);
+		
+		//rotate counterclockwise until don't see block
+		while (ActionController.frontUsPoller.getClippedData(Constants.CLIP) < Constants.WALL_DIST) {
+			//save the smallest us distance we see
+		
+		}
+		ActionController.stopMotors();
+		
+		//rotate to the smallest distance we got
+		
+		
+		//turn 90 degrees clockwise
+		int turn90 = ActionController.navigator.convertAngle(Constants.RADIUS, Constants.TRACK, 90);
+		Constants.rightMotor.rotate(turn90, true);
+		Constants.leftMotor.rotate(-turn90, false);
+		
+		//move forward until 2nd US doesn't see the obstacle and stop
+		
+		
+		/////////////////////////////////////////////////////////////////////////////////
+		//another way of doing it: US might need to be at 45 degrees
+		//rotate a little clockwise so the second US can see
+		int turn45 = ActionController.navigator.convertAngle(Constants.RADIUS, Constants.TRACK, 45);
+		Constants.rightMotor.rotate(turn45, true);
+		Constants.leftMotor.rotate(-turn45, false);
+		
+		//BangBang (make a new class or write it here?)
+		
+		
+		//have an angle condition to stop BangBang
+		
 		
 	}
 }

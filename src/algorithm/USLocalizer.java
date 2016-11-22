@@ -22,7 +22,6 @@ public class USLocalizer {
 	
 	//Renamed in order to differentiate the type of localization: US vs Light
 	public void usLocalize() {
-		// TODO Use Eric's code with Bogdan's architecture for this method
 
 		double[] position = new double[3];
 		position[0] = ActionController.odometer.getX();
@@ -33,14 +32,17 @@ public class USLocalizer {
 		boolean[] update = { false, false, true };
 		double cw_angle, ccw_angle;
 
-		ActionController.setSpeeds(Constants.ROTATE_SPEED, -Constants.ROTATE_SPEED, true);
-
-		while (ActionController.usPoller.getClippedData(Constants.CLIP) == Constants.WALL_DIST) {
+		//rotates the robot clockwise at speed: FAST_ROTATION_SPEED
+		ActionController.setSpeeds(Constants.FAST_ROTATION_SPEED, -Constants.FAST_ROTATION_SPEED, true);
+		
+		//keep turning while distance is large
+		while (ActionController.frontUsPoller.getClippedData(Constants.CLIP) >= Constants.WALL_DIST) {
 
 			//already moving cw
 		}
 
-		while (ActionController.usPoller.getClippedData(Constants.CLIP) < Constants.WALL_DIST + Constants.US_MARGIN) {
+		//keep turning after seeing the wall until we reach the 2nd wall, then stop
+		while (ActionController.frontUsPoller.getClippedData(Constants.CLIP) < Constants.WALL_DIST + Constants.US_MARGIN) {
 
 			//already moving cw
 		}
@@ -48,14 +50,16 @@ public class USLocalizer {
 		ActionController.stopMotors();
 		cw_angle = ActionController.odometer.getAng();
 		Sound.beep();
-		ActionController.setSpeeds(-Constants.ROTATE_SPEED, Constants.ROTATE_SPEED, true);
+		ActionController.setSpeeds(-Constants.FAST_ROTATION_SPEED, Constants.FAST_ROTATION_SPEED, true);
 
-		while (ActionController.usPoller.getClippedData(Constants.CLIP) >= Constants.WALL_DIST) {
+		//turn counterclockwise until its not at the "edge" of the wall anymore
+		while (ActionController.frontUsPoller.getClippedData(Constants.CLIP) >= Constants.WALL_DIST) {
 
 			//already moving ccw
 		}
 
-		while (ActionController.usPoller.getClippedData(Constants.CLIP) < Constants.WALL_DIST + Constants.US_MARGIN) {
+		//keep turning until it sees the other edge of the wall
+		while (ActionController.frontUsPoller.getClippedData(Constants.CLIP) < Constants.WALL_DIST + Constants.US_MARGIN) {
 
 			//already moving ccw
 		}
@@ -75,9 +79,6 @@ public class USLocalizer {
 
 		// set positions below
 		ActionController.odometer.setPosition(position, update);
-		
-		//rotate robot to 45 degrees in order for light localization to be performed
-		//where should this be handled?
 		
 	}
 
