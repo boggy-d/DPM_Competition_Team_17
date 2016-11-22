@@ -36,13 +36,11 @@ import wifi.WifiConnection;
 
 public class ActionController implements TimerListener {
 	
-//	private static final Port sideUsPort = LocalEV3.get().getPort("S4");
-//	private static final SensorModes sideUsSensor = new EV3UltrasonicSensor(sideUsPort);
-
 	//Instantiate more objects
 	public static Odometer odometer;
 	public static Navigator navigator;
 	public static USPoller frontUsPoller;
+	public static USPoller sideUSPoller;
 	public static LightPoller lightPoller;
 	public static ClawController claw;
 
@@ -77,6 +75,8 @@ public class ActionController implements TimerListener {
 		odometer = new Odometer(30, true, 0, 0, 90);	
 
 		frontUsPoller = new USPoller(Constants.frontUsSensor, /* sideUsSensor, */ Constants.DEFAULT_TIMEOUT_PERIOD, true);
+		
+		sideUSPoller = new USPoller(Constants.sideUsSensor, Constants.DEFAULT_TIMEOUT_PERIOD, true);
 		
 		LCDInfo lcd = new LCDInfo();
 		

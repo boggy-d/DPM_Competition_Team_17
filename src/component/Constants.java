@@ -22,6 +22,9 @@ public class Constants {
 	public static final Port usPort = LocalEV3.get().getPort("S2");
 	public static final SensorModes frontUsSensor = new EV3UltrasonicSensor(usPort);
 
+	public static final Port us2Port = LocalEV3.get().getPort("S4");
+	public static final SensorModes sideUsSensor = new EV3UltrasonicSensor(usPort);
+	
 	public static final Port lightPort = LocalEV3.get().getPort("S1");
 	public static final SensorModes lightSensor = new EV3ColorSensor(lightPort);
 
@@ -42,7 +45,10 @@ public class Constants {
 	public final static double DIST_ERR = 1.5;
 	
 	//us localization
-	public final static int CLIP = 50, WALL_DIST = 45, US_MARGIN = 3;
+	public final static int ROTATE_SPEED = 300;
+	public final static int CLIP = 45;
+	public final static int WALL_DIST = 42;
+	public final static int US_MARGIN = 2;
 	
 	//for lightLocalization 
 	public final static double COLOR_DIST = 14.5;									//distance between the center of rotation of robot and light sensor
