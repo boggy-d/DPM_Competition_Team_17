@@ -57,21 +57,6 @@ public class ActionController implements TimerListener {
 //		//Wifi "supposedly works (router is bad and it should feel bad)
 //		setWifiInfo();
 		
-		// used to intialize odometer to starting corner
-//		if (SC == 1) {
-//			// Initialize to bottom left corner
-//			odometer = new Odometer(30, true, 0, 0, 90);	
-//		} else if (SC == 2) {
-//			// Initialize to bottom right corner
-//			odometer = new Odometer(30, true, 0, convertTilesToCm(11), 90);	
-//		} else if (SC == 3) {	
-//			// Initialize to upper right corner
-//			odometer = new Odometer(30, true, convertTilesToCm(11), convertTilesToCm(11), 270);	
-//		} else {
-//			// Initialize to upper left corner
-//			odometer = new Odometer(30, true, convertTilesToCm(11), 0, 270);	
-//		}
-		
 		odometer = new Odometer(30, true, 0, 0, 90);	
 
 		frontUsPoller = new USPoller(Constants.frontUsSensor, /* sideUsSensor, */ Constants.DEFAULT_TIMEOUT_PERIOD, true);
@@ -87,17 +72,6 @@ public class ActionController implements TimerListener {
 		claw = new ClawController();
 		
 		//Tests
-//		navigator.turnTo(30);
-//		navigator.travelTo(30, 30);
-//		navigator.travelTo(60, 30);
-//		navigator.travelTo(10, 70);
-//		navigator.travelTo(50, 50);
-//		Button.waitForAnyPress();
-//		navigator.travelTo(1, 1);
-//		Button.waitForAnyPress();
-//		navigator.travelTo(30, 30);
-//		Button.waitForAnyPress();
-//		navigator.travelTo(0, 0);
 //		Button.waitForAnyPress();
 		
 		// localize
@@ -141,6 +115,9 @@ public class ActionController implements TimerListener {
 		
 		// search for blocks
 		search(zone);
+		
+		// once it is done searching go back to home
+		goToStart();
 		
 		if (autostart) {
 			// if the timeout interval is given as <= 0, default to 20ms timeout 
@@ -406,7 +383,7 @@ public class ActionController implements TimerListener {
 	}
 	
 	/**
-	 * @param the coordinates of a position
+	 * @param position, the Point of the coordinates of a position
 	 * @return true if it is in the arena, false if it is outside
 	 */
 	boolean inBounds(Point position){
@@ -542,6 +519,8 @@ public class ActionController implements TimerListener {
 	
 	/**
 	 * Search for blocks
+	 * @param corners a Point array of each of the corners of the zone to search
+	 * 
 	 */
 	public void search(Point[] corners) {
 	     HashMap<String, HashMap<String, Integer>> cornersAndAngles = new HashMap<String, HashMap<String, Integer>>();
@@ -578,10 +557,11 @@ public class ActionController implements TimerListener {
 	     for (HashMap<String, Integer> corner : cornersAndAngles.values()) {
 	    	 // travel to the corner
 	    	 navigator.travelTo(corner.get("x"), corner.get("y"));
-
+	    	 
 	    	 // turn to starting angle of that corner
 	    	 navigator.turnTo(corner.get("angle"));
 	    	 
+	    	 // For testing only
 	 		Button.waitForAnyPress();
 
 	    	 // get the angle to stop scanning at
