@@ -13,6 +13,7 @@ package component;
 
 import lejos.hardware.sensor.SensorModes;
 import lejos.hardware.sensor.EV3ColorSensor;
+import lejos.robotics.Color;
 import lejos.robotics.SampleProvider;
 import lejos.utility.Timer;
 import lejos.utility.TimerListener;
@@ -42,8 +43,13 @@ public class LightPoller implements TimerListener{
 		//TODO Modify constructor parameters. Create appropriate fields. Assigne params to fields
 		
 		this.lightSensor = lightSensor;
+		
 		this.lightSampler = this.lightSensor.getMode("Red");
 		this.lightData = new float[lightSampler.sampleSize()];
+		EV3ColorSensor temp = new EV3ColorSensor(Constants.lightPort);
+		temp.setFloodlight(true);
+		temp.setFloodlight(Color.RED);
+		this.lightSensor = temp;
 		
 		this.colorSensor = colorSensor;
 		this.colorSampler = this.colorSensor.getMode("RGB");	
@@ -53,6 +59,7 @@ public class LightPoller implements TimerListener{
 		ambientLight = lightData[0];
 		
 		this.medianFilter = new MedianFilter(lightSampler, 5);
+		
 		
 		if (autostart) {
 			// if the timeout interval is given as <= 0, default to 20ms timeout 

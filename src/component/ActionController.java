@@ -52,6 +52,15 @@ public class ActionController implements TimerListener {
 		//Wifi "supposedly works (router is bad and it should feel bad)
 //		setWifiInfo();
 		
+		odometer = new Odometer(30, true);
+		
+		usPoller = new USPoller(Constants.frontUsSensor, /* sideUsSensor, */ Constants.DEFAULT_TIMEOUT_PERIOD, true);
+		
+		LCDInfo lcd = new LCDInfo();
+		
+		lightPoller = new LightPoller(Constants.lightSensor, Constants.colorSensor, Constants.DEFAULT_TIMEOUT_PERIOD, true);
+
+		navigator = new Navigator();
 
 		if (autostart) {
 			// if the timeout interval is given as <= 0, default to 20ms timeout 
@@ -60,21 +69,6 @@ public class ActionController implements TimerListener {
 		} else
 			this.acTimer = null;
 
-		
-		odometer = new Odometer(30, true);
-		
-		usPoller = new USPoller(Constants.frontUsSensor, /* sideUsSensor, */ Constants.DEFAULT_TIMEOUT_PERIOD, true);
-		
-		LCDInfo lcd = new LCDInfo();
-		
-		lightPoller = new LightPoller(Constants.lightSensor, Constants.colorSensor, Constants.DEFAULT_TIMEOUT_PERIOD, true);
-		
-		
-
-		
-		navigator = new Navigator();
-		
-		
 
 		// localize
 

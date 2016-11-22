@@ -6,6 +6,7 @@ import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.hardware.sensor.SensorModes;
+import lejos.robotics.Color;
 
 public class Constants {
 	
@@ -24,6 +25,7 @@ public class Constants {
 
 	public static final Port lightPort = LocalEV3.get().getPort("S1");
 	public static final SensorModes lightSensor = new EV3ColorSensor(lightPort);
+	
 
 	public static final Port colorPort = LocalEV3.get().getPort("S3");
 	public static final SensorModes colorSensor = new EV3ColorSensor(colorPort);

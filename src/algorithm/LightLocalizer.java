@@ -16,6 +16,8 @@ import component.LightPoller;
 import component.Odometer;
 import component.Constants;
 import lejos.hardware.Sound;
+import lejos.hardware.sensor.EV3ColorSensor;
+import lejos.robotics.Color;
 import lejos.utility.Delay;
 
 public class LightLocalizer {
@@ -90,18 +92,25 @@ public class LightLocalizer {
 			//prevLightData = ActionController.lightPoller.getLightData();
 			
 			// keeps rotating until line is detected
-			while(!(ActionController.lightPoller.isLine())) {
+			if((ActionController.lightPoller.isLine())) {
+				lineCount++;
 				
+				// store angle in array
+				angles[lineCount] = ActionController.odometer.getAng();
+				
+				
+				// play sound to confirm
+				Sound.beep();
+				// avoid counting same line several times
+	            Delay.msDelay(2000);
+	            
 				//change the previous light data
 				//prevLightData = ActionController.lightPoller.getLightData();
 			}
 			
-			// store angle in array
-			angles[lineCount++] = ActionController.odometer.getAng();
-			// play sound to confirm
-			Sound.beep();
-			// avoid counting same line several times
-            Delay.msDelay(2000);
+			
+			
+			
 		
 		}
 
