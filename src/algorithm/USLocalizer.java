@@ -32,13 +32,16 @@ public class USLocalizer {
 		boolean[] update = { false, false, true };
 		double cw_angle, ccw_angle;
 
+		//rotates the robot clockwise at speed: ROTATE_SPEED
 		ActionController.setSpeeds(Constants.ROTATE_SPEED, -Constants.ROTATE_SPEED, true);
-
-		while (ActionController.frontUsPoller.getClippedData(Constants.CLIP) == Constants.WALL_DIST) {
+		
+		//keep turning while distance is large
+		while (ActionController.frontUsPoller.getClippedData(Constants.CLIP) >= Constants.WALL_DIST) {
 
 			//already moving cw
 		}
 
+		//keep turning after seeing the wall until we reach the 2nd wall, then stop
 		while (ActionController.frontUsPoller.getClippedData(Constants.CLIP) < Constants.WALL_DIST + Constants.US_MARGIN) {
 
 			//already moving cw
@@ -49,11 +52,13 @@ public class USLocalizer {
 		Sound.beep();
 		ActionController.setSpeeds(-Constants.ROTATE_SPEED, Constants.ROTATE_SPEED, true);
 
+		//turn counterclockwise until its not at the "edge" of the wall anymore
 		while (ActionController.frontUsPoller.getClippedData(Constants.CLIP) >= Constants.WALL_DIST) {
 
 			//already moving ccw
 		}
 
+		//keep turning until it sees the other edge of the wall
 		while (ActionController.frontUsPoller.getClippedData(Constants.CLIP) < Constants.WALL_DIST + Constants.US_MARGIN) {
 
 			//already moving ccw
