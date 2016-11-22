@@ -442,21 +442,6 @@ public class ActionController implements TimerListener {
 		corners[2] = upperLeft;
 		corners[3] = upperRight;
 
-//		corners[0].setLocation(convertTilesToCm(lowerLeftX), convertTilesToCm(lowerLeftY));
-//		corners[0].y = (float) convertTilesToCm(lowerLeftY);
-//
-//		// lower right
-//		corners[1].x = (float) convertTilesToCm(upperRightX);
-//		corners[1].y = (float) convertTilesToCm(lowerLeftY);
-//
-//		// upper left
-//		corners[1].x = (float) convertTilesToCm(lowerLeftX);
-//		corners[1].y = (float) convertTilesToCm(upperRightY);
-//		
-//		// upper right
-//		corners[3].x = (float) convertTilesToCm(upperRightX);
-//		corners[3].y = (float) convertTilesToCm(upperRightY);
-//		
 		return corners;
 	}
 	
@@ -538,7 +523,7 @@ public class ActionController implements TimerListener {
 				double distance2 = frontUsPoller.getClippedData(255);
 				
 				// check if the scan has passed the obstacle
-				if (distance2 > distance1 + Constants.DISTANCE_DIFFERENCE) {
+				if ((distance2 - distance1) > Constants.DISTANCE_DIFFERENCE) {
 					break;
 				}
 			}
