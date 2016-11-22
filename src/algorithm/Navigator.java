@@ -62,7 +62,7 @@ public class Navigator{
 	 */
 	public int convertAngle( double radius, double width, double angle){
 
-		return (int) ((width * angle / 2.0) / (radius));
+		return (int)((width * angle / 2.0) / (radius));
 	}
 
 	/**
@@ -90,11 +90,11 @@ public class Navigator{
 				{ return_angle += Math.PI; }
 		}
 		
-		//if(delta_y < 0 && delta_x > 0)	//4th quadrant wrt x-axis --> will be handles by wraping angle
-			//{ return_angle += 2*Math.PI; }
+		if(delta_y < 0 && delta_x > 0)	//4th quadrant wrt x-axis --> will be handles by wraping angle
+			{ return_angle += 2*Math.PI; }
 		   
 		
-		return wrapAngle(Math.toDegrees(return_angle)); //wrapping wastes time unless 4th quadrant
+		return Math.toDegrees(return_angle); 
 	}
 
 	/**
@@ -109,7 +109,7 @@ public class Navigator{
 
 
 		double delta_theta = target_angle - ActionController.odometer.getAng();
-		int turning_angle =convertAngle(Constants.RADIUS, Constants.TRACK, delta_theta);
+		int turning_angle = convertAngle(Constants.RADIUS, Constants.TRACK, delta_theta);
 		/*System.out.println("target_angle:" + target_angle);
 		System.out.println("delta_theta:"+ delta_theta);
 		System.out.println("odo ang:"+ ActionController.odometer.getAng());
@@ -123,16 +123,23 @@ public class Navigator{
 		System.out.println("adjusted theta:"+ adjusted_theta);
 		System.out.println("adjusted turning angle:" + adjusted_turning_angle);
 		*/
+		/*if ( delta_theta < 0){
+			
+			turning_angle *= -1;
+			adjusted_turning_angle *= -1;
+			
+		}*/
+		
 		if (-180 < delta_theta && delta_theta < 180){
 
-			//System.out.println("1");
+			System.out.println("1");
 
-			Constants.rightMotor.rotate(-turning_angle, true);
-			Constants.leftMotor.rotate(turning_angle, false);
+			Constants.rightMotor.rotate(turning_angle, true);
+			Constants.leftMotor.rotate(-turning_angle, false);
 		}
 
 		else if (delta_theta < -180){
-			//System.out.println("2");
+			System.out.println("2");
 
 			Constants.rightMotor.rotate(adjusted_turning_angle, true);
 			Constants.leftMotor.rotate(-adjusted_turning_angle, false);
@@ -140,7 +147,7 @@ public class Navigator{
 
 		else{
 
-			//System.out.println("3");
+			System.out.println("3");
 
 			Constants.rightMotor.rotate(-adjusted_turning_angle, true);
 			Constants.leftMotor.rotate(adjusted_turning_angle, false);

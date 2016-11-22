@@ -120,7 +120,7 @@ public class LightLocalizer {
         
         double deltaX = -Constants.COLOR_DIST * Math.cos(Math.toRadians(deltaYTheta) / 2);
         double deltaY = -Constants.COLOR_DIST * Math.cos(Math.toRadians(deltaXTheta) / 2);
-        double deltaTheta = 270 - negativeYTheta + deltaYTheta / 2;		//check math
+        double deltaTheta = 180 - negativeYTheta + deltaYTheta / 2;		//check math
         /*	
         System.out.println("deltaX: "+ deltaX);
         System.out.println("deltaY: "+ deltaY);

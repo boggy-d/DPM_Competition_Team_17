@@ -53,8 +53,11 @@ public class ActionController implements TimerListener {
 	
 	public ActionController(int INTERVAL, boolean autostart)
 	{
-		//Wifi "supposedly works (router is bad and it should feel bad)
-		setWifiInfo();
+		// set wifi info for testing only
+		setTestWifiInfo();
+		
+//		//Wifi "supposedly works (router is bad and it should feel bad)
+//		setWifiInfo();
 		
 		// used to intialize odometer to starting corner
 //		if (SC == 1) {
@@ -83,6 +86,20 @@ public class ActionController implements TimerListener {
 		
 		claw = new ClawController();
 		
+		//Tests
+//		navigator.turnTo(30);
+//		navigator.travelTo(30, 30);
+//		navigator.travelTo(60, 30);
+//		navigator.travelTo(10, 70);
+//		navigator.travelTo(50, 50);
+//		Button.waitForAnyPress();
+//		navigator.travelTo(1, 1);
+//		Button.waitForAnyPress();
+//		navigator.travelTo(30, 30);
+//		Button.waitForAnyPress();
+//		navigator.travelTo(0, 0);
+//		Button.waitForAnyPress();
+		
 		// localize
 		USLocalizer usLocalizer = new USLocalizer();
 		usLocalizer.usLocalize();
@@ -92,27 +109,38 @@ public class ActionController implements TimerListener {
 
         // travel to origin and face 0 degrees
 		ActionController.navigator.travelTo(0,0);
-		ActionController.navigator.turnTo(90);
-		
+		ActionController.navigator.turnTo(0);
+
 		// update position to the actual corner it starts in
+		double angle = odometer.getAng();
 		double[] position;
 		boolean[] update = {true, true, true};
 		if (SC == 1) {
 			// Initialize to bottom left corner
-			position = new double[] {0, 0, 90};	
+			position = new double[] {0, 0, angle};	
 		} else if (SC == 2) {
 			// Initialize to bottom right corner
-			position = new double[] {0, convertTilesToCm(11), 90};	
+			position = new double[] {convertTilesToCm(10), 0, angle + 90};	
 		} else if (SC == 3) {	
 			// Initialize to upper right corner
-			position = new double[] {convertTilesToCm(11), convertTilesToCm(11), 270};	
+			position = new double[] {convertTilesToCm(10), convertTilesToCm(10), navigator.wrapAngle(angle + 180)};	
 		} else {
 			// Initialize to upper left corner
-			position = new double[] {convertTilesToCm(11), 0, 270};	
+			position = new double[] {0, convertTilesToCm(10), navigator.wrapAngle(angle - 90)};	
+		}
+		ActionController.odometer.setPosition(position, update);		
+	
+		Point[] zone;	
+		if (ROLE == 0) {
+			// tower builder get green zone
+			zone = getZoneCorners(LGZx, LGZy, UGZx, UGZy);
+		} else {
+			// garbage collector get red zone
+			zone = getZoneCorners(LRZx, LRZy, URZx, URZy);
 		}
 		
-		ActionController.odometer.setPosition(position, update);
-
+		// search for blocks
+		search(zone);
 		
 		if (autostart) {
 			// if the timeout interval is given as <= 0, default to 20ms timeout 
@@ -210,6 +238,61 @@ public class ActionController implements TimerListener {
 		stopMotors();
 	}
 
+	
+	/**
+	 * For testing only
+	 * sets "fake" wifi info
+	 */
+	public void setTestWifiInfo() {
+		// set zones
+		LGZy = 9;
+		LGZx = 2;
+		
+		UGZy = 10;
+		UGZx = 3;
+		
+		LRZy = 6;
+		LRZx = 2;
+		
+		URZy = 8;
+		URZx = 3;
+		
+		// set starting corner
+		SC = 4;
+			
+		// set role
+//		// garbage collector
+//		ROLE = 1;
+
+		// tower builder
+		ROLE = 0;
+		
+//		// set zones
+//		LGZy = 2;
+//		LGZx = 2;
+//		
+//		UGZy = 3;
+//		UGZx = 3;
+//		
+//		LRZy = 6;
+//		LRZx = 2;
+//		
+//		URZy = 8;
+//		URZx = 3;
+//		
+//		// set starting corner
+//		SC = 1;
+//			
+//		// set role
+////		// garbage collector
+////		ROLE = 1;
+//
+//		// tower builder
+//		ROLE = 0;
+//		
+	}
+		
+		
 	/**
 	 * Gets the competition information provided by WiFi
 	 * and stores it into fields
@@ -263,6 +346,11 @@ public class ActionController implements TimerListener {
 		}
 	}
 	
+	/**
+	 * Converts the number of tiles into cm
+	 * @param integer number of tiles
+	 * @return a double of the position in cm
+	 */
 	public double convertTilesToCm(int numberOfTiles) {
 		return numberOfTiles * Constants.TILE_LENGTH;
 	}
@@ -336,22 +424,39 @@ public class ActionController implements TimerListener {
 	 */
 	public Point[] getZoneCorners(int lowerLeftX, int lowerLeftY, int upperRightX, int upperRightY) {
 		Point[] corners = new Point[4];
+		
+		// convert from tiles to Cm
+		double lowerLeftXCm = convertTilesToCm(lowerLeftX);
+		double lowerLeftYCm = convertTilesToCm(lowerLeftY);
+		double upperRightXCm = convertTilesToCm(upperRightX);
+		double upperRightYCm = convertTilesToCm(upperRightY);
+
 		// lower left
-		corners[0].x = (float) convertTilesToCm(lowerLeftX);
-		corners[0].y = (float) convertTilesToCm(lowerLeftY);
+		Point lowerLeft = new Point((float)lowerLeftXCm, (float)lowerLeftYCm);
+		Point lowerRight = new Point((float)upperRightXCm, (float)lowerLeftYCm);
+		Point upperLeft = new Point((float)lowerLeftYCm, (float)upperRightYCm);
+		Point upperRight = new Point((float)upperRightXCm, (float)upperRightYCm);
 
-		// lower right
-		corners[1].x = (float) convertTilesToCm(upperRightX);
-		corners[1].y = (float) convertTilesToCm(lowerLeftY);
+		corners[0] = lowerLeft;
+		corners[1] = lowerRight;
+		corners[2] = upperLeft;
+		corners[3] = upperRight;
 
-		// upper left
-		corners[1].x = (float) convertTilesToCm(lowerLeftX);
-		corners[1].y = (float) convertTilesToCm(upperRightY);
-		
-		// upper right
-		corners[3].x = (float) convertTilesToCm(upperRightX);
-		corners[3].y = (float) convertTilesToCm(upperRightY);
-		
+//		corners[0].setLocation(convertTilesToCm(lowerLeftX), convertTilesToCm(lowerLeftY));
+//		corners[0].y = (float) convertTilesToCm(lowerLeftY);
+//
+//		// lower right
+//		corners[1].x = (float) convertTilesToCm(upperRightX);
+//		corners[1].y = (float) convertTilesToCm(lowerLeftY);
+//
+//		// upper left
+//		corners[1].x = (float) convertTilesToCm(lowerLeftX);
+//		corners[1].y = (float) convertTilesToCm(upperRightY);
+//		
+//		// upper right
+//		corners[3].x = (float) convertTilesToCm(upperRightX);
+//		corners[3].y = (float) convertTilesToCm(upperRightY);
+//		
 		return corners;
 	}
 	
@@ -400,10 +505,12 @@ public class ActionController implements TimerListener {
 			}
 		}
 		
-		// if it is a blue block pick it up /
+		// if it is a blue block pick it up
+		if (lightPoller.isBlue()) {
 			//Claw pickup routine
 			claw.pickUpBlock();
 			hasBlock = true;
+		}
 		
 		// if it has a block place it
 		if (hasBlock) {
@@ -489,6 +596,8 @@ public class ActionController implements TimerListener {
 
 	    	 // turn to starting angle of that corner
 	    	 navigator.turnTo(corner.get("angle"));
+	    	 
+	 		Button.waitForAnyPress();
 
 	    	 // get the angle to stop scanning at
 	    	 double endingAngle = corner.get("angle") + degreesToScan;

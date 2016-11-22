@@ -32,9 +32,9 @@ public class USLocalizer {
 		boolean[] update = { false, false, true };
 		double cw_angle, ccw_angle;
 
-		ActionController.setSpeeds(Constants.ROTATE_SPEED, -Constants.ROTATE_SPEED, true);
+		ActionController.setSpeeds(Constants.FAST_ROTATION_SPEED, -Constants.FAST_ROTATION_SPEED, true);
 
-		while (ActionController.frontUsPoller.getClippedData(Constants.CLIP) == Constants.WALL_DIST) {
+		while (ActionController.frontUsPoller.getClippedData(Constants.CLIP) >= Constants.WALL_DIST) {
 
 			//already moving cw
 		}
@@ -47,7 +47,7 @@ public class USLocalizer {
 		ActionController.stopMotors();
 		cw_angle = ActionController.odometer.getAng();
 		Sound.beep();
-		ActionController.setSpeeds(-Constants.ROTATE_SPEED, Constants.ROTATE_SPEED, true);
+		ActionController.setSpeeds(-Constants.FAST_ROTATION_SPEED, Constants.FAST_ROTATION_SPEED, true);
 
 		while (ActionController.frontUsPoller.getClippedData(Constants.CLIP) >= Constants.WALL_DIST) {
 

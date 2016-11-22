@@ -32,21 +32,21 @@ public class Constants {
 	//motor speeds
 	public final static int FAST_FORWARD_SPEED = 200;
 	public final static int FORWARD_SPEED = 100;
-	public final static int FAST_ROTATION_SPEED = 100;
-	public final static int ROTATION_SPEED = 60;
+	public final static int FAST_ROTATION_SPEED = 150;
+	public final static int ROTATION_SPEED = 80;
 	public final static int ACCELERATION = 3000;
 	
 	//navigator
 	public final static double TRACK = 14.2;
 	public final static double RADIUS = 2.04;
-	public final static int DIST_ERR = 0000;
+	public final static double DIST_ERR = 1.5;
 	
 	//us localization
-	public final static int ROTATE_SPEED = 100, CLIP = 45, WALL_DIST = 42, US_MARGIN = 2;
+	public final static int CLIP = 50, WALL_DIST = 45, US_MARGIN = 3;
 	
 	//for lightLocalization 
 	public final static double COLOR_DIST = 14.5;									//distance between the center of rotation of robot and light sensor
-	public final static double BUFFER_DIST = 6/Math.sqrt(2);						//buffer distance (where we want to be before rotating)
+	public final static double BUFFER_DIST = 6.5;										//buffer distance (where we want to be before rotating)
 	
 	// odometery correction
 	public final static double SENSOR_DISTANCE = 0000;
