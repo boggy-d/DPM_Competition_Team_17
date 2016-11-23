@@ -47,8 +47,6 @@ public class ActionController implements TimerListener {
 	Point blockLocation;
 	int maxTowerHeight;
 	int towerHeight;
-	double deltaX;
-	double deltaY;
 
 	private Timer acTimer;
 	
@@ -124,9 +122,7 @@ public class ActionController implements TimerListener {
 		}
 		
 		// initialize starting block placing position
-		deltaX = Constants.TILE_LENGTH/2;
-		deltaY = Constants.TILE_LENGTH/4;
-		blockLocation = new Point((float)(zone[0].x + deltaX), (float)(zone[0].y + deltaY));
+		blockLocation = new Point((float)(zone[0].x + Constants.DELTA_X), (float)(zone[0].y + Constants.DELTA_Y));
 		
 		// search for blocks
 		search(zone);
@@ -494,14 +490,17 @@ public class ActionController implements TimerListener {
 		}
 		
 		// if it has a block place it
-		if (hasBlock) {			
+		if (hasBlock) {		
+			// if the tower height is equal to the max tower height, get the next position it should be in
 			if (towerHeight >= maxTowerHeight) {
 				chooseNextBlockPosition();
 			}
 			
+			// go to the position of where the block should be placed
 			// TODO use restricted zone navigating pattern instead of travelTo
 			navigator.travelTo(blockLocation.x, blockLocation.y);
 			
+			// always face the same direction when placing blocks
 			navigator.turnTo(180);
 			
 			if (towerHeight < maxTowerHeight) {
@@ -513,6 +512,9 @@ public class ActionController implements TimerListener {
 			}
 			
 			towerHeight++;
+			
+			// TODO add block position we just placed to zones we should avoid
+			
 			
 	    	 // TODO use zone avoiding algorithm (wavefront ect) when traveling to the corner
 			// go back to the corner
@@ -622,18 +624,23 @@ public class ActionController implements TimerListener {
 		// TODO implement secondary searching steps here
 	}
 	
-	
+	/**
+	 * Gets the next position for the block to be placed
+	 */
 	public void chooseNextBlockPosition() {		
 		// add y offset
-		double newY = blockLocation.y + deltaY;
+		double newY = blockLocation.y + Constants.DELTA_Y;
 		
 		// if it is within the zone
+		/* could also add check to see if it is within the x coordinates also
+		 * but i don't think we are going to get to that many blocks 
+		 * / then what do we do if we run out of space */
 		if (newY < zone[3].y) {
 			// update to the next location above
 			blockLocation.setLocation(newY, blockLocation.y);
 		} else {
-			// if it outside the zone create a new column, add offset to y
-			blockLocation.setLocation(blockLocation.x, blockLocation.y + deltaY);
+			// if it outside the zone create a new column, add offset to X
+			blockLocation.setLocation(blockLocation.x + Constants.DELTA_X, blockLocation.y);
 		}
 		
 		// set towerHeight to 0 since we are starting new positions

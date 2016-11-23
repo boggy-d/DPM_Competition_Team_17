@@ -85,6 +85,9 @@ public class Constants {
 	public final static int DISTANCE_DIFFERENCE = 5;
 	public final static int DISTANCE_FROM_CORNER = 5;
 
+	// block placing
+	public final static double DELTA_X = TILE_LENGTH/2;
+	public final static double DELTA_Y = TILE_LENGTH/4;
 
 	public final static String SERVER_IP = "192.168.2.3";
 	public final static int TEAM_NUMBER = 17;
