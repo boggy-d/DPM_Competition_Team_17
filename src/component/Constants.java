@@ -22,9 +22,9 @@ public class Constants {
 	public static final Port usPort = LocalEV3.get().getPort("S2");
 	public static final SensorModes frontUsSensor = new EV3UltrasonicSensor(usPort);
 
-	public static final Port us2Port = LocalEV3.get().getPort("S4");
-	public static final SensorModes sideUsSensor = new EV3UltrasonicSensor(usPort);
-	
+//	public static final Port us2Port = LocalEV3.get().getPort("S4");
+//	public static final SensorModes sideUsSensor = new EV3UltrasonicSensor(us2Port);
+//	
 	public static final Port lightPort = LocalEV3.get().getPort("S1");
 	public static final SensorModes lightSensor = new EV3ColorSensor(lightPort);
 
@@ -34,7 +34,7 @@ public class Constants {
 	
 	//motor speeds
 	public final static int FAST_FORWARD_SPEED = 200;
-	public final static int FORWARD_SPEED = 100;
+	public final static int FORWARD_SPEED = 50;
 	public final static int FAST_ROTATION_SPEED = 150;
 	public final static int ROTATION_SPEED = 80;
 	public final static int ACCELERATION = 3000;
@@ -51,11 +51,11 @@ public class Constants {
 	public final static int US_MARGIN = 2;
 	
 	//for lightLocalization 
-	public final static double COLOR_DIST = 14.5;									//distance between the center of rotation of robot and light sensor
-	public final static double BUFFER_DIST = 6.5;										//buffer distance (where we want to be before rotating)
+	public final static double COLOR_DIST = 14.5;				//distance between the center of rotation of robot and light sensor
+	public final static double BUFFER_DIST = 6.5;				//buffer distance (where we want to be before rotating)
 	
 	// odometery correction
-	public final static double SENSOR_DISTANCE = 0000;
+	public final static double SENSOR_DISTANCE = 14.5;
 	public final static double TILE_LENGTH = 30.48; //odometer must be verified that values in x&y are scaled to cm with double precision 
 
 	// light Poller

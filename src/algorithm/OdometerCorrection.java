@@ -40,24 +40,42 @@ public void timedOut(){
 			position[1] = ActionController.odometer.getY();
 			position[2] = ActionController.odometer.getAng();
 
+//			System.out.println("position 0: "+position[0]);
+//			System.out.println("position 1: "+position[1]);
+//			System.out.println("position 2: "+position[2]);
 
 			//transform location of point for correction from wheel center to color sensor
 			transformPosition(position);
-
+			
+//			System.out.println("position 0*: "+position[0]);
+//			System.out.println("position 1*: "+position[1]);
+//			System.out.println("position 2*: "+position[2]);
+//
+//		
 			//"normalize" positions by tile lengths
 			norm_x = (position[0] / Constants.TILE_LENGTH);
 			norm_y = (position[1] / Constants.TILE_LENGTH);
+			
+//			System.out.println("norm x: "+ norm_x);
+//			System.out.println("norm y: "+ norm_y);
 
 			//hold distance between position relative to nearest gridline
 			delta_x = Math.abs((int)norm_x - norm_x);
 			delta_y = Math.abs((int)norm_y - norm_y);
 			
+//			System.out.println("delta x: "+ delta_x);
+//			System.out.println("delta y: "+ delta_y);
+//			
 			//rescale for minimum distances
 			if (delta_x > 0.5)
 			{ delta_x = 1 - delta_x ; }
 			
 			if (delta_y > 0.5)
 			{ delta_y = 1 - delta_y ; }
+			
+//			System.out.println("delta x*: "+ delta_x);
+//			System.out.println("delta y*: "+ delta_y);
+//			
 
 			//closest to horizontal gridline therefore y must be corrected 
 			//add in additional and statement with a margin to reduce errors (test)
@@ -85,11 +103,19 @@ public void timedOut(){
 
 			//inverse transorm to scale correction from lightsensor position back to wheel contering
 			inverseTransfrom(position);
+			
+//			System.out.println("position 0**: "+position[0]);
+//			System.out.println("position 1**: "+position[1]);
+//			System.out.println("position 2**: "+position[2]);
+
+		
 
 			//update odometer
 			ActionController.odometer.setPosition(position, update);
 			
 			//sleep thread quickly to avoid adjusting multiple times when passing a single gridline
+			
+			//verify it doesn't pass the same gridline twice
 		}
 }
 
@@ -98,14 +124,14 @@ public void timedOut(){
 public static void transformPosition(double position[]){
 
 	position [0] -= Constants.SENSOR_DISTANCE * Math.cos(Math.toRadians(position[2]));
-	position [0] -= Constants.SENSOR_DISTANCE * Math.sin(Math.toRadians(position[2]));
+	position [1] -= Constants.SENSOR_DISTANCE * Math.sin(Math.toRadians(position[2]));
 }
 
 //shifts position of color sensor to position between wheels
 public static void inverseTransfrom(double position[]){
 
 	position [0] += Constants.SENSOR_DISTANCE * Math.cos(Math.toRadians(position[2]));
-	position [0] += Constants.SENSOR_DISTANCE * Math.sin(Math.toRadians(position[2]));
+	position [1] += Constants.SENSOR_DISTANCE * Math.sin(Math.toRadians(position[2]));
 }
 
 }
