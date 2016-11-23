@@ -43,6 +43,12 @@ public class ActionController implements TimerListener {
 	public static USPoller sideUSPoller;
 	public static LightPoller lightPoller;
 	public static ClawController claw;
+	Point[] zone;	
+	Point blockLocation;
+	int maxTowerHeight;
+	int towerHeight;
+	double deltaX;
+	double deltaY;
 
 	private Timer acTimer;
 	
@@ -104,14 +110,23 @@ public class ActionController implements TimerListener {
 		}
 		ActionController.odometer.setPosition(position, update);		
 	
-		Point[] zone;	
 		if (ROLE == 0) {
 			// tower builder get green zone
 			zone = getZoneCorners(LGZx, LGZy, UGZx, UGZy);
+			// set tower height
+			towerHeight = 2;
+			
 		} else {
 			// garbage collector get red zone
 			zone = getZoneCorners(LRZx, LRZy, URZx, URZy);
+			// set tower height
+			towerHeight = 1;
 		}
+		
+		// initialize starting block placing position
+		deltaX = Constants.TILE_LENGTH/2;
+		deltaY = Constants.TILE_LENGTH/4;
+		blockLocation = new Point((float)(zone[0].x + deltaX), (float)(zone[0].y + deltaY));
 		
 		// search for blocks
 		search(zone);
@@ -479,12 +494,31 @@ public class ActionController implements TimerListener {
 		}
 		
 		// if it has a block place it
-		if (hasBlock) {
-			// TODO block placing algorithm
+		if (hasBlock) {			
+			if (towerHeight >= maxTowerHeight) {
+				chooseNextBlockPosition();
+			}
 			
+			// TODO use restricted zone navigating pattern instead of travelTo
+			navigator.travelTo(blockLocation.x, blockLocation.y);
+			
+			navigator.turnTo(180);
+			
+			if (towerHeight < maxTowerHeight) {
+				// stack block
+				claw.placeBlock(true);
+			} else {
+				// don't stack block
+				claw.placeBlock(false);
+			}
+			
+			towerHeight++;
+			
+	    	 // TODO use zone avoiding algorithm (wavefront ect) when traveling to the corner
 			// go back to the corner
 			navigator.travelTo(cornerX, cornerY);
 		} else {
+	    	 // TODO use zone avoiding algorithm (wavefront ect) when traveling to the corner
 			// go back to the corner
 			navigator.travelTo(cornerX, cornerY);
 			
@@ -563,6 +597,8 @@ public class ActionController implements TimerListener {
 
 	     // for each corner of the zone search for blocks
 	     for (HashMap<String, Integer> corner : cornersAndAngles.values()) {
+	    	 
+	    	 // TODO use zone avoiding algorithm (wavefront ect) when traveling to the corner
 	    	 // travel to the corner
 	    	 navigator.travelTo(corner.get("x"), corner.get("y"));
 	    	 
@@ -585,6 +621,25 @@ public class ActionController implements TimerListener {
 		// once it scanned all the corners
 		// TODO implement secondary searching steps here
 	}
+	
+	
+	public void chooseNextBlockPosition() {		
+		// add y offset
+		double newY = blockLocation.y + deltaY;
+		
+		// if it is within the zone
+		if (newY < zone[3].y) {
+			// update to the next location above
+			blockLocation.setLocation(newY, blockLocation.y);
+		} else {
+			// if it outside the zone create a new column, add offset to y
+			blockLocation.setLocation(blockLocation.x, blockLocation.y + deltaY);
+		}
+		
+		// set towerHeight to 0 since we are starting new positions
+		towerHeight = 0;
+	}
+	
 
 	@Override
 	public void timedOut() {
