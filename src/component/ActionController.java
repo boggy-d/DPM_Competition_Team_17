@@ -436,6 +436,10 @@ public class ActionController implements TimerListener {
 			
 			// if the distance is less than the distance the sensor can see and the block is not out of bounds (a wall)
 			if (distance < Constants.SEARCH_DISTANCE_THRESHOLD & inBounds(blockPosition)) {
+				// test this delay to see what is a good time
+				// delay to make it face the block, not just the edge
+				Delay.msDelay(500);
+				
 				// once it sees a block stop
 				ActionController.stopMotors();
 				
@@ -523,26 +527,30 @@ public class ActionController implements TimerListener {
 	 * 
 	 */
 	public void search(Point[] corners) {
+		// a certain amount up from the corner so that it is not exactly in the corner
+		int xBuffer = (int) (Constants.DISTANCE_FROM_CORNER * Math.sin(45));
+		int yBuffer = (int) (Constants.DISTANCE_FROM_CORNER * Math.cos(45));
+		
 	     HashMap<String, HashMap<String, Integer>> cornersAndAngles = new HashMap<String, HashMap<String, Integer>>();
 
 	     HashMap<String, Integer> lowerLeft = new HashMap<String, Integer>();
-	     lowerLeft.put("x", (int)corners[0].x);
-	     lowerLeft.put("y", (int)corners[0].y);
+	     lowerLeft.put("x", (int)corners[0].x - xBuffer);
+	     lowerLeft.put("y", (int)corners[0].y - yBuffer);
 	     lowerLeft.put("angle", 90 + Constants.STARTING_SCANNING_ANGLE);
 
 	     HashMap<String, Integer> lowerRight = new HashMap<String, Integer>();
-	     lowerRight.put("x", (int)corners[1].x);
-	     lowerRight.put("y", (int)corners[1].y);
+	     lowerRight.put("x", (int)corners[1].x + xBuffer);
+	     lowerRight.put("y", (int)corners[1].y - yBuffer );
 	     lowerRight.put("angle", 180 + Constants.STARTING_SCANNING_ANGLE);
 
 	     HashMap<String, Integer> upperLeft = new HashMap<String, Integer>();
-	     upperLeft.put("x", (int)corners[2].x);
-	     upperLeft.put("y", (int)corners[2].y);
+	     upperLeft.put("x", (int)corners[2].x - xBuffer);
+	     upperLeft.put("y", (int)corners[2].y + yBuffer);
 	     upperLeft.put("angle", Constants.STARTING_SCANNING_ANGLE);
 
 	     HashMap<String, Integer> upperRight = new HashMap<String, Integer>();
-	     upperRight.put("x", (int)corners[3].x);
-	     upperRight.put("y", (int)corners[3].y);
+	     upperRight.put("x", (int)corners[3].x + xBuffer);
+	     upperRight.put("y", (int)corners[3].y + yBuffer);
 	     upperRight.put("angle", 270 + Constants.STARTING_SCANNING_ANGLE);
 	     
 	     cornersAndAngles.put("lowerLeft", lowerLeft);
