@@ -40,7 +40,7 @@ public class Constants {
 	public final static int ACCELERATION = 3000;
 	
 	//navigator
-	public final static double TRACK = 14.2;
+	public final static double TRACK = 13.8;
 	public final static double RADIUS = 2.04;
 	public final static double DIST_ERR = 1.5;
 	
