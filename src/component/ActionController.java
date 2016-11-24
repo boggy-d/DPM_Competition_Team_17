@@ -44,6 +44,7 @@ public class ActionController implements TimerListener {
 	public static LightPoller lightPoller;
 	public static ClawController claw;
 	Point[] zone;	
+	Point[] restrictedZone;	
 	Point blockLocation;
 	int maxTowerHeight;
 	int towerHeight;
@@ -111,12 +112,14 @@ public class ActionController implements TimerListener {
 		if (ROLE == 0) {
 			// tower builder get green zone
 			zone = getZoneCorners(LGZx, LGZy, UGZx, UGZy);
+			restrictedZone = getZoneCorners(LRZx, LRZy, URZx, URZy);
 			// set tower height
 			towerHeight = 2;
 			
 		} else {
 			// garbage collector get red zone
 			zone = getZoneCorners(LRZx, LRZy, URZx, URZy);
+			restrictedZone = getZoneCorners(LGZx, LGZy, UGZx, UGZy);
 			// set tower height
 			towerHeight = 1;
 		}
@@ -395,11 +398,13 @@ public class ActionController implements TimerListener {
 	
 	/**
 	 * @param position, the Point of the coordinates of a position
-	 * @return true if it is in the arena, false if it is outside
+	 * @return true if it is in the arena and not in the opponents zone, false if it is outside
 	 */
-	boolean inBounds(Point position){
+	boolean inBounds(Point position) {
 		if (position.x < -Constants.TILE_LENGTH || position.x > convertTilesToCm(11) 
-				|| position.y < -Constants.TILE_LENGTH || position.y > convertTilesToCm(11)) {
+				|| position.y < -Constants.TILE_LENGTH || position.y > convertTilesToCm(11)
+				|| (position.x > restrictedZone[0].x && position.x < restrictedZone[1].x) 
+				|| (position.y > restrictedZone[0].y && position.y < restrictedZone[2].y)) {
 			return false;
 		} else {
 			return true;
@@ -478,6 +483,7 @@ public class ActionController implements TimerListener {
 		while (true) {
 			// when there is a block ahead break out of the loop
 			if (frontUsPoller.isBlock()) {
+				stopMotors();
 				break;
 			}
 		}
@@ -579,20 +585,20 @@ public class ActionController implements TimerListener {
 	     lowerRight.put("y", (int)corners[1].y - yBuffer );
 	     lowerRight.put("angle", 180 + Constants.STARTING_SCANNING_ANGLE);
 
-	     HashMap<String, Integer> upperLeft = new HashMap<String, Integer>();
-	     upperLeft.put("x", (int)corners[2].x - xBuffer);
-	     upperLeft.put("y", (int)corners[2].y + yBuffer);
-	     upperLeft.put("angle", Constants.STARTING_SCANNING_ANGLE);
-
 	     HashMap<String, Integer> upperRight = new HashMap<String, Integer>();
 	     upperRight.put("x", (int)corners[3].x + xBuffer);
 	     upperRight.put("y", (int)corners[3].y + yBuffer);
 	     upperRight.put("angle", 270 + Constants.STARTING_SCANNING_ANGLE);
 	     
+	     HashMap<String, Integer> upperLeft = new HashMap<String, Integer>();
+	     upperLeft.put("x", (int)corners[2].x - xBuffer);
+	     upperLeft.put("y", (int)corners[2].y + yBuffer);
+	     upperLeft.put("angle", Constants.STARTING_SCANNING_ANGLE);
+	     
 	     cornersAndAngles.put("lowerLeft", lowerLeft);
 	     cornersAndAngles.put("lowerRight", lowerRight);
-	     cornersAndAngles.put("upperLeft", upperLeft);
 	     cornersAndAngles.put("upperRight", upperRight);
+	     cornersAndAngles.put("upperLeft", upperLeft);
 	     
 	     // calculate the degrees to scan
 	     double degreesToScan = 270 - (2 * Constants.STARTING_SCANNING_ANGLE);
