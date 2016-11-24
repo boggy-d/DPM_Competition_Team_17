@@ -114,18 +114,19 @@ public class ActionController implements TimerListener {
 			zone = getZoneCorners(LGZx, LGZy, UGZx, UGZy);
 			restrictedZone = getZoneCorners(LRZx, LRZy, URZx, URZy);
 			// set tower height
-			towerHeight = 2;
+			maxTowerHeight = 2;
 			
 		} else {
 			// garbage collector get red zone
 			zone = getZoneCorners(LRZx, LRZy, URZx, URZy);
 			restrictedZone = getZoneCorners(LGZx, LGZy, UGZx, UGZy);
 			// set tower height
-			towerHeight = 1;
+			maxTowerHeight = 1;
 		}
 		
 		// initialize starting block placing position
-		blockLocation = new Point((float)(zone[0].x + Constants.DELTA_X), (float)(zone[0].y + Constants.DELTA_Y));
+		blockLocation = new Point((float)(zone[0].x + Constants.DELTA_X), (float)(zone[0].y + Constants.TILE_LENGTH / 4));
+		towerHeight = 0;
 		
 		// search for blocks
 		search(zone);
@@ -645,8 +646,8 @@ public class ActionController implements TimerListener {
 			// update to the next location above
 			blockLocation.setLocation(newY, blockLocation.y);
 		} else {
-			// if it outside the zone create a new column, add offset to X
-			blockLocation.setLocation(blockLocation.x + Constants.DELTA_X, blockLocation.y);
+			// if it outside the zone create a new column, add offset to X, set y to initial y block position
+			blockLocation.setLocation(blockLocation.x + Constants.DELTA_X, zone[0].y + Constants.TILE_LENGTH / 4);
 		}
 		
 		// set towerHeight to 0 since we are starting new positions
