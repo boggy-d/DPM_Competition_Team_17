@@ -510,7 +510,7 @@ public class ActionController implements TimerListener {
 			// always face the same direction when placing blocks
 			navigator.turnTo(180);
 			
-			if (towerHeight < maxTowerHeight) {
+			if (towerHeight + 1 < maxTowerHeight) {
 				// stack block
 				claw.placeBlock(true);
 			} else {
