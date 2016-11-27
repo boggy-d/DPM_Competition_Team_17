@@ -82,7 +82,7 @@ public class Constants {
 	public final static int STARTING_SCANNING_ANGLE = 30;
 	public final static int DELAY_MS = 500;
 	public final static int DISTANCE_DIFFERENCE = 5;
-	public final static int DISTANCE_FROM_CORNER = 5;
+	public final static int DISTANCE_FROM_CORNER = 10;
 
 	// block placing
 	public final static double DELTA_X = TILE_LENGTH/2;

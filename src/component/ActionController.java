@@ -22,6 +22,7 @@ import algorithm.ObstacleAvoider;
 import algorithm.Searcher;
 import algorithm.USLocalizer;
 import lejos.hardware.Button;
+import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.Port;
@@ -79,10 +80,6 @@ public class ActionController implements TimerListener {
 
 		claw = new ClawController();
 
-
-		//Tests
-		//		Button.waitForAnyPress();
-
 		// localize
 		USLocalizer usLocalizer = new USLocalizer();
 		usLocalizer.usLocalize();
@@ -130,8 +127,11 @@ public class ActionController implements TimerListener {
 
 		searcher = new Searcher(zone, restrictedZone, maxTowerHeight);
 
+		// For testing only
+		Button.waitForAnyPress();
+		
 		// search for blocks
-		searcher.search(zone);
+		searcher.search();
 
 		// once it is done searching go back to home
 		goToStart();
@@ -238,12 +238,13 @@ public class ActionController implements TimerListener {
 	 * sets "fake" wifi info
 	 */
 	public void setTestWifiInfo() {
+		// TEST CASE 1
 		// set zones
-		LGZy = 9;
-		LGZx = 2;
+		LGZy = 8;
+		LGZx = 0;
 
-		UGZy = 10;
-		UGZx = 3;
+		UGZy = 9;
+		UGZx = 2;
 
 		LRZy = 6;
 		LRZx = 2;
@@ -254,36 +255,29 @@ public class ActionController implements TimerListener {
 		// set starting corner
 		SC = 4;
 
-		// set role
-		//		// garbage collector
-		//		ROLE = 1;
-
 		// tower builder
 		ROLE = 0;
-
-		//		// set zones
-		//		LGZy = 2;
-		//		LGZx = 2;
-		//		
-		//		UGZy = 3;
-		//		UGZx = 3;
-		//		
-		//		LRZy = 6;
-		//		LRZx = 2;
-		//		
-		//		URZy = 8;
-		//		URZx = 3;
-		//		
-		//		// set starting corner
-		//		SC = 1;
-		//			
-		//		// set role
-		////		// garbage collector
-		////		ROLE = 1;
-		//
-		//		// tower builder
-		//		ROLE = 0;
-		//		
+		
+//		// TEST CASE 2
+//		// set zones
+//		LGZy = 1;
+//		LGZx = 1;
+//		
+//		UGZy = 2;
+//		UGZx = 2;
+//		
+//		LRZy = 6;
+//		LRZx = 2;
+//		
+//		URZy = 8;
+//		URZx = 3;
+//		
+//		// set starting corner
+//		SC = 1;
+//
+//		// tower builder
+//		ROLE = 0;
+				
 	}
 
 
@@ -437,6 +431,10 @@ public class ActionController implements TimerListener {
 			
 		// if it is not in any of the restricted zones return true
 		} else {
+			// For testing only
+			Sound.beep();
+			Sound.beep();
+			
 			return true;
 		}
 	}

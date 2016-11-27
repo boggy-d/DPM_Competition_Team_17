@@ -15,6 +15,7 @@ import component.Constants;
 import component.Odometer;
 import component.USPoller;
 import lejos.hardware.Button;
+import lejos.hardware.Sound;
 import lejos.robotics.geometry.Point;
 import lejos.utility.Delay;
 
@@ -40,7 +41,7 @@ public class Searcher{
 	 * @param corners a Point array of each of the corners of the zone to search
 	 * 
 	 */
-	public void search(Point[] corners) {
+	public void search() {
 		// a certain amount up from the corner so that it is not exactly in the corner
 		int xBuffer = (int) (Constants.DISTANCE_FROM_CORNER * Math.sin(45));
 		int yBuffer = (int) (Constants.DISTANCE_FROM_CORNER * Math.cos(45));
@@ -49,23 +50,23 @@ public class Searcher{
 		HashMap<String, HashMap<String, Integer>> cornersAndAngles = new HashMap<String, HashMap<String, Integer>>();
 
 		HashMap<String, Integer> lowerLeft = new HashMap<String, Integer>();
-		lowerLeft.put("x", (int)corners[0].x - xBuffer);
-		lowerLeft.put("y", (int)corners[0].y - yBuffer);
+		lowerLeft.put("x", (int)zone[0].x - xBuffer);
+		lowerLeft.put("y", (int)zone[0].y - yBuffer);
 		lowerLeft.put("angle", 90 + Constants.STARTING_SCANNING_ANGLE);
 
 		HashMap<String, Integer> lowerRight = new HashMap<String, Integer>();
-		lowerRight.put("x", (int)corners[1].x + xBuffer);
-		lowerRight.put("y", (int)corners[1].y - yBuffer );
+		lowerRight.put("x", (int)zone[1].x + xBuffer);
+		lowerRight.put("y", (int)zone[1].y - yBuffer );
 		lowerRight.put("angle", 180 + Constants.STARTING_SCANNING_ANGLE);
 
 		HashMap<String, Integer> upperRight = new HashMap<String, Integer>();
-		upperRight.put("x", (int)corners[3].x + xBuffer);
-		upperRight.put("y", (int)corners[3].y + yBuffer);
+		upperRight.put("x", (int)zone[3].x + xBuffer);
+		upperRight.put("y", (int)zone[3].y + yBuffer);
 		upperRight.put("angle", 270 + Constants.STARTING_SCANNING_ANGLE);
 
 		HashMap<String, Integer> upperLeft = new HashMap<String, Integer>();
-		upperLeft.put("x", (int)corners[2].x - xBuffer);
-		upperLeft.put("y", (int)corners[2].y + yBuffer);
+		upperLeft.put("x", (int)zone[2].x - xBuffer);
+		upperLeft.put("y", (int)zone[2].y + yBuffer);
 		upperLeft.put("angle", Constants.STARTING_SCANNING_ANGLE);
 
 		cornersAndAngles.put("lowerLeft", lowerLeft);
@@ -86,17 +87,16 @@ public class Searcher{
 			// turn to starting angle of that corner
 			ActionController.navigator.turnTo(corner.get("angle"));
 
-			// For testing only
-			Button.waitForAnyPress();
-
 			// get the angle to stop scanning at
 			double endingAngle = corner.get("angle") + degreesToScan;
 			// wrap ending angle to not be over 360 degrees
 			endingAngle = ActionController.navigator.wrapAngle(endingAngle);
 
+			// For testing only
+			Button.waitForAnyPress();
+			
 			// start scanning for blocks
 			scanForBlocks(endingAngle, corner.get("x"), corner.get("y"));
-
 		}
 
 		// once it scanned all the corners
@@ -125,6 +125,9 @@ public class Searcher{
 //				// delay to make it face the block, not just the edge
 //				Delay.msDelay(500);
 
+				// For testing only
+				Sound.beep();
+				
 				// once it sees a block stop
 				ActionController.stopMotors();
 
