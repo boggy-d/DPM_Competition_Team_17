@@ -27,7 +27,7 @@ public class Constants {
 	public static final SensorModes frontUsSensor = new EV3UltrasonicSensor(usPort);
 
 	public static final Port us2Port = LocalEV3.get().getPort("S4");
-	public static final SensorModes sideUsSensor = new EV3UltrasonicSensor(usPort);
+	public static final SensorModes sideUsSensor = new EV3UltrasonicSensor(us2Port);
 	
 	public static final Port lightPort = LocalEV3.get().getPort("S1");
 	public static final SensorModes lightSensor = new EV3ColorSensor(lightPort);
@@ -40,13 +40,13 @@ public class Constants {
 	
 	//motor speeds
 	public final static int FAST_FORWARD_SPEED = 200;
-	public final static int FORWARD_SPEED = 100;
+	public final static int FORWARD_SPEED = 50;
 	public final static int FAST_ROTATION_SPEED = 150;
 	public final static int ROTATION_SPEED = 80;
 	public final static int ACCELERATION = 3000;
 	
 	//navigator
-	public final static double TRACK = 14.2;
+	public final static double TRACK = 13.8;
 	public final static double RADIUS = 2.04;
 	public final static double DIST_ERR = 1.5;
 	
@@ -57,11 +57,11 @@ public class Constants {
 	public final static int US_MARGIN = 2;
 	
 	//for lightLocalization 
-	public final static double COLOR_DIST = 14.5;									//distance between the center of rotation of robot and light sensor
-	public final static double BUFFER_DIST = 6.5;										//buffer distance (where we want to be before rotating)
+	public final static double COLOR_DIST = 14.5;				//distance between the center of rotation of robot and light sensor
+	public final static double BUFFER_DIST = 6.5;				//buffer distance (where we want to be before rotating)
 	
 	// odometery correction
-	public final static double SENSOR_DISTANCE = 0000;
+	public final static double SENSOR_DISTANCE = 14.5;
 	public final static double TILE_LENGTH = 30.48; //odometer must be verified that values in x&y are scaled to cm with double precision 
 
 	// light Poller
@@ -83,12 +83,20 @@ public class Constants {
 	public final static int CLAW_CLOSE_ANGLE = 75;
 	public final static int CLAW_OPEN_ANGLE = 60;
 
-
 	// searching
-	public final static int SEARCH_DISTANCE_THRESHOLD = 200;
+	public final static int SEARCH_DISTANCE_THRESHOLD = 240;
 	public final static int STARTING_SCANNING_ANGLE = 30;
 	public final static int DELAY_MS = 500;
 	public final static int DISTANCE_DIFFERENCE = 5;
+	public final static int DISTANCE_FROM_CORNER = 5;
+
+	// block placing
+	public final static double DELTA_X = TILE_LENGTH/2;
+	public final static double DELTA_Y = TILE_LENGTH/2;
+	
+	// go back to start
+	public final static double DISTANCE_IN_CORNER = 15;
+
 
 	public final static String SERVER_IP = "192.168.2.3";
 	public final static int TEAM_NUMBER = 17;

@@ -9,6 +9,7 @@
 
 package algorithm;
 
+import component.ActionController;
 import component.Constants;
 
 
@@ -29,7 +30,8 @@ public class ClawController {
 	 */
 	public void pickUpBlock()
 	{
-		isBlockGrabbed = true;
+		ActionController.stopMotors();
+		ActionController.goForward(-5, Constants.FORWARD_SPEED);
 		// open claw
 		release();
 		// put claw down
@@ -38,6 +40,7 @@ public class ClawController {
 		grab();
 		// lift block up
 		lift(-Constants.CLAW_LIFT_FULL);
+		this.setBlockGrabbed(true);
 	}
 	
 	/**
@@ -46,7 +49,6 @@ public class ClawController {
 	 */
 	public void placeBlock(boolean stackBlock)
 	{
-		isBlockGrabbed = false;
 		if (stackBlock) {
 			lift(Constants.CLAW_LIFT_TWO_BLOCK);
 			release();
@@ -56,6 +58,7 @@ public class ClawController {
 			release();
 			lift(Constants.CLAW_LIFT_ONE_BLOCK - Constants.CLAW_LIFT_FULL);
 		}
+		this.setBlockGrabbed(false);
 	}
 	
 	/**
