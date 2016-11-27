@@ -115,7 +115,7 @@ public class Searcher{
 			// start rotating counter clockwise
 			ActionController.setSpeeds(-Constants.ROTATION_SPEED, Constants.ROTATION_SPEED, true);
 
-			double distance = ActionController.frontUsPoller.getClippedData(255);
+			double distance = ActionController.usPoller.getClippedData(Constants.frontUsSensor, 255);
 			Point blockPosition = ActionController.calculatePosition(ActionController.odometer.getPosition(), distance);
 
 			// if the distance is less than the distance the sensor can see and the block is not out of bounds (a wall)
@@ -158,10 +158,10 @@ public class Searcher{
 		// keep checking if there is a block ahead
 		while (true) {
 			// when there is a block ahead break out of the loop
-			if (ActionController.frontUsPoller.isBlock()) {
+			if (ActionController.usPoller.isFrontBlock()) {
 				ActionController.stopMotors();
 				break;
-			} else if (ActionController.frontUsPoller.getClippedData(255) < Constants.SEARCH_DISTANCE_THRESHOLD ) {
+			} else if (ActionController.usPoller.getClippedData(Constants.frontUsSensor, 255) < Constants.SEARCH_DISTANCE_THRESHOLD ) {
 				// go forward towards block
 				ActionController.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED, true);
 			} else {
@@ -209,6 +209,7 @@ public class Searcher{
 			// TODO use zone avoiding algorithm (wavefront ect) when traveling to the corner
 			// go back to the corner
 			ActionController.navigator.travelTo(cornerX, cornerY);
+			ActionController.navigator.turnTo(angleOfBlock);
 		} else {
 			// TODO use zone avoiding algorithm (wavefront ect) when traveling to the corner
 			// go back to the corner
@@ -222,12 +223,12 @@ public class Searcher{
 				// start rotating counter clockwise
 				ActionController.setSpeeds(-Constants.ROTATION_SPEED, Constants.ROTATION_SPEED, true);
 
-				double distance1 = ActionController.frontUsPoller.getClippedData(255);
+				double distance1 = ActionController.usPoller.getClippedData(Constants.frontUsSensor, 255);
 
 				// delay for a bit
 				Delay.msDelay(Constants.DELAY_MS);
 
-				double distance2 = ActionController.frontUsPoller.getClippedData(255);
+				double distance2 = ActionController.usPoller.getClippedData(Constants.frontUsSensor, 255);
 
 				// check if the scan has passed the obstacle
 				if ((distance2 - distance1) > Constants.DISTANCE_DIFFERENCE) {

@@ -13,6 +13,7 @@ package component;
 
 import lejos.hardware.sensor.SensorModes;
 import lejos.hardware.sensor.EV3ColorSensor;
+import lejos.robotics.Color;
 import lejos.robotics.SampleProvider;
 import lejos.utility.Timer;
 import lejos.utility.TimerListener;
@@ -35,25 +36,37 @@ public class LightPoller implements TimerListener{
 	/**
 	 * Class Constructor
 	 * 
-	 * @since 0.1.0
+	 * @since 0.1.1
 	 */
 	public LightPoller(SensorModes lightSensor, SensorModes colorSensor, int INTERVAL, boolean autostart)
 	{
 		//TODO Modify constructor parameters. Create appropriate fields. Assign params to fields
 		
 		this.lightSensor = lightSensor;
+		
 		this.lightSampler = this.lightSensor.getMode("Red");
 		this.lightSensor.setCurrentMode("Red");
 		this.lightData = new float[lightSampler.sampleSize()];
+		EV3ColorSensor temp = new EV3ColorSensor(Constants.lightPort);
+		temp.setFloodlight(true);
+		temp.setFloodlight(Color.RED);
+		this.lightSensor = temp;
 		
 		this.colorSensor = colorSensor;
 		this.colorSampler = this.colorSensor.getMode("RGB");	
 		this.colorData = new float[colorSampler.sampleSize()];
 		
 		lightSampler.fetchSample(lightData, 0);
-		ambientLight = lightData[0];
+		
+		//calibrate ambient light
+		for (int i = 0; i < 10; ++i)
+		{ambientLight += lightData[0]; }
+		
+		ambientLight = ambientLight / 10;
+
 		
 		this.medianFilter = new MedianFilter(lightSampler, 5);
+		
 		
 		if (autostart) {
 			// if the timeout interval is given as <= 0, default to 20ms timeout 
@@ -139,6 +152,10 @@ public class LightPoller implements TimerListener{
 	}
 
 	@Override
+	/**
+	 * Constantly checks if the light sensor detects a line and the 
+	 * color sensor detects a blue block
+	 */
 	public void timedOut() {
 		//TODO Implement Filters
 		if(Math.abs(ambientLight - getLightData()) >= Constants.LINE_DETECT_DIFF)

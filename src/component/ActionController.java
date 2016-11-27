@@ -41,8 +41,7 @@ public class ActionController implements TimerListener {
 	//Instantiate more objects
 	public static Odometer odometer;
 	public static Navigator navigator;
-	public static USPoller frontUsPoller;
-	public static USPoller sideUSPoller;
+	public static USPoller usPoller;
 	public static LightPoller lightPoller;
 	public static ClawController claw;
 	public static Searcher searcher;
@@ -54,23 +53,25 @@ public class ActionController implements TimerListener {
 	int towerHeight;
 
 	private Timer acTimer;
-
+	private double movementCounter = 0; // hold how many incremental pieces have been covered
+	
 	//Create competition variables
 	static int SC, ROLE, LRZx, LRZy, URZx, URZy, LGZx, LGZy, UGZx, UGZy;
-
+	
+	/**
+	 * Class constructor that does localization and sets up the thread loop
+	 * @param INTERVAL the refresh rate of the Timer
+	 * @param autostart the flag that start the Timer on startup or not
+	 */
 	public ActionController(int INTERVAL, boolean autostart)
 	{
 		// set wifi info for testing only
 		setTestWifiInfo();
-
-		//		//Wifi "supposedly works (router is bad and it should feel bad)
-		//		setWifiInfo();
-
+		//setWifiInfo();
+		
 		odometer = new Odometer(30, true, 0, 0, 90);	
 
-		frontUsPoller = new USPoller(Constants.frontUsSensor, /* sideUsSensor, */ Constants.DEFAULT_TIMEOUT_PERIOD, true);
-
-		sideUSPoller = new USPoller(Constants.sideUsSensor, Constants.DEFAULT_TIMEOUT_PERIOD, true);
+		usPoller = new USPoller(Constants.frontUsSensor, Constants.sideUsSensor, Constants.DEFAULT_TIMEOUT_PERIOD, true);
 
 		LCDInfo lcd = new LCDInfo();
 
@@ -172,15 +173,6 @@ public class ActionController implements TimerListener {
 	 * @param lSpd	the speed of the left motor
 	 * @param rSpd	the speed of the right motor
 	 */
-
-	/*PROBLEM: if set speeds causes motors to actually move, the function gives user less control.
-	 * This results in unnecessary movement that will interfere with methods in Navigation
-	 * The robot will start rotating before actual scaled rotation in passed.
-	 * Make a go backward method that uses distance.
-	 * Make a generalized go forward/backward that doesnt take in any distances
-	 * Just make a general setSpeeds that doesn't take make the bot move immediately
-	 */
-
 	public static void setSpeeds(int lSpd, int rSpd, boolean move) {
 
 		Constants.leftMotor.setSpeed(Math.abs(lSpd));
@@ -441,6 +433,10 @@ public class ActionController implements TimerListener {
 
 	/**
 	 * Given the lower left and upper right corners of a zone
+	 * @param lowerLeftX
+	 * @param lowerLeftY
+	 * @param upperRightX
+	 * @param upperRightY
 	 * @return an array of points of all the corners of the zone
 	 */
 	public Point[] getZoneCorners(int lowerLeftX, int lowerLeftY, int upperRightX, int upperRightY) {
@@ -487,42 +483,90 @@ public class ActionController implements TimerListener {
 		}
 	}
 
-
 	@Override
+	/**
+	 * Main routine of robot
+	 */
 	public void timedOut() {
 
-		//		//Navigation mode
-		//		if(!lightPoller.isLine())
-		//		{
-		//Block detected mode
-		if(frontUsPoller.isBlock())
-		{
-			if(lightPoller.isBlue())
-			{
-				//Claw pickup routine
-				claw.pickUpBlock();
-			}
-			else
-			{
-				//Obstacle avoidance
-			}
-		}
-		//Navigation mode
-		//			else
-		//			{
-		////				navigator.travelTo(LGZx, LGZy); //Goes to greenzone
-		//			}
-		//		}
-		//		else
-		//		{
-		//			//Odometry correction mode
-		//		}
-
-		else {
-
-
-		}
-
+//		//Time is still remaining, do routine
+//		if(time still remaining)
+//		{
+//			//Travel to not done, keep going to POI
+//			if(navigation not done)
+//			{
+//				//Object in front detected
+//				if(usPoller.isFrontBlock())
+//				{
+//					setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED, true); //Get closer slower to detect color better
+//					
+//					//Block is blue, pick it up
+//					if(lightPoller.isBlue())
+//					{
+//						claw.pickUpBlock();
+//					}
+//					
+//					//Obstacle avoidance
+//					else
+//					{
+//						
+//					}
+//				}
+//				
+//				//Keep navigating to POI
+//				else
+//				{
+//					
+//				}
+//			}
+//			
+//			//Travel done, either search or place block
+//			else
+//			{
+//				//Claw has a block already, place block and continue (might need to retravel to POI)
+//				if(claw.isBlockGrabbed())
+//				{
+//					//Detected an existing block where the block is supposed to be placed, stack
+//					if(usPoller.isFrontBlock() && lightPoller.isBlue())
+//					{
+//						claw.placeBlock(true);
+//					}
+//					//No block where the block is supposed to be placed, place block on ground
+//					else
+//					{
+//						claw.placeBlock(false);
+//					}
+//				}
+//				//Do searching algorithm
+//				else(search)
+//				{
+//					
+//				}
+//			}
+//		}
+//		
+//		//Round almost over, stop everything and go to start
+//		else
+//		{
+//			//Avoid any block
+//			if(usPoller.isFrontBlock())
+//			{
+//				
+//			}
+//			//Move to starting position
+//			else
+//			{
+//				goToStart();
+//			}
+//			
+//		}
 
 	}
+	// Navigation complete, start searching
+	// Start 360 scan
+	// if 360 scan hasnt been completed
+	// 		if object detected and still in range activate motors and restart timed
+	// 		out
+	// 		else keep turning until it hits 360 deg
+	// else go to second corner
 }

@@ -16,28 +16,11 @@ import component.LightPoller;
 import component.Odometer;
 import component.Constants;
 import lejos.hardware.Sound;
+import lejos.hardware.sensor.EV3ColorSensor;
+import lejos.robotics.Color;
 import lejos.utility.Delay;
 
 public class LightLocalizer {
-	//for the constructor
-
-	
-	/**
-	 * Class constructor specifying the different parameters this class
-	 * needs to works
-	 *
-	 * @param odometer the Odometer object to use
-	 * @param navigation the Navigation object to use
-	 * @param colorSensor the EV3UltrasonicSensor to use
-	 * @param leftMotor the left motor of the robot
-	 * @param rightMotor the right motor of the robot
-	 *
-	 * @see Odometer
-	 * @see Navigator
-	 */
-	public LightLocalizer() {
-		
-	}
 	
 	/**
 	 * Localizes the robot when it gets to the assumed (0 , 0) coordinate
@@ -101,8 +84,6 @@ public class LightLocalizer {
 	            Delay.msDelay(2000);
 				
 			}
-			
-			
 		
 		}
 

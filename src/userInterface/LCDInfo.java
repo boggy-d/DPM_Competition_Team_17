@@ -15,13 +15,14 @@ import lejos.hardware.lcd.TextLCD;
 import lejos.utility.Timer;
 import lejos.utility.TimerListener;
 import component.ActionController;
+import component.Constants;
 import component.Odometer;
 
 
 
 public class LCDInfo implements TimerListener{
 	
-	public static final int LCD_REFRESH = 100;
+	
 	private Timer lcdTimer;
 	private TextLCD LCD = LocalEV3.get().getTextLCD();;
 
@@ -29,7 +30,7 @@ public class LCDInfo implements TimerListener{
 	private double [] pos;
 	
 	public LCDInfo() {
-		this.lcdTimer = new Timer(LCD_REFRESH, this);
+		this.lcdTimer = new Timer(Constants.LCD_REFRESH, this);
 		
 		// initialise the arrays for displaying data
 		pos = new double [3];
@@ -57,10 +58,13 @@ public class LCDInfo implements TimerListener{
 		LCD.drawInt((int)(pos[0]), 3, 0);
 		LCD.drawInt((int)(pos[1]), 3, 1);
 		LCD.drawInt((int)pos[2], 3, 2);
-		LCD.drawInt((int)ActionController.frontUsPoller.getClippedData(255), 3, 3);
+		LCD.drawInt((int)ActionController.usPoller.getClippedData(Constants.frontUsSensor, 255), 3, 3);
 		
 	}
 
+	/**
+	 * Constantly updates the display
+	 */
 	public void timedOut() { 
 		ActionController.odometer.getPosition(pos);
 		printDisplay();

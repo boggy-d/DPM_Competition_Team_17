@@ -105,6 +105,9 @@ public class Odometer implements TimerListener {
 	}
 	
 	@Override 
+	/**
+	 * Updates position and angle
+	 */
 	public void timedOut() {
 		this.getDisplacementAndHeading(dDH);
 		dDH[0] -= oldDH[0];
