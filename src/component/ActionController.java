@@ -400,7 +400,7 @@ public class ActionController implements TimerListener {
 	}
 
 	/**
-	 * @param position, the Point of the coordinates of a position
+	 * @param position the Point of the coordinates of a position you want to check
 	 * @return true if it is in the arena, not in the opponents zone, and not in the corners, false if it is out of bounds
 	 */
 	public static boolean inBounds(Point position) {

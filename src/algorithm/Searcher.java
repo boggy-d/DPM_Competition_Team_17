@@ -120,9 +120,10 @@ public class Searcher{
 
 			// if the distance is less than the distance the sensor can see and the block is not out of bounds (a wall)
 			if (distance < Constants.SEARCH_DISTANCE_THRESHOLD & ActionController.inBounds(blockPosition)) {
-				// test this delay to see what is a good time
-				// delay to make it face the block, not just the edge
-				Delay.msDelay(500);
+				
+//				// test this delay to see what is a good time
+//				// delay to make it face the block, not just the edge
+//				Delay.msDelay(500);
 
 				// once it sees a block stop
 				ActionController.stopMotors();
@@ -157,6 +158,14 @@ public class Searcher{
 			if (ActionController.frontUsPoller.isBlock()) {
 				ActionController.stopMotors();
 				break;
+			} else if (ActionController.frontUsPoller.getClippedData(255) < Constants.SEARCH_DISTANCE_THRESHOLD ) {
+				// go forward towards block
+				ActionController.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED, true);
+			} else {
+				// keep rotating counter clockwise towards the block
+				ActionController.setSpeeds(-Constants.ROTATION_SPEED, Constants.ROTATION_SPEED, true);
+				// delay to make it face the block, not just the edge
+				Delay.msDelay(200);
 			}
 		}
 
