@@ -401,14 +401,41 @@ public class ActionController implements TimerListener {
 
 	/**
 	 * @param position, the Point of the coordinates of a position
-	 * @return true if it is in the arena and not in the opponents zone, false if it is outside
+	 * @return true if it is in the arena, not in the opponents zone, and not in the corners, false if it is out of bounds
 	 */
 	public static boolean inBounds(Point position) {
+		// check that is is within the x and y coordinates of the arena
 		if (position.x < -Constants.TILE_LENGTH || position.x > convertTilesToCm(11) 
-				|| position.y < -Constants.TILE_LENGTH || position.y > convertTilesToCm(11)
-				|| (position.x > restrictedZone[0].x && position.x < restrictedZone[1].x) 
+				|| position.y < -Constants.TILE_LENGTH || position.y > convertTilesToCm(11)) {
+			return false;
+		}
+		
+		// check if it is not within the other team's zone
+		if ((position.x > restrictedZone[0].x && position.x < restrictedZone[1].x) 
 				|| (position.y > restrictedZone[0].y && position.y < restrictedZone[2].y)) {
 			return false;
+		}
+		
+		// check that it is not in corner 1
+		if (position.x < -Constants.TILE_LENGTH || position.y < 0) {
+			return false;
+		}
+		
+		// check that it is not in corner 2
+		if (position.x > ActionController.convertTilesToCm(10) || position.y < 0) {
+			return false;
+		}
+		
+		// check that it is not in corner 3
+		if (position.x > ActionController.convertTilesToCm(10) || position.y > ActionController.convertTilesToCm(10)) {
+			return false;
+		}
+		
+		// check that it is not in corner 4
+		if (position.x < -Constants.TILE_LENGTH || position.y > ActionController.convertTilesToCm(10)) {
+			return false;
+			
+		// if it is not in any of the restricted zones return true
 		} else {
 			return true;
 		}
