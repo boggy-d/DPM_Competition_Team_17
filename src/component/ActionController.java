@@ -491,37 +491,79 @@ public class ActionController implements TimerListener {
 	 */
 	public void timedOut() {
 
-		// Objected is detected
-		if (usPoller.isFrontBlock()) {
-			ActionController.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED, true);
-
-			// Block is blue
-			if (lightPoller.isBlue() && !claw.isBlockGrabbed()) {
-				// Claw pickup routine
-				claw.pickUpBlock();
-			}
-
-			else if (!claw.isBlockGrabbed()) {
-				claw.placeBlock(true);
-			}
-
-			// Block is obstacle or block is already captured
-			else {
-				// Obstacle avoidance
-			}
-		}
-
-		// Navigate
-		else {
-			if(movementCounter != Constants.MOVEMENT_PARTITIONS)
+		//Time is still remaining, do routine
+		if(time still remaining)
+		{
+			//Travel to not done, keep going to POI
+			if(navigation not done)
 			{
-				Constants.leftMotor.rotate((int) navigator.dR, true);
-				Constants.rightMotor.rotate((int) navigator.dR, false);
+				//Object in front detected
+				if(usPoller.isFrontBlock())
+				{
+					setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED, true); //Get closer slower to detect color better
+					
+					//Block is blue, pick it up
+					if(lightPoller.isBlue())
+					{
+						claw.pickUpBlock();
+					}
+					
+					//Obstacle avoidance
+					else
+					{
+						
+					}
+				}
+				
+				//Keep navigating to POI
+				else
+				{
+					
+				}
+			}
+			
+			//Travel done, either search or place block
+			else
+			{
+				//Claw has a block already, place block and continue (might need to retravel to POI)
+				if(claw.isBlockGrabbed())
+				{
+					//Detected an existing block where the block is supposed to be placed, stack
+					if(usPoller.isFrontBlock() && lightPoller.isBlue())
+					{
+						claw.placeBlock(true);
+					}
+					//No block where the block is supposed to be placed, place block on ground
+					else
+					{
+						claw.placeBlock(false);
+					}
+				}
+				//Do searching algorithm
+				else(search)
+				{
+					
+				}
 			}
 		}
+		
+		//Round almost over, stop everything and go to start
+		else
+		{
+			//Avoid any block
+			if(usPoller.isFrontBlock())
+			{
+				
+			}
+			//Move to starting position
+			else
+			{
+				goToStart();
+			}
+			
+		}
+
 	}
-
-
 	// Navigation complete, start searching
 	// Start 360 scan
 	// if 360 scan hasnt been completed
