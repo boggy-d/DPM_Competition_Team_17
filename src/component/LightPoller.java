@@ -39,7 +39,7 @@ public class LightPoller implements TimerListener{
 	 */
 	public LightPoller(SensorModes lightSensor, SensorModes colorSensor, int INTERVAL, boolean autostart)
 	{
-		//TODO Modify constructor parameters. Create appropriate fields. Assigne params to fields
+		//TODO Modify constructor parameters. Create appropriate fields. Assign params to fields
 		
 		this.lightSensor = lightSensor;
 		this.lightSampler = this.lightSensor.getMode("Red");

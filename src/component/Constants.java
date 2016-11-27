@@ -77,7 +77,6 @@ public class Constants {
 	public final static int CLAW_CLOSE_ANGLE = 75;
 	public final static int CLAW_OPEN_ANGLE = 60;
 
-
 	// searching
 	public final static int SEARCH_DISTANCE_THRESHOLD = 240;
 	public final static int STARTING_SCANNING_ANGLE = 30;
@@ -88,6 +87,10 @@ public class Constants {
 	// block placing
 	public final static double DELTA_X = TILE_LENGTH/2;
 	public final static double DELTA_Y = TILE_LENGTH/2;
+	
+	// go back to start
+	public final static double DISTANCE_IN_CORNER = 15;
+
 
 	public final static String SERVER_IP = "192.168.2.3";
 	public final static int TEAM_NUMBER = 17;

@@ -473,6 +473,20 @@ public class ActionController implements TimerListener {
 	 */
 	public void goToStart() {
 		//TODO Write algorithm to go back to starting position while avoiding blocks
+		
+		if (SC == 1) {
+			// Go back to bottom left corner
+			navigator.travelTo(-Constants.DISTANCE_IN_CORNER, -Constants.DISTANCE_IN_CORNER);
+		} else if (SC == 2) {
+			// Go back to bottom right corner
+			navigator.travelTo(convertTilesToCm(10) + Constants.DISTANCE_IN_CORNER, -Constants.DISTANCE_IN_CORNER);
+		} else if (SC == 3) {	
+			// Go back to upper right corner
+			navigator.travelTo(convertTilesToCm(10) + Constants.DISTANCE_IN_CORNER, convertTilesToCm(10) + Constants.DISTANCE_IN_CORNER);
+		} else {
+			// Go back to upper left corner
+			navigator.travelTo(-Constants.DISTANCE_IN_CORNER, convertTilesToCm(10) + Constants.DISTANCE_IN_CORNER);
+		}
 	}
 
 
