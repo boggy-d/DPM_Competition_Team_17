@@ -60,7 +60,7 @@ public class ObstacleAvoider {
 		ActionController.setSpeeds(Constants.ROTATE_SPEED, -Constants.ROTATE_SPEED, true);
 		
 		//rotate clockwise until don't see block
-		while (ActionController.frontUsPoller.getClippedData(Constants.CLIP) < Constants.WALL_DIST) {
+		while (!ActionController.usPoller.isFrontBlock()) {
 			//save the smallest us distance we see
 			
 		}
@@ -70,7 +70,7 @@ public class ObstacleAvoider {
 		ActionController.setSpeeds(-Constants.ROTATE_SPEED, Constants.ROTATE_SPEED, true);
 		
 		//rotate counterclockwise until don't see block
-		while (ActionController.frontUsPoller.getClippedData(Constants.CLIP) < Constants.WALL_DIST) {
+		while (!ActionController.usPoller.isFrontBlock()) {
 			//save the smallest us distance we see
 		
 		}

@@ -3,27 +3,33 @@
  * used to lift and activate the claw
  * 
  * @author Bogdan Dumitru
+ * @author Eva Suska
  * @version 0.1.0
  */
 
 package algorithm;
 
-import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import component.Constants;
 
+
 public class ClawController {
-
 	
+	private boolean isBlockGrabbed;
+	
+	/**
+	 * Class constructor initializing the block grabbed flag
+	 */
 	public ClawController() {
-
+		
+		isBlockGrabbed = false;
 	}
 	
-	//TODO fix constants for the lifting
 	/**
 	 * Picks up a blue foam block
 	 */
 	public void pickUpBlock()
 	{
+		isBlockGrabbed = true;
 		// open claw
 		release();
 		// put claw down
@@ -36,9 +42,11 @@ public class ClawController {
 	
 	/**
 	 * Puts down a blue foam block
+	 * @param stackBlock <code>true</code> if the robot is stacking the second floor, <code>false</code>otherwise
 	 */
 	public void placeBlock(boolean stackBlock)
 	{
+		isBlockGrabbed = false;
 		if (stackBlock) {
 			lift(Constants.CLAW_LIFT_TWO_BLOCK);
 			release();
@@ -48,6 +56,24 @@ public class ClawController {
 			release();
 			lift(Constants.CLAW_LIFT_ONE_BLOCK - Constants.CLAW_LIFT_FULL);
 		}
+	}
+	
+	/**
+	 * Accessor method that returns if the block currently has a block captured or not
+	 * @return <code>true</code> if the claw is holding a block, <code>false</code> otherwise
+	 */
+	public boolean isBlockGrabbed()
+	{
+		return isBlockGrabbed;
+	}
+	
+	/**
+	 * Mutator method that sets the <code>isBlockGrabbed</code> flag
+	 * @param blockGrabbed the new state of the claw (holding a block or not)
+	 */
+	public void setBlockGrabbed(boolean blockGrabbed)
+	{
+		this.isBlockGrabbed = blockGrabbed;
 	}
 	
 	/**

@@ -19,6 +19,7 @@ import algorithm.ClawController;
 import algorithm.LightLocalizer;
 import algorithm.Navigator;
 import algorithm.ObstacleAvoider;
+import algorithm.Searching;
 import algorithm.USLocalizer;
 import lejos.hardware.Button;
 import lejos.hardware.ev3.LocalEV3;
@@ -39,44 +40,30 @@ public class ActionController implements TimerListener {
 	//Instantiate more objects
 	public static Odometer odometer;
 	public static Navigator navigator;
-	public static USPoller frontUsPoller;
-	public static USPoller sideUSPoller;
+	public static USPoller usPoller;
 	public static LightPoller lightPoller;
 	public static ClawController claw;
 
 	private Timer acTimer;
+	private double movementCounter = 0; // hold how many incremental pieces have been covered
 	
 	//Create competition variables
 	static int SC, ROLE, LRZx, LRZy, URZx, URZy, LGZx, LGZy, UGZx, UGZy;
 	
+	/**
+	 * Class constructor that does localization and sets up the thread loop
+	 * @param INTERVAL the refresh rate of the Timer
+	 * @param autostart the flag that start the Timer on startup or not
+	 */
 	public ActionController(int INTERVAL, boolean autostart)
 	{
 		// set wifi info for testing only
 		setTestWifiInfo();
-		
-//		//Wifi "supposedly works (router is bad and it should feel bad)
-//		setWifiInfo();
-		
-		// used to intialize odometer to starting corner
-//		if (SC == 1) {
-//			// Initialize to bottom left corner
-//			odometer = new Odometer(30, true, 0, 0, 90);	
-//		} else if (SC == 2) {
-//			// Initialize to bottom right corner
-//			odometer = new Odometer(30, true, 0, convertTilesToCm(11), 90);	
-//		} else if (SC == 3) {	
-//			// Initialize to upper right corner
-//			odometer = new Odometer(30, true, convertTilesToCm(11), convertTilesToCm(11), 270);	
-//		} else {
-//			// Initialize to upper left corner
-//			odometer = new Odometer(30, true, convertTilesToCm(11), 0, 270);	
-//		}
+		//setWifiInfo();
 		
 		odometer = new Odometer(30, true, 0, 0, 90);	
 
-		frontUsPoller = new USPoller(Constants.frontUsSensor, /* sideUsSensor, */ Constants.DEFAULT_TIMEOUT_PERIOD, true);
-		
-		sideUSPoller = new USPoller(Constants.sideUsSensor, Constants.DEFAULT_TIMEOUT_PERIOD, true);
+		usPoller = new USPoller(Constants.frontUsSensor, Constants.sideUsSensor, Constants.DEFAULT_TIMEOUT_PERIOD, true);
 		
 		LCDInfo lcd = new LCDInfo();
 		
@@ -139,7 +126,8 @@ public class ActionController implements TimerListener {
 		}
 		
 		// search for blocks
-		search(zone);
+		Searching searcher = new Searching(zone);
+		searcher.search();
 		
 		if (autostart) {
 			// if the timeout interval is given as <= 0, default to 20ms timeout 
@@ -176,14 +164,6 @@ public class ActionController implements TimerListener {
 	 * 
 	 * @param lSpd	the speed of the left motor
 	 * @param rSpd	the speed of the right motor
-	 */
-	
-	/*PROBLEM: if set speeds causes motors to actually move, the function gives user less control.
-	 * This results in unnecessary movement that will interfere with methods in Navigation
-	 * The robot will start rotating before actual scaled rotation in passed.
-	 * Make a go backward method that uses distance.
-	 * Make a generalized go forward/backward that doesnt take in any distances
-	 * Just make a general setSpeeds that doesn't take make the bot move immediately
 	 */
 	
 	public static void setSpeeds(int lSpd, int rSpd, boolean move) {
@@ -419,6 +399,10 @@ public class ActionController implements TimerListener {
 	
 	/**
 	 * Given the lower left and upper right corners of a zone
+	 * @param lowerLeftX
+	 * @param lowerLeftY
+	 * @param upperRightX
+	 * @param upperRightY
 	 * @return an array of points of all the corners of the zone
 	 */
 	public Point[] getZoneCorners(int lowerLeftX, int lowerLeftY, int upperRightX, int upperRightY) {
@@ -445,35 +429,13 @@ public class ActionController implements TimerListener {
 	}
 	
 	/**
-	 * Scan for blocks
-	 */
-	public void scanForBlocks(double endingAngle, int cornerX, int cornerY) {		
-		// scan until it reaches ending angle
-		while (odometer.getAng() < endingAngle) {
-			// start rotating counter clockwise
-			ActionController.setSpeeds(-Constants.ROTATION_SPEED, Constants.ROTATION_SPEED, true);
-			
-			double distance = frontUsPoller.getClippedData(255);
-			Point blockPosition = calculatePosition(odometer.getPosition(), distance);
-			
-			// if the distance is less than the distance the sensor can see and the block is not out of bounds (a wall)
-			if (distance < Constants.SEARCH_DISTANCE_THRESHOLD & inBounds(blockPosition)) {
-				// once it sees a block stop
-				ActionController.stopMotors();
-				
-				// is is a block, check what block it is 
-				getBlock(endingAngle, odometer.getAng(), cornerX, cornerY);
-				return;
-			}
-		}
-		// no block found, return 
-		return;
-	}
-	
-	/**
 	 * Approach the block and check if it is a wooden or foam block,
 	 * if it is a wooden block go back and continue scanning for blocks
 	 * if it is a blue block, pick it up and place or stack it
+	 * @param endingAngle
+	 * @param angleOfBlock
+	 * @param cornerX
+	 * @param cornerY
 	 */
 	public void getBlock(double endingAngle, double angleOfBlock, int cornerX, int cornerY) {
 		boolean hasBlock = false;
@@ -484,7 +446,7 @@ public class ActionController implements TimerListener {
 		// keep checking if there is a block ahead
 		while (true) {
 			// when there is a block ahead break out of the loop
-			if (frontUsPoller.isBlock()) {
+			if (usPoller.isFrontBlock()) {
 				break;
 			}
 		}
@@ -514,12 +476,12 @@ public class ActionController implements TimerListener {
 				// start rotating counter clockwise
 				ActionController.setSpeeds(-Constants.ROTATION_SPEED, Constants.ROTATION_SPEED, true);
 				
-				double distance1 = frontUsPoller.getClippedData(255);
+				double distance1 = usPoller.getClippedData(255);
 				
 				// delay for a bit
 		        Delay.msDelay(Constants.DELAY_MS);
 				
-				double distance2 = frontUsPoller.getClippedData(255);
+				double distance2 = usPoller.getClippedData(255);
 				
 				// check if the scan has passed the obstacle
 				if ((distance2 - distance1) > Constants.DISTANCE_DIFFERENCE) {
@@ -539,189 +501,52 @@ public class ActionController implements TimerListener {
 		//TODO Write algorithm to go back to starting position while avoiding blocks
 	}
 	
-	/**
-	 * Search for blocks
-	 */
-	public void search(Point[] corners) {
-	     HashMap<String, HashMap<String, Integer>> cornersAndAngles = new HashMap<String, HashMap<String, Integer>>();
-
-	     HashMap<String, Integer> lowerLeft = new HashMap<String, Integer>();
-	     lowerLeft.put("x", (int)corners[0].x);
-	     lowerLeft.put("y", (int)corners[0].y);
-	     lowerLeft.put("angle", 90 + Constants.STARTING_SCANNING_ANGLE);
-
-	     HashMap<String, Integer> lowerRight = new HashMap<String, Integer>();
-	     lowerRight.put("x", (int)corners[1].x);
-	     lowerRight.put("y", (int)corners[1].y);
-	     lowerRight.put("angle", 180 + Constants.STARTING_SCANNING_ANGLE);
-
-	     HashMap<String, Integer> upperLeft = new HashMap<String, Integer>();
-	     upperLeft.put("x", (int)corners[2].x);
-	     upperLeft.put("y", (int)corners[2].y);
-	     upperLeft.put("angle", Constants.STARTING_SCANNING_ANGLE);
-
-	     HashMap<String, Integer> upperRight = new HashMap<String, Integer>();
-	     upperRight.put("x", (int)corners[3].x);
-	     upperRight.put("y", (int)corners[3].y);
-	     upperRight.put("angle", 270 + Constants.STARTING_SCANNING_ANGLE);
-	     
-	     cornersAndAngles.put("lowerLeft", lowerLeft);
-	     cornersAndAngles.put("lowerRight", lowerRight);
-	     cornersAndAngles.put("upperLeft", upperLeft);
-	     cornersAndAngles.put("upperRight", upperRight);
-	     
-	     // calculate the degrees to scan
-	     double degreesToScan = 270 - (2 * Constants.STARTING_SCANNING_ANGLE);
-
-	     // for each corner of the zone search for blocks
-	     for (HashMap<String, Integer> corner : cornersAndAngles.values()) {
-	    	 // travel to the corner
-	    	 navigator.travelTo(corner.get("x"), corner.get("y"));
-
-	    	 // turn to starting angle of that corner
-	    	 navigator.turnTo(corner.get("angle"));
-	    	 
-	 		Button.waitForAnyPress();
-
-	    	 // get the angle to stop scanning at
-	    	 double endingAngle = corner.get("angle") + degreesToScan;
-	    	 // wrap ending angle to not be over 360 degrees
-	    	 endingAngle = navigator.wrapAngle(endingAngle);
-
-	    	 // start scanning for blocks
-	    	 scanForBlocks(endingAngle, corner.get("x"), corner.get("y"));
-
-	     }
-
-		// once it scanned all the corners
-		// TODO implement secondary searching steps here
-	}
+	
 
 	@Override
+	/**
+	 * Main routine of robot
+	 */
 	public void timedOut() {
-		
-//		//Navigation mode
-//		if(!lightPoller.isLine())
-//		{
-			//Block detected mode
-			if(frontUsPoller.isBlock())
-			{
-				if(lightPoller.isBlue())
-				{
-					//Claw pickup routine
-					claw.pickUpBlock();
-				}
-				else
-				{
-					//Obstacle avoidance
-				}
-			}
-			//Navigation mode
-//			else
-//			{
-////				navigator.travelTo(LGZx, LGZy); //Goes to greenzone
-//			}
-//		}
-//		else
-//		{
-//			//Odometry correction mode
-//		}
 
-			else {
-				
+		// Objected is detected
+		if (usPoller.isFrontBlock()) {
 
-		}
-		
-			
-
-		// TODO EVERYTHING!!!
-	//	setWifiInfo();
-		
-		// just for testing, actually get the values from the wifi
-	//	double greenAreaX = 60;
-	//	double greenAreaY = 60;
-
-		//startOdometer();
-		
-		
-	//	ClawController claw = new ClawController(clawLift, clawClose);
-	//	ObstacleAvoider avoider = new ObstacleAvoider();
-
-		//start USPoller timelistener here?
-		/*		
-		// how to do this constantly? thread?
-		// constantly check if there is a block in front
-		boolean hasBlock = false;
-		if (frontUSPoller.isBlock()) {
-			ActionController.stopMotors();
-			//possibly slow down and approach block
-			
-			if (colorPoller.isBlue()) {
-				// pick up blue block
+			// Block is blue
+			if (lightPoller.isBlue() && !claw.isBlockGrabbed()) {
+				// Claw pickup routine
 				claw.pickUpBlock();
-				hasBlock = true;
-			} else {
-				//avoid obstacle
-				avoider.avoidObstacle();
+				claw.setBlockGrabbed(true);
+			}
+
+			else if (!claw.isBlockGrabbed()) {
+				claw.placeBlock(true);
+				claw.setBlockGrabbed(false);
+			}
+
+			// Block is obstacle or block is already captured
+			else {
+				// Obstacle avoidance
 			}
 		}
-		
-		// travel to middle of green zone
-		navigator.travelTo(greenAreaX, greenAreaY);
 
-		// do a 360 deg scan of the blocks around you
-		double startingAngle = odometer.getAng();
-		
-		// start rotating clockwise
-		ActionController.setSpeeds(Constants.ROTATION_SPEED, -Constants.ROTATION_SPEED, true);
-		
-		// avoid getting into while loop right away
-        Delay.msDelay(1000);
-		
-		while (odometer.getAng() != startingAngle) {
-			// store angles of the blocks in an array
-			// sort blocks by the closest distance to you
+		// Navigate
+		else {
+			if(movementCounter != Constants.MOVEMENT_PARTITIONS)
+			{
+				Constants.leftMotor.rotate((int) navigator.dR, true);
+				Constants.rightMotor.rotate((int) navigator.dR, false);
+			}
 		}
-		// stop motors
-		ActionController.stopMotors();
-		
-		// calculate the position of the blocks from the array of angles and distances
-		// store in array
-		
-		// if you ran into a blue block on the way place it down
-		if (hasBlock) {
-			// TODO block placement algorithm
-			claw.placeBlock(false);
-			hasBlock = false;
-		}
-		
-		// navigate to the closest block
-		// remove that block position from the array
-		
-		// check if blue block or not
-		
-		// if it is a wooden block find the next closest block to you (avoid block if needed)
-		// if there is no block (in the case that the opponent took it) find the next closet block to you and navigate to it
-
-		// if it is a blue block pick it up
-		
-		// navigate back to the zone
-		// place block where you want it
-		// resort the positions of the blocks to the closest to you again
-		// make sure you avoid the areas where the previous blocks were placed in the zone (or just avoid the zone)
-		// navigate to that block and repeat
-		
-		// once you have finished checking all the blocks in the array
-		// move to a distance 2x what the first scan could see from the zone
-		// do a 360 scan and repeat
-		
-		
-		
-		
-		
-		// place block down
-		claw.placeBlock(false);*/
-
-		
 	}
+
+
+	// Navigation complete, start searching
+	// Start 360 scan
+	// if 360 scan hasnt been completed
+	// 		if object detected and still in range activate motors and restart timed
+	// 		out
+	// 		else keep turning until it hits 360 deg
+	// else go to second corner
+
 }

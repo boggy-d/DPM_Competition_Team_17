@@ -1,3 +1,6 @@
+/**
+ * System's constants
+ */
 package component;
 
 import lejos.hardware.ev3.LocalEV3;
@@ -33,6 +36,7 @@ public class Constants {
 	public static final Port colorPort = LocalEV3.get().getPort("S3");
 	public static final SensorModes colorSensor = new EV3ColorSensor(colorPort);
 	
+	public final static int MOVEMENT_PARTITIONS = 0;
 	
 	//motor speeds
 	public final static int FAST_FORWARD_SPEED = 200;
@@ -49,7 +53,7 @@ public class Constants {
 	//us localization
 	public final static int ROTATE_SPEED = 300;
 	public final static int CLIP = 45;
-	public final static int WALL_DIST = 42;
+	public final static int OBSTACLE_DISTANCE_THRESHOLD = 42;
 	public final static int US_MARGIN = 2;
 	
 	//for lightLocalization 
@@ -88,5 +92,7 @@ public class Constants {
 
 	public final static String SERVER_IP = "192.168.2.3";
 	public final static int TEAM_NUMBER = 17;
+	
+	public static final int LCD_REFRESH = 100;
 }
  

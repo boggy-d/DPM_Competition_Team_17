@@ -1,28 +1,35 @@
 package component;
 
+import lejos.hardware.sensor.SensorMode;
 import lejos.hardware.sensor.SensorModes;
 import lejos.robotics.SampleProvider;
 import lejos.utility.Timer;
 import lejos.utility.TimerListener;
 
 public class USPoller implements TimerListener{
-	private SensorModes usSensor;
-	private SampleProvider distanceSampler;
+	private SensorModes frontSensor;
+	private SampleProvider frontSampler;
 	private float[] usData;
 	private Timer usPollerTimer;
-	private boolean isBlock;
+	private boolean isFrontBlock, isSideBlock;
+	private SensorModes sideSensor;
+	private SensorMode sideSampler;
 
-	
 	/**
 	 * Class constructor specifying the USS sample feed and sample
-	 * 
-	 * @param usSensor the USS sample feed
-	 * @param usData   the reading of the USS
+	 * @param frontSensor
+	 * @param sideSensor
+	 * @param INTERVAL
+	 * @param autostart
 	 */
-	public USPoller(SensorModes usSensor, int INTERVAL, boolean autostart){
-		this.usSensor = usSensor;
-		distanceSampler = usSensor.getMode("Distance");
-		usData = new float[distanceSampler.sampleSize()];
+	public USPoller(SensorModes frontSensor, SensorModes sideSensor, int INTERVAL, boolean autostart){
+		this.frontSensor = frontSensor;
+		frontSampler = frontSensor.getMode("Distance");
+		
+		this.sideSensor = sideSensor;
+		sideSampler = sideSensor.getMode("Distance");
+		
+		this.usData = new float[frontSampler.sampleSize()];
 		
 		if (autostart) {
 			// if the timeout interval is given as <= 0, default to 20ms timeout 
@@ -60,7 +67,7 @@ public class USPoller implements TimerListener{
 	 * @param maxValue the cutoff distance
 	 * @return         the distance reported by the USS times a factor (for visibility)
 	 */
-	public float getClippedData(int maxValue){
+	public float getClippedData(SensorModes usSensor, int maxValue){
 		
 		usSensor.fetchSample(usData,0);
 		float distance = usData[0]*100;
@@ -75,8 +82,8 @@ public class USPoller implements TimerListener{
 	 * Returns the distance reported by the USS
 	 * @return	the distance reported by the USS times a factor (for visibility)
 	 */
-	public float getRawData() {
-
+	public float getRawData(SensorModes usSensor) {
+		
 		usSensor.fetchSample(usData, 0);
 		float distance = usData[0]*100;
 			 
@@ -89,27 +96,63 @@ public class USPoller implements TimerListener{
 	 * returns the result
 	 * @return <code>true</code> if the distance is smaller than the threshold, otherwise returns <code>false</code>
 	 */
-	public boolean isBlock()
+	public boolean isFrontBlock()
 	{
 		//TODO Write algorithm for block detection. Implement filters.
 		synchronized(this)
 		{
-			return isBlock;
+			return isFrontBlock;
 		}	
 	}
 	
+	public boolean isSideBlock()
+	{
+		//TODO Write algorithm for block detection. Implement filters.
+		synchronized(this)
+		{
+			return isSideBlock;
+		}	
+	}
+	
+	public double getFrontDistance()
+	{
+		synchronized(this)
+		{
+			return getRawData(frontSensor);
+		}
+	}
+	
+	public double getSideDistance()
+	{
+		synchronized(this)
+		{
+			return getRawData(sideSensor);
+		}
+	}
 
 	@Override
+	/**
+	 * Constantly checks if the front and side USSS detect a block
+	 */
 	public void timedOut() {
 		//TODO Get data. Check thresholds (basically use the above methods)
 		//TODO add constants
-		if(getClippedData(255) < Constants.BLOCK_INFRONT)
+		if(getClippedData(frontSensor,Constants.CLIP) < Constants.OBSTACLE_DISTANCE_THRESHOLD)
 		{
-			isBlock = true;
+			isFrontBlock = true;
 		}
 		else
 		{
-			isBlock = false;
+			isFrontBlock = false;
+		}
+		
+		if(getClippedData(sideSensor, Constants.CLIP) < Constants.OBSTACLE_DISTANCE_THRESHOLD)
+		{
+			isSideBlock = true;
+		}
+		else
+		{
+			isSideBlock = false;
 		}
 	}
 }

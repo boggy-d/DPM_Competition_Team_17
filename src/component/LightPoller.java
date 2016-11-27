@@ -146,6 +146,10 @@ public class LightPoller implements TimerListener{
 	}
 
 	@Override
+	/**
+	 * Constantly checks if the light sensor detects a line and the 
+	 * color sensor detects a blue block
+	 */
 	public void timedOut() {
 		//TODO Implement Filters
 		if(Math.abs(ambientLight - getLightData()) >= Constants.LINE_DETECT_DIFF)

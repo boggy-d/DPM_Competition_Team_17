@@ -3,6 +3,7 @@
  * to correct the Odometer object's values
  * 
  * @author Eric Zimmermann
+ * @author Fiona Hang
  */
 
 package algorithm;
@@ -19,7 +20,12 @@ private boolean update[] = {true, true, false};
 private double norm_x, norm_y;
 private double delta_x, delta_y;
 private Timer ocTimer;
-
+/**
+ * Class contructor creating OdometerCorrection thread
+ * 
+ * @param INTERVAL the refresh time of the Timer
+ * @param autostart the flag that start the Timer on startup or not
+ */
 public OdometerCorrection(int INTERVAL, boolean autostart)
 {
 	if (autostart) {
@@ -30,7 +36,10 @@ public OdometerCorrection(int INTERVAL, boolean autostart)
 		ocTimer = null;
 }
 
-
+/**
+ * Modifies the Odometer based on if the light sensor
+ * sees a line or not
+ */
 public void timedOut(){
 
 		//if line is detected -> correct ---> make entire while an if statement?
@@ -95,6 +104,10 @@ public void timedOut(){
 
 
 // shifts position between wheels to position of color sensor
+/**
+ * Shifts position between wheels to position of color sensor
+ * @param position the position of the wheels
+ */
 public static void transformPosition(double position[]){
 
 	position [0] -= Constants.SENSOR_DISTANCE * Math.cos(Math.toRadians(position[2]));
