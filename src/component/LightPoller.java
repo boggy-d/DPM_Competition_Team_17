@@ -35,7 +35,7 @@ public class LightPoller implements TimerListener{
 	/**
 	 * Class Constructor
 	 * 
-	 * @since 0.1.0
+	 * @since 0.1.1
 	 */
 	public LightPoller(SensorModes lightSensor, SensorModes colorSensor, int INTERVAL, boolean autostart)
 	{
@@ -51,7 +51,13 @@ public class LightPoller implements TimerListener{
 		this.colorData = new float[colorSampler.sampleSize()];
 		
 		lightSampler.fetchSample(lightData, 0);
-		ambientLight = lightData[0];
+		
+		//calibrate ambient light
+		for (int i = 0; i < 10; ++i)
+		{ambientLight += lightData[0]; }
+		
+		ambientLight = ambientLight / 10;
+
 		
 		this.medianFilter = new MedianFilter(lightSampler, 5);
 		
