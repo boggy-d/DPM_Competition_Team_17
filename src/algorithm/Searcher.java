@@ -1,10 +1,7 @@
 /**
- * The Navigation class moves the robot around the
- * competition field, updates the odometer, and checks
- * for obstacles
+ * The Searcher class looks for blocks in the arena, and places them properly in the zone
  * 
- * @author Bogdan Dumitru
- * @author Eric Zimmermann
+ * @author Eva Suska
  * @version 1.0.0
  * @since 0.1.0
  */
