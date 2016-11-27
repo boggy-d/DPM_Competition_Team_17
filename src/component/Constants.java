@@ -22,9 +22,9 @@ public class Constants {
 	public static final Port usPort = LocalEV3.get().getPort("S2");
 	public static final SensorModes frontUsSensor = new EV3UltrasonicSensor(usPort);
 
-//	public static final Port us2Port = LocalEV3.get().getPort("S4");
-//	public static final SensorModes sideUsSensor = new EV3UltrasonicSensor(us2Port);
-//	
+	public static final Port us2Port = LocalEV3.get().getPort("S4");
+	public static final SensorModes sideUsSensor = new EV3UltrasonicSensor(us2Port);
+	
 	public static final Port lightPort = LocalEV3.get().getPort("S1");
 	public static final SensorModes lightSensor = new EV3ColorSensor(lightPort);
 
