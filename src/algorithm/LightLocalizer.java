@@ -56,7 +56,7 @@ public class LightLocalizer {
 		Sound.beep();
 			
 		// move backward until we are in the negative XY quadrant
-		ActionController.goForward((float)(Constants.COLOR_DIST + Constants.BUFFER_DIST), -Constants.FORWARD_SPEED);
+		ActionController.goForward((float)(Constants.COLOR_DIST + Constants.BUFFER_DIST), -Constants.FAST_FORWARD_SPEED);
 		
 		// start rotating clockwise
 		ActionController.setSpeeds(Constants.ROTATION_SPEED, -Constants.ROTATION_SPEED, true);
