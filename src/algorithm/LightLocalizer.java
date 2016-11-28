@@ -35,7 +35,6 @@ public class LightLocalizer {
 		ActionController.navigator.turnTo(45);
 		
 		ActionController.stopMotors();
-		
 		//setting speed and begin to move forward speed
 		ActionController.setSpeeds(Constants.FORWARD_SPEED, Constants.FAST_FORWARD_SPEED, true);
 		

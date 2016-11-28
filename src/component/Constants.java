@@ -53,7 +53,7 @@ public class Constants {
 	//us localization
 	public final static int ROTATE_SPEED = 300;
 	public final static int CLIP = 45;
-	public final static int OBSTACLE_DISTANCE_THRESHOLD = 42;
+	public final static int WALL_DISTANCE_THRESHOLD = 42;
 	public final static int US_MARGIN = 2;
 	
 	//for lightLocalization 

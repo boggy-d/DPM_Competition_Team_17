@@ -10,8 +10,10 @@ package algorithm;
 
 import component.ActionController;
 import component.Constants;
+import lejos.utility.Timer;
+import lejos.utility.TimerListener;
 
-public class ObstacleAvoider {
+public class ObstacleAvoider extends Thread {
 
 	/**
 	 * Checks how long the USS has been detecting values
@@ -99,6 +101,15 @@ public class ObstacleAvoider {
 		
 		//have an angle condition to stop BangBang
 		
-		
+	}
+
+	
+	@Override
+	public void run() {
+		while(true){
+			if (ActionController.usPoller.isFrontBlock()) {
+				avoidObstacle();
+			}
+		}	
 	}
 }

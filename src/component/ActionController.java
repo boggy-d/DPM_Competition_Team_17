@@ -45,6 +45,7 @@ public class ActionController implements TimerListener {
 	public static LightPoller lightPoller;
 	public static ClawController claw;
 	public static Searcher searcher;
+	public static ObstacleAvoider avoider;
 
 	Point[] zone;	
 	static Point[] restrictedZone;	
@@ -80,6 +81,8 @@ public class ActionController implements TimerListener {
 		navigator = new Navigator();
 
 		claw = new ClawController();
+		
+		avoider = new ObstacleAvoider();
 
 		// localize
 		USLocalizer usLocalizer = new USLocalizer();
@@ -468,6 +471,8 @@ public class ActionController implements TimerListener {
 	public void goToStart() {
 		//TODO Write algorithm to go back to starting position while avoiding blocks
 		
+		avoider.start();
+		
 		if (SC == 1) {
 			// Go back to bottom left corner
 			navigator.travelTo(-Constants.DISTANCE_IN_CORNER, -Constants.DISTANCE_IN_CORNER);
@@ -481,6 +486,9 @@ public class ActionController implements TimerListener {
 			// Go back to upper left corner
 			navigator.travelTo(-Constants.DISTANCE_IN_CORNER, convertTilesToCm(10) + Constants.DISTANCE_IN_CORNER);
 		}
+		
+		avoider.stop();
+
 	}
 
 	@Override
