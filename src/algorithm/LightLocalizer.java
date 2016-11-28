@@ -35,9 +35,8 @@ public class LightLocalizer {
 		ActionController.navigator.turnTo(45);
 		
 		ActionController.stopMotors();
-		
 		//setting speed and begin to move forward speed
-		ActionController.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED, true);
+		ActionController.setSpeeds(Constants.FORWARD_SPEED, Constants.FAST_FORWARD_SPEED, true);
 		
 		
 		//TODO Check if we actually need prevLightData
@@ -56,7 +55,7 @@ public class LightLocalizer {
 		Sound.beep();
 			
 		// move backward until we are in the negative XY quadrant
-		ActionController.goForward((float)(Constants.COLOR_DIST + Constants.BUFFER_DIST), -Constants.FORWARD_SPEED);
+		ActionController.goForward((float)(Constants.COLOR_DIST + Constants.BUFFER_DIST), -Constants.FAST_FORWARD_SPEED);
 		
 		// start rotating clockwise
 		ActionController.setSpeeds(Constants.ROTATION_SPEED, -Constants.ROTATION_SPEED, true);
@@ -66,6 +65,8 @@ public class LightLocalizer {
 		
 		//angles = {angleX negative, angleY positive, angleX positive, angleY negative}
 		double[] angles = new double[4] ;
+		boolean isOnLine = false;
+		
 		
 		while (lineCount < 4) {
 			
@@ -73,18 +74,20 @@ public class LightLocalizer {
 			//prevLightData = ActionController.lightPoller.getLightData();
 			
 			// keeps rotating until line is detected
-			if(ActionController.lightPoller.isLine()) {
+			if(ActionController.lightPoller.isLine()) 
+			{ isOnLine = true; }
 				
-				// store angle in array
-				angles[lineCount] = ActionController.odometer.getAng();
-				lineCount++;
-				// play sound to confirm
-				Sound.beep();
-				// avoid counting same line several times
-	            Delay.msDelay(2000);
-				
-			}
-		
+				if (isOnLine) {
+					
+					// store angle in array
+					angles[lineCount] = ActionController.odometer.getAng();
+					lineCount++;
+					// play sound to confirm
+					Sound.beep();
+					// avoid counting same line several times
+	           		 	Delay.msDelay(500);
+				}
+				isOnLine = false;
 		}
 
 		// stop motors

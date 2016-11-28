@@ -22,6 +22,7 @@ import algorithm.ObstacleAvoider;
 import algorithm.Searcher;
 import algorithm.USLocalizer;
 import lejos.hardware.Button;
+import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.Port;
@@ -44,6 +45,7 @@ public class ActionController implements TimerListener {
 	public static LightPoller lightPoller;
 	public static ClawController claw;
 	public static Searcher searcher;
+	public static ObstacleAvoider avoider;
 
 	Point[] zone;	
 	static Point[] restrictedZone;	
@@ -79,10 +81,8 @@ public class ActionController implements TimerListener {
 		navigator = new Navigator();
 
 		claw = new ClawController();
-
-
-		//Tests
-		//		Button.waitForAnyPress();
+		
+		avoider = new ObstacleAvoider();
 
 		// localize
 		USLocalizer usLocalizer = new USLocalizer();
@@ -131,8 +131,11 @@ public class ActionController implements TimerListener {
 
 		searcher = new Searcher(zone, restrictedZone, maxTowerHeight);
 
+		// For testing only
+		Button.waitForAnyPress();
+		
 		// search for blocks
-		searcher.search(zone);
+		searcher.start();
 
 		// once it is done searching go back to home
 		goToStart();
@@ -230,52 +233,46 @@ public class ActionController implements TimerListener {
 	 * sets "fake" wifi info
 	 */
 	public void setTestWifiInfo() {
+//		// TEST CASE 1
+//		// set zones
+//		LGZy = 8;
+//		LGZx = 0;
+//
+//		UGZy = 9;
+//		UGZx = 2;
+//
+//		LRZy = 6;
+//		LRZx = 2;
+//
+//		URZy = 8;
+//		URZx = 3;
+//
+//		// set starting corner
+//		SC = 4;
+//
+//		// tower builder
+//		ROLE = 0;
+		
+		// TEST CASE 2
 		// set zones
-		LGZy = 9;
-		LGZx = 2;
-
-		UGZy = 10;
-		UGZx = 3;
-
+		LGZy = 1;
+		LGZx = 1;
+		
+		UGZy = 2;
+		UGZx = 2;
+		
 		LRZy = 6;
 		LRZx = 2;
-
+		
 		URZy = 8;
 		URZx = 3;
-
+		
 		// set starting corner
-		SC = 4;
-
-		// set role
-		//		// garbage collector
-		//		ROLE = 1;
+		SC = 1;
 
 		// tower builder
 		ROLE = 0;
-
-		//		// set zones
-		//		LGZy = 2;
-		//		LGZx = 2;
-		//		
-		//		UGZy = 3;
-		//		UGZx = 3;
-		//		
-		//		LRZy = 6;
-		//		LRZx = 2;
-		//		
-		//		URZy = 8;
-		//		URZx = 3;
-		//		
-		//		// set starting corner
-		//		SC = 1;
-		//			
-		//		// set role
-		////		// garbage collector
-		////		ROLE = 1;
-		//
-		//		// tower builder
-		//		ROLE = 0;
-		//		
+				
 	}
 
 
@@ -429,6 +426,10 @@ public class ActionController implements TimerListener {
 			
 		// if it is not in any of the restricted zones return true
 		} else {
+			// For testing only
+			Sound.beep();
+			Sound.beep();
+			
 			return true;
 		}
 	}
@@ -470,6 +471,8 @@ public class ActionController implements TimerListener {
 	public void goToStart() {
 		//TODO Write algorithm to go back to starting position while avoiding blocks
 		
+		avoider.start();
+		
 		if (SC == 1) {
 			// Go back to bottom left corner
 			navigator.travelTo(-Constants.DISTANCE_IN_CORNER, -Constants.DISTANCE_IN_CORNER);
@@ -483,6 +486,9 @@ public class ActionController implements TimerListener {
 			// Go back to upper left corner
 			navigator.travelTo(-Constants.DISTANCE_IN_CORNER, convertTilesToCm(10) + Constants.DISTANCE_IN_CORNER);
 		}
+		
+		avoider.stop();
+
 	}
 
 	@Override
@@ -491,77 +497,77 @@ public class ActionController implements TimerListener {
 	 */
 	public void timedOut() {
 
-		//Time is still remaining, do routine
-		if(time still remaining)
-		{
-			//Travel to not done, keep going to POI
-			if(navigation not done)
-			{
-				//Object in front detected
-				if(usPoller.isFrontBlock())
-				{
-					setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED, true); //Get closer slower to detect color better
-					
-					//Block is blue, pick it up
-					if(lightPoller.isBlue())
-					{
-						claw.pickUpBlock();
-					}
-					
-					//Obstacle avoidance
-					else
-					{
-						
-					}
-				}
-				
-				//Keep navigating to POI
-				else
-				{
-					
-				}
-			}
-			
-			//Travel done, either search or place block
-			else
-			{
-				//Claw has a block already, place block and continue (might need to retravel to POI)
-				if(claw.isBlockGrabbed())
-				{
-					//Detected an existing block where the block is supposed to be placed, stack
-					if(usPoller.isFrontBlock() && lightPoller.isBlue())
-					{
-						claw.placeBlock(true);
-					}
-					//No block where the block is supposed to be placed, place block on ground
-					else
-					{
-						claw.placeBlock(false);
-					}
-				}
-				//Do searching algorithm
-				else(search)
-				{
-					
-				}
-			}
-		}
-		
-		//Round almost over, stop everything and go to start
-		else
-		{
-			//Avoid any block
-			if(usPoller.isFrontBlock())
-			{
-				
-			}
-			//Move to starting position
-			else
-			{
-				goToStart();
-			}
-			
-		}
+//		//Time is still remaining, do routine
+//		if(time still remaining)
+//		{
+//			//Travel to not done, keep going to POI
+//			if(navigation not done)
+//			{
+//				//Object in front detected
+//				if(usPoller.isFrontBlock())
+//				{
+//					setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED, true); //Get closer slower to detect color better
+//					
+//					//Block is blue, pick it up
+//					if(lightPoller.isBlue())
+//					{
+//						claw.pickUpBlock();
+//					}
+//					
+//					//Obstacle avoidance
+//					else
+//					{
+//						
+//					}
+//				}
+//				
+//				//Keep navigating to POI
+//				else
+//				{
+//					
+//				}
+//			}
+//			
+//			//Travel done, either search or place block
+//			else
+//			{
+//				//Claw has a block already, place block and continue (might need to retravel to POI)
+//				if(claw.isBlockGrabbed())
+//				{
+//					//Detected an existing block where the block is supposed to be placed, stack
+//					if(usPoller.isFrontBlock() && lightPoller.isBlue())
+//					{
+//						claw.placeBlock(true);
+//					}
+//					//No block where the block is supposed to be placed, place block on ground
+//					else
+//					{
+//						claw.placeBlock(false);
+//					}
+//				}
+//				//Do searching algorithm
+//				else(search)
+//				{
+//					
+//				}
+//			}
+//		}
+//		
+//		//Round almost over, stop everything and go to start
+//		else
+//		{
+//			//Avoid any block
+//			if(usPoller.isFrontBlock())
+//			{
+//				
+//			}
+//			//Move to starting position
+//			else
+//			{
+//				goToStart();
+//			}
+//			
+//		}
 
 	}
 	// Navigation complete, start searching

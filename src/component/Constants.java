@@ -53,7 +53,7 @@ public class Constants {
 	//us localization
 	public final static int ROTATE_SPEED = 300;
 	public final static int CLIP = 45;
-	public final static int OBSTACLE_DISTANCE_THRESHOLD = 42;
+	public final static int WALL_DISTANCE_THRESHOLD = 42;
 	public final static int US_MARGIN = 2;
 	
 	//for lightLocalization 
@@ -84,11 +84,11 @@ public class Constants {
 	public final static int CLAW_OPEN_ANGLE = 60;
 
 	// searching
-	public final static int SEARCH_DISTANCE_THRESHOLD = 240;
+	public final static int SEARCH_DISTANCE_THRESHOLD = 80;
 	public final static int STARTING_SCANNING_ANGLE = 30;
 	public final static int DELAY_MS = 500;
 	public final static int DISTANCE_DIFFERENCE = 5;
-	public final static int DISTANCE_FROM_CORNER = 5;
+	public final static int DISTANCE_FROM_CORNER = 10;
 
 	// block placing
 	public final static double DELTA_X = TILE_LENGTH/2;
