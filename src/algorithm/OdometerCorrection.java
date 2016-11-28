@@ -93,44 +93,42 @@ public void timedOut(){
 //			System.out.println("delta x*: "+ delta_x);
 //			System.out.println("delta y*: "+ delta_y);
 //			
+			if(Math.abs(delta_y - delta_x) > Constans.CORNER_MARGIN){
 
-			//closest to horizontal gridline therefore y must be corrected 
-			//add in additional and statement with a margin to reduce errors (test)
-			if(delta_y < delta_x){
+				//closest to horizontal gridline therefore y must be corrected 
+				//add in additional and statement with a margin to reduce errors (test)
+				if(delta_y < delta_x){
 				
-				if(norm_y + delta_y <= (int)norm_y + 1) // implies norm_y < position of horizontal gridline
-					{ position[1] = ((int)norm_y + 1) * Constants.TILE_LENGTH; }
+					if(norm_y + delta_y <= (int)norm_y + 1) // implies norm_y < position of horizontal gridline
+						{ position[1] = ((int)norm_y + 1) * Constants.TILE_LENGTH; }
 				
-				else //implies norm_y > position of horizontal gridline
-					{ position[1] = ((int)norm_y) * Constants.TILE_LENGTH; }
-			}
+					else //implies norm_y > position of horizontal gridline
+						{ position[1] = ((int)norm_y) * Constants.TILE_LENGTH; }
+				}
 
 			//closest to vertical gridline therefore x must be corrected
-			else{
+				else{
 
-				if(norm_x + delta_x <= (int)norm_x + 1) // implies norm_x < position of vertical gridline
-					{ position[0] = ((int)norm_x + 1) * Constants.TILE_LENGTH; }
+					if(norm_x + delta_x <= (int)norm_x + 1) // implies norm_x < position of vertical gridline
+						{ position[0] = ((int)norm_x + 1) * Constants.TILE_LENGTH; }
 				
-				else //implies norm_x > position of vertical gridline
-					{ position[0] = ((int)norm_x) * Constants.TILE_LENGTH; }
+					else //implies norm_x > position of vertical gridline
+						{ position[0] = ((int)norm_x) * Constants.TILE_LENGTH; }
+				}
+			
+				// may break down near gridline intersections
 
+				//inverse transorm to scale correction from lightsensor position back to wheel contering
+				inverseTransfrom(position);
+			
+//				System.out.println("position 0**: "+position[0]);
+//				System.out.println("position 1**: "+position[1]);
+//				System.out.println("position 2**: "+position[2]);
+
+				//update odometer
+				ActionController.odometer.setPosition(position, update);	
 			}
-			
-			// may break down near gridline intersections
-
-			//inverse transorm to scale correction from lightsensor position back to wheel contering
-			inverseTransfrom(position);
-			
-//			System.out.println("position 0**: "+position[0]);
-//			System.out.println("position 1**: "+position[1]);
-//			System.out.println("position 2**: "+position[2]);
-
-		
-
-			//update odometer
-			ActionController.odometer.setPosition(position, update);	
 		}
-	
 }
 
 
