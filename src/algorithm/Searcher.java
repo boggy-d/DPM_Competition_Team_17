@@ -119,7 +119,7 @@ public class Searcher extends Thread {
 			// start rotating counter clockwise
 			ActionController.setSpeeds(-Constants.ROTATION_SPEED, Constants.ROTATION_SPEED, true);
 
-			double distance = ActionController.usPoller.getClippedData(Constants.frontUsSensor, 255);
+			double distance = ActionController.usPoller.getFrontDistance();
 			Point blockPosition = ActionController.calculatePosition(ActionController.odometer.getPosition(), distance);
 
 			// if the distance is less than the distance the sensor can see and the block is not out of bounds (a wall)
@@ -166,7 +166,7 @@ public class Searcher extends Thread {
 			if (ActionController.usPoller.isFrontBlock()) {
 				ActionController.stopMotors();
 				break;
-			} else if (ActionController.usPoller.getClippedData(Constants.frontUsSensor, 255) < Constants.SEARCH_DISTANCE_THRESHOLD ) {
+			} else if (ActionController.usPoller.getFrontDistance() < Constants.SEARCH_DISTANCE_THRESHOLD ) {
 				// go forward towards block
 				ActionController.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED, true);
 			} else {
@@ -228,12 +228,12 @@ public class Searcher extends Thread {
 				// start rotating counter clockwise
 				ActionController.setSpeeds(-Constants.ROTATION_SPEED, Constants.ROTATION_SPEED, true);
 
-				double distance1 = ActionController.usPoller.getClippedData(Constants.frontUsSensor, 255);
+				double distance1 = ActionController.usPoller.getFrontDistance();
 
 				// delay for a bit
 				Delay.msDelay(Constants.DELAY_MS);
 
-				double distance2 = ActionController.usPoller.getClippedData(Constants.frontUsSensor, 255);
+				double distance2 = ActionController.usPoller.getFrontDistance();
 
 				// check if the scan has passed the obstacle
 				if ((distance2 - distance1) > Constants.DISTANCE_DIFFERENCE) {
