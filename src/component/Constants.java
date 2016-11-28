@@ -102,5 +102,8 @@ public class Constants {
 	public final static int TEAM_NUMBER = 17;
 	
 	public static final int LCD_REFRESH = 100;
+	
+	public static final long FIVE_MINUTES = 300000;
+	public static final long TIME_TO_GO_TO_START = 60000;
 }
  

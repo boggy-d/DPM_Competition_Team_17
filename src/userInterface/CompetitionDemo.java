@@ -54,6 +54,8 @@ public class CompetitionDemo {
 		//while(Button.waitForAnyPress() != Button.ID_LEFT);
 
 		while (Button.waitForAnyPress() != Button.ID_ESCAPE);
+		
+		final boolean TIME_TO_GO_TO_SLEEP = true; //zzz
 		System.exit(0);	
 	}
 	
