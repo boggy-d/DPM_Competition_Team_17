@@ -78,7 +78,7 @@ public class LightLocalizer {
 			if(ActionController.lightPoller.isLine()) 
 			{ isOnLine = true; }
 				
-				if{isOnLine){
+				if (isOnLine) {
 					
 					// store angle in array
 					angles[lineCount] = ActionController.odometer.getAng();
@@ -88,7 +88,7 @@ public class LightLocalizer {
 					// avoid counting same line several times
 	           		 	Delay.msDelay(500);
 				}
-			isOneLine = false;
+				isOnLine = false;
 		}
 
 		// stop motors

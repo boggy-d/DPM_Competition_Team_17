@@ -129,12 +129,13 @@ public class Searcher extends Thread {
 //				// delay to make it face the block, not just the edge
 //				Delay.msDelay(500);
 
-				// For testing only
-				Sound.beep();
-				
 				// once it sees a block stop
 				ActionController.stopMotors();
-
+				
+				// For testing only
+				Sound.beep();
+				Button.waitForAnyPress();
+				
 				// is is a block, check what block it is 
 				getBlock(endingAngle, ActionController.odometer.getAng(), cornerX, cornerY);
 				return;
