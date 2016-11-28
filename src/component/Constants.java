@@ -62,8 +62,8 @@ public class Constants {
 	
 	// odometery correction
 	public final static double SENSOR_DISTANCE = 14.5;
-	public final static double TILE_LENGTH = 30.48; //odometer must be verified that values in x&y are scaled to cm with double precision 
-
+	public final static double TILE_LENGTH = 30.48; 
+	public final static double CORNER_MARGIN = 0.15;
 	// light Poller
 	public final static double BLACKINTENSITY = 0.2;
 	public final static double BLUECOLOURID = 2;
