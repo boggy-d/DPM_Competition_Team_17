@@ -154,23 +154,17 @@ public class Navigator {
 
 		if (-180 < delta_theta && delta_theta < 180) {
 
-			System.out.println("1");
-
 			Constants.rightMotor.rotate(turning_angle, true);
 			Constants.leftMotor.rotate(-turning_angle, false);
 		}
 
 		else if (delta_theta < -180) {
-			System.out.println("2");
 
 			Constants.rightMotor.rotate(adjusted_turning_angle, true);
 			Constants.leftMotor.rotate(-adjusted_turning_angle, false);
 		}
 
 		else {
-
-			System.out.println("3");
-
 			Constants.rightMotor.rotate(-adjusted_turning_angle, true);
 			Constants.leftMotor.rotate(adjusted_turning_angle, false);
 		}
@@ -198,6 +192,7 @@ public class Navigator {
 																				// into
 																				// total
 																				// dist
+		
 		double delta_y = Math.abs(final_y - ActionController.odometer.getY()); // can
 																				// be
 																				// directly
@@ -206,10 +201,11 @@ public class Navigator {
 																				// total
 																				// dist
 
-		double total_distance = Math.pow(Math.pow(delta_x, 2) + Math.pow(delta_y, 2), 1 / 2);
+		double total_distance = Math.sqrt((Math.pow(delta_x, 2) + Math.pow(delta_y, 2)));
 
 		double total_rotations = calculateForwardRotation(total_distance);
-
+	
+		ActionController.setSpeeds(Constants.FAST_FORWARD_SPEED, Constants.FAST_FORWARD_SPEED, false);
 		Constants.leftMotor.rotate((int) total_rotations, true);
 		Constants.rightMotor.rotate((int) total_rotations, false);
 
@@ -236,7 +232,8 @@ public class Navigator {
 																				// total
 																				// dist
 
-		double total_distance = Math.pow(Math.pow(delta_x, 2) + Math.pow(delta_y, 2), 1 / 2); // total
+		double total_distance = Math.sqrt((Math.pow(delta_x, 2) + Math.pow(delta_y, 2)));
+																								// total
 																								// distance
 																								// between
 																								// points
@@ -245,6 +242,10 @@ public class Navigator {
 													// distance in cm
 		dR = this.calculateForwardRotation(dP); // incremental piece of
 														// rotation in degrees
+		
+		// for timed out
+//		ActionController.setSpeeds(Constants.FAST_FORWARD_SPEED, Constants.FAST_FORWARD_SPEED, false);
+
 	}
 
 	public double calculateForwardRotation(double distance) {

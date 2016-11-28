@@ -93,7 +93,7 @@ public void timedOut(){
 //			System.out.println("delta x*: "+ delta_x);
 //			System.out.println("delta y*: "+ delta_y);
 //			
-			if(Math.abs(delta_y - delta_x) > Constans.CORNER_MARGIN){
+			if(Math.abs(delta_y - delta_x) > Constants.CORNER_MARGIN){
 
 				//closest to horizontal gridline therefore y must be corrected 
 				//add in additional and statement with a margin to reduce errors (test)

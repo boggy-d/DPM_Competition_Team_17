@@ -14,7 +14,6 @@ import lejos.utility.Timer;
 import lejos.utility.TimerListener;
 
 public class ObstacleAvoider implements TimerListener {
-	
 	private int distance = 0;
 	private Timer obstacleTimer;
 	//Default Constructor
@@ -28,8 +27,7 @@ public class ObstacleAvoider implements TimerListener {
 		obstacleTimer.start();
 		
 	}
-	
-	
+
 
 	/**
 	 * Checks how long the USS has been detecting values
@@ -89,6 +87,5 @@ public class ObstacleAvoider implements TimerListener {
 	
 	@Override
 	public void timedOut() {
-		
 	}
 }
