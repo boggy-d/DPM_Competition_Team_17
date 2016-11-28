@@ -19,6 +19,7 @@ import component.USPoller;
 
 public class Navigator {
 	public double dR;
+	public int movementCounter;
 	
 	/**
 	 * Class constructor setting the acceleration of the motors
@@ -242,6 +243,8 @@ public class Navigator {
 													// distance in cm
 		dR = this.calculateForwardRotation(dP); // incremental piece of
 														// rotation in degrees
+		
+		movementCounter = 0; // hold how many incremental pieces have been covered
 		
 		// for timed out
 //		ActionController.setSpeeds(Constants.FAST_FORWARD_SPEED, Constants.FAST_FORWARD_SPEED, false);

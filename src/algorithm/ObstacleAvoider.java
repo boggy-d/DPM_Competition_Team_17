@@ -87,5 +87,31 @@ public class ObstacleAvoider implements TimerListener {
 	
 	@Override
 	public void timedOut() {
+		currentTheta = odometer.getTheta() % FULL_CIRCLE;
+		
+		//If the corner has been cleared and the angle is about 90 deg from the pre-bangbang angle stop wall-following
+		if(isCleared && Math.abs(initialTheta - currentTheta) > FINISH_ANGLE_ERROR)
+		{
+			setSpeeds(0,0);
+			isCleared = false;
+			avoid = false;
+			usMotor.rotate(-US_ROTATION);
+			
+			continue;
+		}
+		
+		//If the pre-bangbang angle is similar to the angle from the odometer during wall-following
+		//the corner has been cleared
+		else if((Math.abs(initialTheta - currentTheta)) <= CORNER_ANGLE_ERROR)
+		{
+			isCleared = true;
+			continue;
+		}
+		
+		//Else do bangbang
+		else
+		{
+			avoidObstacle();
+		}
 	}
 }
