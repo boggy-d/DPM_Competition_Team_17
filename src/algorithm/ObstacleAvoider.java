@@ -13,7 +13,7 @@ import component.Constants;
 import lejos.utility.Timer;
 import lejos.utility.TimerListener;
 
-public class ObstacleAvoider extends Thread {
+public class ObstacleAvoider implements TimerListener {
 
 	/**
 	 * Checks how long the USS has been detecting values
@@ -105,7 +105,7 @@ public class ObstacleAvoider extends Thread {
 
 	
 	@Override
-	public void run() {
+	public void timedOut() {
 		while(true){
 			if (ActionController.usPoller.isFrontBlock()) {
 				avoidObstacle();

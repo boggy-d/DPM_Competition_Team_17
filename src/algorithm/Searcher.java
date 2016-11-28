@@ -17,7 +17,6 @@ import component.Constants;
 import component.Odometer;
 import component.USPoller;
 import lejos.hardware.Button;
-import lejos.hardware.Sound;
 import lejos.robotics.geometry.Point;
 import lejos.utility.Delay;
 
@@ -107,8 +106,8 @@ public class Searcher extends Thread {
 			// wrap ending angle to not be over 360 degrees
 			endingAngle = ActionController.navigator.wrapAngle(endingAngle);
 
-			// For testing only
-			Button.waitForAnyPress();
+//			// For testing only
+//			Button.waitForAnyPress();
 			
 			// start scanning for blocks
 			scanForBlocks(endingAngle, corner.get("x"), corner.get("y"));
@@ -133,18 +132,17 @@ public class Searcher extends Thread {
 			double distance = ActionController.usPoller.getFrontDistance();
 			Point blockPosition = ActionController.calculatePosition(ActionController.odometer.getPosition(), distance);
 
-			// if the distance is less than the distance the sensor can see and the block is not out of bounds (a wall)
+			// if the distance is less than the distance the sensor can see and the block is not out of bounds
 			if (distance < Constants.SEARCH_DISTANCE_THRESHOLD & ActionController.inBounds(blockPosition)) {
 				
-//				// test this delay to see what is a good time
-//				// delay to make it face the block, not just the edge
-//				Delay.msDelay(500);
+				// test this delay to see what is a good time
+				// delay to make it face the block, not just the edge
+				Delay.msDelay(500);
 
 				// once it sees a block stop
 				ActionController.stopMotors();
 				
 				// For testing only
-				Sound.beep();
 				Button.waitForAnyPress();
 				
 				// is is a block, check what block it is 
@@ -177,7 +175,8 @@ public class Searcher extends Thread {
 			if (ActionController.usPoller.isFrontBlock()) {
 				ActionController.stopMotors();
 				break;
-			} else if (ActionController.usPoller.getFrontDistance() < Constants.SEARCH_DISTANCE_THRESHOLD ) {
+				// if the distance is less than the distance the sensor can see and the block is not out of bounds
+			} else if (ActionController.usPoller.getFrontDistance() < Constants.SEARCH_DISTANCE_THRESHOLD & ActionController.inBounds(ActionController.calculatePosition(ActionController.odometer.getPosition(), ActionController.usPoller.getFrontDistance()))) {
 				// go forward towards block
 				ActionController.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED, true);
 			} else {

@@ -134,7 +134,11 @@ public class ActionController implements TimerListener {
 		// For testing only
 		Button.waitForAnyPress();
 		
-		
+//		// navigate to the first corner of the zone while avoiding obstacles
+//		avoider.start();
+//		navigator.travelTo(zone[0].getX(), zone[0].getY());
+//		avoider.stop();
+
 		// search for blocks
 		searcher.start();
 
@@ -427,10 +431,7 @@ public class ActionController implements TimerListener {
 			
 		// if it is not in any of the restricted zones return true
 		} else {
-			// For testing only
-			Sound.beep();
-			Sound.beep();
-			
+
 			return true;
 		}
 	}
@@ -469,10 +470,9 @@ public class ActionController implements TimerListener {
 	/**
 	 * Moves the robot to the starting corner
 	 */
-	public void goToStart() {
-		//TODO Write algorithm to go back to starting position while avoiding blocks
-		
-		avoider.start();
+	public void goToStart() {		
+		// avoid obstacles on the way
+//		avoider.start();
 		
 		if (SC == 1) {
 			// Go back to bottom left corner
@@ -488,7 +488,8 @@ public class ActionController implements TimerListener {
 			navigator.travelTo(-Constants.DISTANCE_IN_CORNER, convertTilesToCm(10) + Constants.DISTANCE_IN_CORNER);
 		}
 		
-		avoider.stop();
+//		// stop avoider
+//		avoider.stop();
 
 	}
 
