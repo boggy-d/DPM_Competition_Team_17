@@ -132,7 +132,7 @@ public class ActionController implements TimerListener {
 		Button.waitForAnyPress();
 		
 		// search for blocks
-		searcher.search();
+		searcher.start();
 
 		// once it is done searching go back to home
 		goToStart();
@@ -230,45 +230,45 @@ public class ActionController implements TimerListener {
 	 * sets "fake" wifi info
 	 */
 	public void setTestWifiInfo() {
-		// TEST CASE 1
-		// set zones
-		LGZy = 8;
-		LGZx = 0;
-
-		UGZy = 9;
-		UGZx = 2;
-
-		LRZy = 6;
-		LRZx = 2;
-
-		URZy = 8;
-		URZx = 3;
-
-		// set starting corner
-		SC = 4;
-
-		// tower builder
-		ROLE = 0;
-		
-//		// TEST CASE 2
+//		// TEST CASE 1
 //		// set zones
-//		LGZy = 1;
-//		LGZx = 1;
-//		
-//		UGZy = 2;
+//		LGZy = 8;
+//		LGZx = 0;
+//
+//		UGZy = 9;
 //		UGZx = 2;
-//		
+//
 //		LRZy = 6;
 //		LRZx = 2;
-//		
+//
 //		URZy = 8;
 //		URZx = 3;
-//		
+//
 //		// set starting corner
-//		SC = 1;
+//		SC = 4;
 //
 //		// tower builder
 //		ROLE = 0;
+		
+		// TEST CASE 2
+		// set zones
+		LGZy = 1;
+		LGZx = 1;
+		
+		UGZy = 2;
+		UGZx = 2;
+		
+		LRZy = 6;
+		LRZx = 2;
+		
+		URZy = 8;
+		URZx = 3;
+		
+		// set starting corner
+		SC = 1;
+
+		// tower builder
+		ROLE = 0;
 				
 	}
 

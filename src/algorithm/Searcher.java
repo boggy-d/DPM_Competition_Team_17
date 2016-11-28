@@ -19,7 +19,7 @@ import lejos.hardware.Sound;
 import lejos.robotics.geometry.Point;
 import lejos.utility.Delay;
 
-public class Searcher{
+public class Searcher extends Thread {
 	Point[] zone;	
 	Point[] restrictedZone;	
 	Point blockLocation;
@@ -36,6 +36,10 @@ public class Searcher{
 		towerHeight = 0;
 	}
 
+	public void run() {
+		search();
+	}
+	
 	/**
 	 * Search for blocks
 	 * @param corners a Point array of each of the corners of the zone to search

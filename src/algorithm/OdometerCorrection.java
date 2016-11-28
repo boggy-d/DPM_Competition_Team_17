@@ -20,7 +20,7 @@ private boolean update[] = {true, true, false};
 private double norm_x, norm_y;
 private double delta_x, delta_y;
 private Timer ocTimer;
-private boolean is_On_Line = false;
+private boolean isOnLine = false;
 /**
  * Class contructor creating OdometerCorrection thread
  * 
@@ -45,13 +45,13 @@ public void timedOut(){
 
 		//if on a line, continue to set line to true
 		while(ActionController.lightPoller.isLine())
-		{ is_On_Line = true; }
+		{ isOnLine = true; }
 	
 		// no longer on line so correct!
 	
-		if(is_On_Line){
+		if(isOnLine){
 		
-			is_On_line = false; //stop correcting since no longer on line!
+			isOnLine = false; //stop correcting since no longer on line!
 			
 			position[0] = ActionController.odometer.getX();
 			position[1] = ActionController.odometer.getY();

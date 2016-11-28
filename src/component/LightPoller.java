@@ -47,10 +47,6 @@ public class LightPoller implements TimerListener{
 		this.lightSampler = this.lightSensor.getMode("Red");
 		this.lightSensor.setCurrentMode("Red");
 		this.lightData = new float[lightSampler.sampleSize()];
-		EV3ColorSensor temp = new EV3ColorSensor(Constants.lightPort);
-		temp.setFloodlight(true);
-		temp.setFloodlight(Color.RED);
-		this.lightSensor = temp;
 		
 		this.colorSensor = colorSensor;
 		this.colorSampler = this.colorSensor.getMode("RGB");	
