@@ -44,6 +44,7 @@ public class Constants {
 	public final static int FAST_ROTATION_SPEED = 200;
 	public final static int ROTATION_SPEED = 130;
 	public final static int ACCELERATION = 3000;
+	public final static int AVOID_SPEED = 100;
 	
 	//navigator
 	public final static double TRACK = 13.8;
@@ -106,5 +107,8 @@ public class Constants {
 	
 	public static final long FIVE_MINUTES = 300000;
 	public static final long TIME_TO_GO_TO_START = 60000;
+	
+	public static final double BANDWIDTH = 3;
+	public static final double BANDCENTER = 30;
 }
  

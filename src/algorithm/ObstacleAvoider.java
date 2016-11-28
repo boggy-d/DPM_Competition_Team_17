@@ -13,7 +13,23 @@ import component.Constants;
 import lejos.utility.Timer;
 import lejos.utility.TimerListener;
 
-public class ObstacleAvoider extends Thread {
+public class ObstacleAvoider implements TimerListener {
+	
+	private int distance = 0;
+	private Timer obstacleTimer;
+	//Default Constructor
+	
+	public ObstacleAvoider()
+	{
+		//turn robot 90deg to right then move forward 
+		ActionController.navigator.turnTo(ActionController.odometer.getAng() - 90);
+		ActionController.setSpeeds(Constants.AVOID_SPEED, Constants.AVOID_SPEED,true);
+		this.obstacleTimer = new Timer(Constants.LCD_REFRESH, this);
+		obstacleTimer.start();
+		
+	}
+	
+	
 
 	/**
 	 * Checks how long the USS has been detecting values
@@ -48,68 +64,31 @@ public class ObstacleAvoider extends Thread {
 	 */
 	public void avoidObstacle()
 	{
-		//ASSUMING THAT THE 2ND US IS ON THE LEFT
-		
-		//second us sensor is at 90 degrees
-		//problem with this method: doesn't work if we are close to the corner of the block
-		//after probing is done, back up
-		ActionController.goForward(5, Constants.FORWARD_SPEED);
-		
-		//rotate (both direction) until we get the smallest distance on front US (forms a 90 degree with block)
-		//like rising/falling edge
-		
-		//rotates the robot clockwise at speed: ROTATE_SPEED
-		ActionController.setSpeeds(Constants.ROTATE_SPEED, -Constants.ROTATE_SPEED, true);
-		
-		//rotate clockwise until don't see block
-		while (!ActionController.usPoller.isFrontBlock()) {
-			//save the smallest us distance we see
-			
+		// Processes a movement based on the US passed
+		// distance is within the bandCenter, it moves straight
+		if (ActionController.usPoller.getSideDistance() <= Constants.BANDCENTER + Constants.BANDWIDTH
+				&& distance >= Constants.BANDCENTER - Constants.BANDWIDTH) {
+
+			ActionController.setSpeeds(Constants.AVOID_SPEED, Constants.AVOID_SPEED, true);
 		}
-		ActionController.stopMotors();
-		
-		//rotates the robot counterclockwise at speed: ROTATE_SPEED
-		ActionController.setSpeeds(-Constants.ROTATE_SPEED, Constants.ROTATE_SPEED, true);
-		
-		//rotate counterclockwise until don't see block
-		while (!ActionController.usPoller.isFrontBlock()) {
-			//save the smallest us distance we see
-		
+
+		// too close, it needs to move away from the wall
+		// outer wheel moves backwards
+		else if (ActionController.usPoller.getSideDistance() < Constants.BANDCENTER - Constants.BANDWIDTH) {
+			ActionController.setSpeeds(Constants.AVOID_SPEED, Constants.AVOID_SPEED, true);
 		}
-		ActionController.stopMotors();
-		
-		//rotate to the smallest distance we got
-		
-		
-		//turn 90 degrees clockwise
-		int turn90 = ActionController.navigator.convertAngle(Constants.RADIUS, Constants.TRACK, 90);
-		Constants.rightMotor.rotate(turn90, true);
-		Constants.leftMotor.rotate(-turn90, false);
-		
-		//move forward until 2nd US doesn't see the obstacle and stop
-		
-		
-		/////////////////////////////////////////////////////////////////////////////////
-		//another way of doing it: US might need to be at 45 degrees
-		//rotate a little clockwise so the second US can see
-		int turn45 = ActionController.navigator.convertAngle(Constants.RADIUS, Constants.TRACK, 45);
-		Constants.rightMotor.rotate(turn45, true);
-		Constants.leftMotor.rotate(-turn45, false);
-		
-		//BangBang (make a new class or write it here?)
-		
-		
-		//have an angle condition to stop BangBang
+
+		// too far, it needs to move closer to the wall
+		// outer wheels moves forward faster
+		else if (ActionController.usPoller.getSideDistance() > Constants.BANDCENTER + Constants.BANDWIDTH) {
+			ActionController.setSpeeds(Constants.AVOID_SPEED, Constants.AVOID_SPEED, true);
+		}
 		
 	}
 
 	
 	@Override
-	public void run() {
-		while(true){
-			if (ActionController.usPoller.isFrontBlock()) {
-				avoidObstacle();
-			}
-		}	
+	public void timedOut() {
+		
 	}
 }
