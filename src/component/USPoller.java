@@ -127,7 +127,7 @@ public class USPoller implements TimerListener{
 	{
 		synchronized(this)
 		{
-			return getClippedData(frontSensor, sideUsData, Constants.CLIP);
+			return getRawData(frontSensor, sideUsData);
 		}
 	}
 
