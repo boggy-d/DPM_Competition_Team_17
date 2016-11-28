@@ -136,7 +136,8 @@ public class USPoller implements TimerListener{
 	 * Constantly checks if the front and side USSS detect a block
 	 */
 	public void timedOut() {
-		if(getFrontDistance() < Constants.WALL_DISTANCE_THRESHOLD)
+
+		if(getFrontDistance() < Constants.BLOCK_INFRONT)
 		{
 			isFrontBlock = true;
 		}
@@ -145,7 +146,7 @@ public class USPoller implements TimerListener{
 			isFrontBlock = false;
 		}
 		
-		if(getSideDistance() < Constants.WALL_DISTANCE_THRESHOLD)
+		if(getSideDistance() < Constants.BLOCK_INFRONT)
 		{
 			isSideBlock = true;
 		}
