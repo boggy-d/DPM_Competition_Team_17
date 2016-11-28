@@ -58,7 +58,7 @@ public class Constants {
 	
 	//for lightLocalization 
 	public final static double COLOR_DIST = 14.5;				//distance between the center of rotation of robot and light sensor
-	public final static double BUFFER_DIST = 8.5;				//buffer distance (where we want to be before rotating)
+	public final static double BUFFER_DIST = 9.5;				//buffer distance (where we want to be before rotating)
 	
 	// odometery correction
 	public final static double SENSOR_DISTANCE = 14.5;
@@ -103,5 +103,8 @@ public class Constants {
 	public final static int TEAM_NUMBER = 17;
 	
 	public static final int LCD_REFRESH = 100;
+	
+	public static final long FIVE_MINUTES = 300000;
+	public static final long TIME_TO_GO_TO_START = 60000;
 }
  

@@ -36,12 +36,12 @@ public class USLocalizer {
 		ActionController.setSpeeds(Constants.FAST_ROTATION_SPEED, -Constants.FAST_ROTATION_SPEED, true);
 		
 		//keep turning while distance is large
-        while (ActionController.usPoller.getClippedData(Constants.frontUsSensor, Constants.CLIP) >= Constants.WALL_DISTANCE_THRESHOLD) {
+        while (ActionController.usPoller.getFrontDistance() >= Constants.WALL_DISTANCE_THRESHOLD) {
 			//already moving cw
 		}
 
 		//keep turning after seeing the wall until we reach the 2nd wall, then stop
-		while (ActionController.usPoller.getClippedData(Constants.frontUsSensor, Constants.CLIP) < Constants.WALL_DISTANCE_THRESHOLD + Constants.US_MARGIN) {
+		while (ActionController.usPoller.getFrontDistance() < Constants.WALL_DISTANCE_THRESHOLD + Constants.US_MARGIN) {
 
 			//already moving cw
 		}
@@ -52,12 +52,12 @@ public class USLocalizer {
 		ActionController.setSpeeds(-Constants.FAST_ROTATION_SPEED, Constants.FAST_ROTATION_SPEED, true);
 
 		//turn counterclockwise until its not at the "edge" of the wall anymore
-        while (ActionController.usPoller.getClippedData(Constants.frontUsSensor, Constants.CLIP) >= Constants.WALL_DISTANCE_THRESHOLD) {
+        while (ActionController.usPoller.getFrontDistance() >= Constants.WALL_DISTANCE_THRESHOLD) {
 			//already moving ccw
 		}
 
 		//keep turning until it sees the other edge of the wall
-		while (ActionController.usPoller.getClippedData(Constants.frontUsSensor, Constants.CLIP) < Constants.WALL_DISTANCE_THRESHOLD + Constants.US_MARGIN) {
+		while (ActionController.usPoller.getFrontDistance() < Constants.WALL_DISTANCE_THRESHOLD + Constants.US_MARGIN) {
 
 			//already moving ccw
 		}

@@ -36,7 +36,7 @@ public class LightLocalizer {
 		
 		ActionController.stopMotors();
 		//setting speed and begin to move forward speed
-		ActionController.setSpeeds(Constants.FORWARD_SPEED, Constants.FAST_FORWARD_SPEED, true);
+		ActionController.setSpeeds(Constants.FAST_FORWARD_SPEED, Constants.FAST_FORWARD_SPEED, true);
 		
 		
 		//TODO Check if we actually need prevLightData

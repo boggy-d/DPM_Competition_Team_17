@@ -9,7 +9,7 @@ import lejos.utility.TimerListener;
 public class USPoller implements TimerListener{
 	private SensorModes frontSensor;
 	private SampleProvider frontSampler;
-	private float[] usData;
+	private float[] frontUsData, sideUsData;
 	private Timer usPollerTimer;
 	private boolean isFrontBlock, isSideBlock;
 	private SensorModes sideSensor;
@@ -29,7 +29,8 @@ public class USPoller implements TimerListener{
 		this.sideSensor = sideSensor;
 		sideSampler = sideSensor.getMode("Distance");
 		
-		this.usData = new float[frontSampler.sampleSize()];
+		this.frontUsData = new float[frontSampler.sampleSize()];
+		this.sideUsData = new float[sideSampler.sampleSize()];
 		
 		if (autostart) {
 			// if the timeout interval is given as <= 0, default to 20ms timeout 
@@ -67,7 +68,7 @@ public class USPoller implements TimerListener{
 	 * @param maxValue the cutoff distance
 	 * @return         the distance reported by the USS times a factor (for visibility)
 	 */
-	public float getClippedData(SensorModes usSensor, int maxValue){
+	public float getClippedData(SensorModes usSensor, float[] usData, int maxValue){
 		
 		usSensor.fetchSample(usData,0);
 		float distance = usData[0]*100;
@@ -82,7 +83,7 @@ public class USPoller implements TimerListener{
 	 * Returns the distance reported by the USS
 	 * @return	the distance reported by the USS times a factor (for visibility)
 	 */
-	public float getRawData(SensorModes usSensor) {
+	public float getRawData(SensorModes usSensor, float[] usData) {
 		
 		usSensor.fetchSample(usData, 0);
 		float distance = usData[0]*100;
@@ -118,7 +119,7 @@ public class USPoller implements TimerListener{
 	{
 		synchronized(this)
 		{
-			return getRawData(frontSensor);
+			return getClippedData(frontSensor, frontUsData, Constants.CLIP);
 		}
 	}
 	
@@ -126,7 +127,7 @@ public class USPoller implements TimerListener{
 	{
 		synchronized(this)
 		{
-			return getRawData(sideSensor);
+			return getClippedData(frontSensor, sideUsData, Constants.CLIP);
 		}
 	}
 
@@ -135,9 +136,8 @@ public class USPoller implements TimerListener{
 	 * Constantly checks if the front and side USSS detect a block
 	 */
 	public void timedOut() {
-		//TODO Get data. Check thresholds (basically use the above methods)
-		//TODO add constants
-		if(getClippedData(frontSensor,Constants.CLIP) < Constants.BLOCK_INFRONT)
+
+		if(getFrontDistance() < Constants.BLOCK_INFRONT)
 		{
 			isFrontBlock = true;
 		}
@@ -146,7 +146,7 @@ public class USPoller implements TimerListener{
 			isFrontBlock = false;
 		}
 		
-		if(getClippedData(sideSensor, Constants.CLIP) < Constants.BLOCK_INFRONT)
+		if(getSideDistance() < Constants.BLOCK_INFRONT)
 		{
 			isSideBlock = true;
 		}
