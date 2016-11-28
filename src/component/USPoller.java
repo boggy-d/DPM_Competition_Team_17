@@ -137,7 +137,7 @@ public class USPoller implements TimerListener{
 	public void timedOut() {
 		//TODO Get data. Check thresholds (basically use the above methods)
 		//TODO add constants
-		if(getClippedData(frontSensor,Constants.CLIP) < Constants.WALL_DISTANCE_THRESHOLD)
+		if(getClippedData(frontSensor,Constants.CLIP) < Constants.BLOCK_INFRONT)
 		{
 			isFrontBlock = true;
 		}
@@ -146,7 +146,7 @@ public class USPoller implements TimerListener{
 			isFrontBlock = false;
 		}
 		
-		if(getClippedData(sideSensor, Constants.CLIP) < Constants.WALL_DISTANCE_THRESHOLD)
+		if(getClippedData(sideSensor, Constants.CLIP) < Constants.BLOCK_INFRONT)
 		{
 			isSideBlock = true;
 		}

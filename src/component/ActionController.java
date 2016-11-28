@@ -134,6 +134,7 @@ public class ActionController implements TimerListener {
 		// For testing only
 		Button.waitForAnyPress();
 		
+		
 		// search for blocks
 		searcher.start();
 
