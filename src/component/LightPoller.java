@@ -163,7 +163,7 @@ public class LightPoller implements TimerListener{
 			isLine = false;
 		}
 		
-		if(getColorData()[2] > getColorData()[0])
+		if(getColorData()[2] > (getColorData()[0]))
 		{
 			isBlue = true;
 		}

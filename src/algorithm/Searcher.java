@@ -14,9 +14,11 @@ import java.util.List;
 
 import component.ActionController;
 import component.Constants;
+import component.LightPoller;
 import component.Odometer;
 import component.USPoller;
 import lejos.hardware.Button;
+import lejos.hardware.Sound;
 import lejos.robotics.geometry.Point;
 import lejos.utility.Delay;
 
@@ -50,12 +52,10 @@ public class Searcher extends Thread {
 		// a certain amount up from the corner so that it is not exactly in the corner
 		int xBuffer = (int) (Constants.DISTANCE_FROM_CORNER * Math.sin(45));
 		int yBuffer = (int) (Constants.DISTANCE_FROM_CORNER * Math.cos(45));
-
+		
+		// create a List of hashmaps of the position the robot should be at for each corner and the angle it should turn to for each corner
 		List<HashMap<String, Double>> cornersAndAngles = new ArrayList<HashMap<String, Double>>();
 		
-		// create a hashmap of the position the robot should be at for each corner and the angle it should turn to fo each corner
-//		HashMap<String, HashMap<String, Integer>> cornersAndAngles = new HashMap<String, HashMap<String, Integer>>();
-
 		HashMap<String, Double> lowerLeft = new HashMap<String, Double>();
 		lowerLeft.put("x", (double) (zone[0].x - xBuffer));
 		lowerLeft.put("y", (double) (zone[0].y - yBuffer));
@@ -81,19 +81,11 @@ public class Searcher extends Thread {
 		cornersAndAngles.add(upperRight);
 		cornersAndAngles.add(upperLeft);
 
-//		cornersAndAngles.put("lowerLeft", lowerLeft);
-//		cornersAndAngles.put("lowerRight", lowerRight);
-//		cornersAndAngles.put("upperRight", upperRight);
-//		cornersAndAngles.put("upperLeft", upperLeft);
-
 		// calculate the degrees to scan
 		double degreesToScan = 270 - (2 * Constants.STARTING_SCANNING_ANGLE);
 
 		// for each corner of the zone search for blocks
-//		for (HashMap<String, Integer> corner : cornersAndAngles.values()) {
 		for (HashMap<String, Double> corner : cornersAndAngles) {
-
-
 			// TODO use zone avoiding algorithm (wavefront ect) when traveling to the corner
 			// travel to the corner
 			ActionController.navigator.travelTo(corner.get("x"), corner.get("y"));
@@ -105,9 +97,6 @@ public class Searcher extends Thread {
 			double endingAngle = corner.get("angle") + degreesToScan;
 			// wrap ending angle to not be over 360 degrees
 			endingAngle = ActionController.navigator.wrapAngle(endingAngle);
-
-//			// For testing only
-//			Button.waitForAnyPress();
 			
 			// start scanning for blocks
 			scanForBlocks(endingAngle, corner.get("x"), corner.get("y"));
@@ -125,31 +114,39 @@ public class Searcher extends Thread {
 	 */
 	public void scanForBlocks(double endingAngle, Double cornerX, Double cornerY) {		
 		// scan until it reaches ending angle
-		while (ActionController.odometer.getAng() < endingAngle) {
-			// start rotating counter clockwise
-			ActionController.setSpeeds(-Constants.ROTATION_SPEED, Constants.ROTATION_SPEED, true);
+		
+		// start rotating counter clockwise
+		ActionController.setSpeeds(-Constants.SLOW_ROTATION_SPEED, Constants.SLOW_ROTATION_SPEED, true);
+		
+		while (ActionController.odometer.getAng() > (endingAngle + Constants.SCAN_MARGIN) || ActionController.odometer.getAng() < (endingAngle - Constants.SCAN_MARGIN)) {
 
 			double distance = ActionController.usPoller.getFrontDistance();
 			Point blockPosition = ActionController.calculatePosition(ActionController.odometer.getPosition(), distance);
 
 			// if the distance is less than the distance the sensor can see and the block is not out of bounds
-			if (distance < Constants.SEARCH_DISTANCE_THRESHOLD & ActionController.inBounds(blockPosition)) {
+			if (distance < Constants.SEARCH_DISTANCE_THRESHOLD && ActionController.inBounds(blockPosition)) {
 				
 				// test this delay to see what is a good time
 				// delay to make it face the block, not just the edge
-				Delay.msDelay(500);
+				Delay.msDelay(100);
 
 				// once it sees a block stop
 				ActionController.stopMotors();
 				
 				// For testing only
-				Button.waitForAnyPress();
+				Sound.beep();
 				
 				// is is a block, check what block it is 
 				getBlock(endingAngle, ActionController.odometer.getAng(), cornerX, cornerY);
 				return;
 			}
 		}
+		// stop once you've passed the ending angle
+		ActionController.stopMotors();
+		
+//		// For testing only
+//		Button.waitForAnyPress();
+		
 		// no block found, return 
 		return;
 	}
@@ -176,19 +173,25 @@ public class Searcher extends Thread {
 				ActionController.stopMotors();
 				break;
 				// if the distance is less than the distance the sensor can see and the block is not out of bounds
-			} else if (ActionController.usPoller.getFrontDistance() < Constants.SEARCH_DISTANCE_THRESHOLD & ActionController.inBounds(ActionController.calculatePosition(ActionController.odometer.getPosition(), ActionController.usPoller.getFrontDistance()))) {
+			} else if (ActionController.usPoller.getFrontDistance() < Constants.SEARCH_DISTANCE_THRESHOLD && ActionController.inBounds(ActionController.calculatePosition(ActionController.odometer.getPosition(), ActionController.usPoller.getFrontDistance()))) {
 				// go forward towards block
 				ActionController.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED, true);
 			} else {
 				// keep rotating counter clockwise towards the block
-				ActionController.setSpeeds(-Constants.ROTATION_SPEED, Constants.ROTATION_SPEED, true);
-				// delay to make it face the block, not just the edge
-				Delay.msDelay(200);
+				ActionController.setSpeeds(-Constants.SLOW_ROTATION_SPEED, Constants.SLOW_ROTATION_SPEED, true);
 			}
 		}
 
+		// approach the block
+		Delay.msDelay(100);
+		ActionController.goForward(3, Constants.FORWARD_SPEED);
+		Delay.msDelay(200);
+		
 		// if it is a blue block pick it up
 		if (ActionController.lightPoller.isBlue()) {
+			Sound.beepSequenceUp();
+			// backup to pick up the block
+			ActionController.goForward(7, -Constants.FORWARD_SPEED);
 			//Claw pickup routine
 			ActionController.claw.pickUpBlock();
 			hasBlock = true;
@@ -226,7 +229,11 @@ public class Searcher extends Thread {
 			ActionController.navigator.travelTo(cornerX, cornerY);
 			ActionController.navigator.turnTo(angleOfBlock);
 		} else {
-			// TODO use zone avoiding algorithm (wavefront ect) when traveling to the corner
+			
+			// backup to avoid hitting the block
+			ActionController.goForward(20, -Constants.FORWARD_SPEED);
+
+			// TODO use zone avoiding algorithm when traveling to the corner
 			// go back to the corner
 			ActionController.navigator.travelTo(cornerX, cornerY);
 

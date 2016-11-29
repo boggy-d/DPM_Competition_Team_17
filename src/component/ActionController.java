@@ -70,87 +70,95 @@ public class ActionController implements TimerListener {
 		setTestWifiInfo();
 		//setWifiInfo();
 		
-		odometer = new Odometer(30, true, 0, 0, 90);	
+		odometer = new Odometer(30, true, 0, 0, 0);	
 
 		usPoller = new USPoller(Constants.frontUsSensor, Constants.sideUsSensor, Constants.DEFAULT_TIMEOUT_PERIOD, true);
 
-		LCDInfo lcd = new LCDInfo();
-
 		lightPoller = new LightPoller(Constants.lightSensor, Constants.colorSensor, Constants.DEFAULT_TIMEOUT_PERIOD, true);
+		
+		LCDInfo lcd = new LCDInfo();
 
 		navigator = new Navigator();
 
 		claw = new ClawController();
 		
-		avoider = new ObstacleAvoider();
+//		avoider = new ObstacleAvoider();
 
-		// localize
-		USLocalizer usLocalizer = new USLocalizer();
-		usLocalizer.usLocalize();
+//		// localize
+//		USLocalizer usLocalizer = new USLocalizer();
+//		usLocalizer.usLocalize();
+//
+//		LightLocalizer lightLocalizer = new LightLocalizer();
+//		lightLocalizer.lightlocalize();
+//
+//		// travel to origin and face 0 degrees
+//		ActionController.navigator.travelTo(0,0);
+//		ActionController.navigator.turnTo(0);
 
-		LightLocalizer lightLocalizer = new LightLocalizer();
-		lightLocalizer.lightlocalize();
+		// TEST
+		while (true) {
+			if(lightPoller.getColorData()[2] > lightPoller.getColorData()[0]) {
+				Sound.beep();
+				Delay.msDelay(1000);
 
-		// travel to origin and face 0 degrees
-		ActionController.navigator.travelTo(0,0);
-		ActionController.navigator.turnTo(0);
-
-		// update position to the actual corner it starts in
-		double angle = odometer.getAng();
-		double[] position;
-		boolean[] update = {true, true, true};
-		if (SC == 1) {
-			// Initialize to bottom left corner
-			position = new double[] {0, 0, angle};	
-		} else if (SC == 2) {
-			// Initialize to bottom right corner
-			position = new double[] {convertTilesToCm(10), 0, angle + 90};	
-		} else if (SC == 3) {	
-			// Initialize to upper right corner
-			position = new double[] {convertTilesToCm(10), convertTilesToCm(10), navigator.wrapAngle(angle + 180)};	
-		} else {
-			// Initialize to upper left corner
-			position = new double[] {0, convertTilesToCm(10), navigator.wrapAngle(angle - 90)};	
+			}
+				
 		}
-		ActionController.odometer.setPosition(position, update);		
-
-		if (ROLE == 0) {
-			// tower builder get green zone
-			zone = getZoneCorners(LGZx, LGZy, UGZx, UGZy);
-			restrictedZone = getZoneCorners(LRZx, LRZy, URZx, URZy);
-			// set tower height
-			maxTowerHeight = 2;
-
-		} else {
-			// garbage collector get red zone
-			zone = getZoneCorners(LRZx, LRZy, URZx, URZy);
-			restrictedZone = getZoneCorners(LGZx, LGZy, UGZx, UGZy);
-			// set tower height
-			maxTowerHeight = 1;
-		}
-
-		searcher = new Searcher(zone, restrictedZone, maxTowerHeight);
-
-		// For testing only
-		Button.waitForAnyPress();
 		
-//		// navigate to the first corner of the zone while avoiding obstacles
-//		avoider.start();
-//		navigator.travelTo(zone[0].getX(), zone[0].getY());
-//		avoider.stop();
-
-		// search for blocks
-		searcher.start();
-
-		// once it is done searching go back to home
-		goToStart();
-
-		if (autostart) {
-			// if the timeout interval is given as <= 0, default to 20ms timeout 
-			this.acTimer = new Timer((INTERVAL <= 0) ? INTERVAL : Constants.DEFAULT_TIMEOUT_PERIOD, this);
-			this.acTimer.start();
-		} else
-			this.acTimer = null;		
+//		// update position to the actual corner it starts in
+//		double angle = odometer.getAng();
+//		double[] position;
+//		boolean[] update = {true, true, true};
+//		if (SC == 1) {
+//			// Initialize to bottom left corner
+//			position = new double[] {0, 0, angle};	
+//		} else if (SC == 2) {
+//			// Initialize to bottom right corner
+//			position = new double[] {convertTilesToCm(10), 0, angle + 90};	
+//		} else if (SC == 3) {	
+//			// Initialize to upper right corner
+//			position = new double[] {convertTilesToCm(10), convertTilesToCm(10), navigator.wrapAngle(angle + 180)};	
+//		} else {
+//			// Initialize to upper left corner
+//			position = new double[] {0, convertTilesToCm(10), navigator.wrapAngle(angle - 90)};	
+//		}
+//		ActionController.odometer.setPosition(position, update);		
+//
+//		if (ROLE == 0) {
+//			// tower builder get green zone
+//			zone = getZoneCorners(LGZx, LGZy, UGZx, UGZy);
+//			restrictedZone = getZoneCorners(LRZx, LRZy, URZx, URZy);
+//			// set tower height
+//			maxTowerHeight = 2;
+//
+//		} else {
+//			// garbage collector get red zone
+//			zone = getZoneCorners(LRZx, LRZy, URZx, URZy);
+//			restrictedZone = getZoneCorners(LGZx, LGZy, UGZx, UGZy);
+//			// set tower height
+//			maxTowerHeight = 1;
+//		}
+//
+//		searcher = new Searcher(zone, restrictedZone, maxTowerHeight);
+//		
+////		// navigate to the first corner of the zone while avoiding obstacles
+////		avoider.start();
+////		navigator.travelTo(zone[0].getX(), zone[0].getY());
+////		avoider.stop();
+//
+//		// search for blocks
+////		searcher.start();
+//		searcher.search();
+//
+//		// once it is done searching go back to home
+//		goToStart();
+//
+//		if (autostart) {
+//			// if the timeout interval is given as <= 0, default to 20ms timeout 
+//			this.acTimer = new Timer((INTERVAL <= 0) ? INTERVAL : Constants.DEFAULT_TIMEOUT_PERIOD, this);
+//			this.acTimer.start();
+//		} else
+//			this.acTimer = null;		
 
 	}
 

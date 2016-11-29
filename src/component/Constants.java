@@ -31,7 +31,6 @@ public class Constants {
 	
 	public static final Port lightPort = LocalEV3.get().getPort("S1");
 	public static final SensorModes lightSensor = new EV3ColorSensor(lightPort);
-	
 
 	public static final Port colorPort = LocalEV3.get().getPort("S3");
 	public static final SensorModes colorSensor = new EV3ColorSensor(colorPort);
@@ -40,9 +39,10 @@ public class Constants {
 	
 	//motor speeds
 	public final static int FAST_FORWARD_SPEED = 250;
-	public final static int FORWARD_SPEED = 100;
+	public final static int FORWARD_SPEED = 150;
 	public final static int FAST_ROTATION_SPEED = 200;
 	public final static int ROTATION_SPEED = 130;
+	public final static int SLOW_ROTATION_SPEED = 70;
 	public final static int ACCELERATION = 3000;
 	public final static int AVOID_SPEED = 100;
 	
@@ -86,11 +86,14 @@ public class Constants {
 	public final static int CLAW_OPEN_ANGLE = 60;
 
 	// searching
-	public final static int SEARCH_DISTANCE_THRESHOLD = 80;
+	public final static int SEARCH_DISTANCE_THRESHOLD = 40;
 	public final static int STARTING_SCANNING_ANGLE = 30;
 	public final static int DELAY_MS = 500;
 	public final static int DISTANCE_DIFFERENCE = 5;
 	public final static int DISTANCE_FROM_CORNER = 10;
+	public final static int SCAN_MARGIN = 5;
+	public final static int OUT_OF_BOUNDS_MARGIN = 5;
+
 
 	// block placing
 	public final static double DELTA_X = TILE_LENGTH/2;
