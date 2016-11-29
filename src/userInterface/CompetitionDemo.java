@@ -21,7 +21,7 @@ public class CompetitionDemo {
 //		int buttonChoice;
 //		buttonChoice = Button.waitForAnyPress();
 //		isEnter(buttonChoice);
-		ActionController ac = new ActionController(Constants.DEFAULT_TIMEOUT_PERIOD, true);
+		ActionController ac = new ActionController();
 		
 //		System.out.println("Press left, right up or down");
 //		

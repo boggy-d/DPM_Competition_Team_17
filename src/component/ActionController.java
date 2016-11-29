@@ -64,17 +64,18 @@ public class ActionController {
 	 * @param INTERVAL the refresh rate of the Timer
 	 * @param autostart the flag that start the Timer on startup or not
 	 */
-	public ActionController(int INTERVAL, boolean autostart)
+	public ActionController()
 	{
 		// set wifi info for testing only
 		setTestWifiInfo();
 		//setWifiInfo();
-		
+
 		odometer = new Odometer(30, true, 0, 0, 0);	
 
 		usPoller = new USPoller(Constants.frontUsSensor, Constants.sideUsSensor);
 
 		lightPoller = new LightPoller(Constants.lightSensor, Constants.colorSensor);
+
 		
 		// for debugging only REMOVE TO RUN
 		LCDInfo lcd = new LCDInfo();
@@ -125,6 +126,7 @@ public class ActionController {
 			position = new double[] {0, convertTilesToCm(10), navigator.wrapAngle(angle - 90)};	
 		}
 		ActionController.odometer.setPosition(position, update);		
+
 
 		if (ROLE == 0) {
 			// tower builder get green zone
@@ -513,7 +515,6 @@ public class ActionController {
 		
 //		// stop avoider
 //		avoider.stop();
-
 	}
 
 //	@Override
@@ -590,9 +591,12 @@ public class ActionController {
 //			else
 //			{
 //				goToStart();
+//				System.exit(0);
 //			}
 //			
 //		}
+//
+//	}
 
 //	}
 	// Navigation complete, start searching
@@ -602,4 +606,5 @@ public class ActionController {
 	// 		out
 	// 		else keep turning until it hits 360 deg
 	// else go to second corner
+
 }

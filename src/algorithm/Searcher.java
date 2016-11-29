@@ -22,7 +22,7 @@ import lejos.hardware.Sound;
 import lejos.robotics.geometry.Point;
 import lejos.utility.Delay;
 
-public class Searcher extends Thread {
+public class Searcher {
 	Point[] zone;	
 	Point[] restrictedZone;	
 	Point blockLocation;
@@ -39,9 +39,6 @@ public class Searcher extends Thread {
 		towerHeight = 0;
 	}
 
-	public void run() {
-		search();
-	}
 	
 	/**
 	 * Search for blocks
@@ -196,7 +193,7 @@ public class Searcher extends Thread {
 		if (ActionController.lightPoller.isBlue()) {
 			Sound.beepSequenceUp();
 			// backup to pick up the block
-			ActionController.goForward(12, -Constants.FORWARD_SPEED);
+			ActionController.goForward(14, -Constants.FORWARD_SPEED);
 			//Claw pickup routine
 			ActionController.claw.pickUpBlock();
 			hasBlock = true;

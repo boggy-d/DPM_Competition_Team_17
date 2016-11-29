@@ -38,6 +38,7 @@ public class LightPoller {
 	 * 
 	 * @since 0.1.1
 	 */
+
 	public LightPoller(SensorModes lightSensor, SensorModes colorSensor)
 	{
 		//TODO Modify constructor parameters. Create appropriate fields. Assign params to fields
@@ -49,7 +50,6 @@ public class LightPoller {
 		
 		this.colorSensor = colorSensor;
 		this.colorSampler = this.colorSensor.getMode("RGB");
-		this.colorSensor.setCurrentMode("RGB");
 		this.colorData = new float[colorSampler.sampleSize()];
 		
 		lightSampler.fetchSample(lightData, 0);
@@ -59,9 +59,6 @@ public class LightPoller {
 		{ambientLight += lightData[0]; }
 		
 		ambientLight = ambientLight / 10;
-
-		
-		this.medianFilter = new MedianFilter(lightSampler, 5);
 		
 	}
 	
