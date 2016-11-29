@@ -4,6 +4,7 @@
  * routine to avoid either wooden blocks or walls.
  * 
  * @author Bogdan Dumitru
+ * @author Eric Zimmermann
  */
 
 package algorithm;
@@ -28,7 +29,7 @@ public class ObstacleAvoider implements TimerListener {
 		initialTheta = ActionController.odometer.getAng();
 		//turn robot 90deg to right then move forward 
 		ActionController.navigator.turnTo(ActionController.navigator.wrapAngle(ActionController.odometer.getAng() - 90));
-		ActionController.setSpeeds(Constants.AVOID_SPEED, Constants.AVOID_SPEED,true);
+		ActionController.setSpeeds(Constants.AVOID_SPEED_STRAIGHT, Constants.AVOID_SPEED_STRAIGHT,true);
 		this.obstacleTimer = new Timer(Constants.LCD_REFRESH, this);
 		
 		obstacleTimer.start();
@@ -74,19 +75,19 @@ public class ObstacleAvoider implements TimerListener {
 		if (ActionController.usPoller.getSideDistance() <= Constants.BANDCENTER + Constants.BANDWIDTH
 				&& distance >= Constants.BANDCENTER - Constants.BANDWIDTH) {
 
-			ActionController.setSpeeds(Constants.AVOID_SPEED, Constants.AVOID_SPEED, true);
+			ActionController.setSpeeds(Constants.AVOID_SPEED_STRAIGHT, Constants.AVOID_SPEED_STRAIGHT, true);
 		}
 
 		// too close, it needs to move away from the wall
 		// outer wheel moves backwards
 		else if (ActionController.usPoller.getSideDistance() < Constants.BANDCENTER - Constants.BANDWIDTH) {
-			ActionController.setSpeeds(Constants.AVOID_SPEED, Constants.AVOID_SPEED, true);
+			ActionController.setSpeeds(Constants.AVOID_SPEED_HIGH, Constants.AVOID_SPEED_LOW, true);
 		}
 
 		// too far, it needs to move closer to the wall
 		// outer wheels moves forward faster
 		else if (ActionController.usPoller.getSideDistance() > Constants.BANDCENTER + Constants.BANDWIDTH) {
-			ActionController.setSpeeds(Constants.AVOID_SPEED, Constants.AVOID_SPEED, true);
+			ActionController.setSpeeds(Constants.AVOID_SPEED_LOW, Constants.AVOID_SPEED_HIGH, true);
 		}
 		
 	}
