@@ -93,7 +93,7 @@ public class USPoller{
 	 */
 	public boolean isFrontBlock()
 	{
-		if(getFrontDistance(Constants.SEARCHING_CLIP) < Constants.BLOCK_INFRONT)
+		if(getFrontDistance(Constants.SEARCHING_CLIP) <= Constants.BLOCK_INFRONT)
 		{
 			return true;
 		}

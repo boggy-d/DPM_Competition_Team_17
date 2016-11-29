@@ -178,11 +178,12 @@ public class Searcher extends Thread {
 					&& ActionController.inBounds(ActionController.calculatePosition(ActionController.odometer.getPosition(), ActionController.usPoller.getFrontDistance(Constants.SEARCHING_CLIP)))) {
 				// go forward towards block
 				ActionController.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED, true);
+				Delay.msDelay(1000);
 			} else {
 				// keep rotating counter clockwise towards the block
 				ActionController.setSpeeds(-Constants.SLOW_ROTATION_SPEED, Constants.SLOW_ROTATION_SPEED, true);
-				Delay.msDelay(200);
-				ActionController.stopMotors();
+				Delay.msDelay(100);
+				ActionController.goForward(3, Constants.FORWARD_SPEED);
 			}
 		}
 
@@ -195,7 +196,7 @@ public class Searcher extends Thread {
 		if (ActionController.lightPoller.isBlue()) {
 			Sound.beepSequenceUp();
 			// backup to pick up the block
-			ActionController.goForward(7, -Constants.FORWARD_SPEED);
+			ActionController.goForward(12, -Constants.FORWARD_SPEED);
 			//Claw pickup routine
 			ActionController.claw.pickUpBlock();
 			hasBlock = true;

@@ -36,7 +36,7 @@ import lejos.utility.TimerListener;
 import userInterface.LCDInfo;
 import wifi.WifiConnection;
 
-public class ActionController implements TimerListener {
+public class ActionController {
 
 	//Instantiate more objects
 	public static Odometer odometer;
@@ -76,6 +76,7 @@ public class ActionController implements TimerListener {
 
 		lightPoller = new LightPoller(Constants.lightSensor, Constants.colorSensor);
 		
+		// for debugging only REMOVE TO RUN
 		LCDInfo lcd = new LCDInfo();
 
 		navigator = new Navigator();
@@ -84,16 +85,17 @@ public class ActionController implements TimerListener {
 		
 //		avoider = new ObstacleAvoider();
 
-//		// localize
-//		USLocalizer usLocalizer = new USLocalizer();
-//		usLocalizer.usLocalize();
-//
-//		LightLocalizer lightLocalizer = new LightLocalizer();
-//		lightLocalizer.lightlocalize();
-//
-//		// travel to origin and face 0 degrees
-//		ActionController.navigator.travelTo(0,0);
-//		ActionController.navigator.turnTo(0);
+		
+		// localize
+		USLocalizer usLocalizer = new USLocalizer();
+		usLocalizer.usLocalize();
+
+		LightLocalizer lightLocalizer = new LightLocalizer();
+		lightLocalizer.lightlocalize();
+
+		// travel to origin and face 0 degrees
+		ActionController.navigator.travelTo(0,0);
+		ActionController.navigator.turnTo(0);
 
 //		// TEST
 //		while (true) {
@@ -152,13 +154,6 @@ public class ActionController implements TimerListener {
 
 		// once it is done searching go back to home
 		goToStart();
-
-		if (autostart) {
-			// if the timeout interval is given as <= 0, default to 20ms timeout 
-			this.acTimer = new Timer((INTERVAL <= 0) ? INTERVAL : Constants.DEFAULT_TIMEOUT_PERIOD, this);
-			this.acTimer.start();
-		} else
-			this.acTimer = null;		
 
 	}
 
@@ -266,13 +261,33 @@ public class ActionController implements TimerListener {
 //		// tower builder
 //		ROLE = 0;
 		
-		// TEST CASE 2
-		// set zones
-		LGZy = 1;
-		LGZx = 1;
+//		// TEST CASE 2
+//		// set zones
+//		LGZy = 2;
+//		LGZx = 2;
+//		
+//		UGZy = 4;
+//		UGZx = 3;
+//		
+//		LRZy = 6;
+//		LRZx = 2;
+//		
+//		URZy = 8;
+//		URZx = 3;
+//		
+//		// set starting corner
+//		SC = 1;
+//
+//		// tower builder
+//		ROLE = 0;
 		
-		UGZy = 2;
-		UGZx = 2;
+		// TEST CASE 3
+		// set zones
+		LGZy = 4;
+		LGZx = 4;
+		
+		UGZy = 5;
+		UGZx = 6;
 		
 		LRZy = 6;
 		LRZx = 2;
@@ -501,11 +516,11 @@ public class ActionController implements TimerListener {
 
 	}
 
-	@Override
-	/**
-	 * Main routine of robot
-	 */
-	public void timedOut() {
+//	@Override
+//	/**
+//	 * Main routine of robot
+//	 */
+//	public void timedOut() {
 
 //		//Time is still remaining, do routine
 //		if(time still remaining)
@@ -579,7 +594,7 @@ public class ActionController implements TimerListener {
 //			
 //		}
 
-	}
+//	}
 	// Navigation complete, start searching
 	// Start 360 scan
 	// if 360 scan hasnt been completed

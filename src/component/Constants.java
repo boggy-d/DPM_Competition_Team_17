@@ -72,22 +72,19 @@ public class Constants {
 	public final static double LINE_DETECT_DIFF = 0.3;
 	
 	// us poller
-	public final static double BLOCK_INFRONT = 5;
-
+	public final static double BLOCK_INFRONT = 8;
 
 	// odometer
 	public final static int DEFAULT_TIMEOUT_PERIOD = 20;
 
 	// claw controller
 	public final static int CLAW_LIFT_FULL = (int) (360 * 2.25);
-	public final static int CLAW_LIFT_ONE_BLOCK = -700;
-	public final static int CLAW_LIFT_TWO_BLOCK = 600;
-	public final static int CLAW_LIFT_THREE_BLOCK = 500;
-	public final static int CLAW_CLOSE_ANGLE = 75;
-	public final static int CLAW_OPEN_ANGLE = 60;
+	public final static int CLAW_STACK = (int) (360);
+	public final static int CLAW_CLOSE_ANGLE = 90;
+	public final static int CLAW_OPEN_ANGLE = 80;
 
 	// searching
-	public final static int SEARCH_DISTANCE_THRESHOLD = 40;
+	public final static int SEARCH_DISTANCE_THRESHOLD = 70;
 	public final static int STARTING_SCANNING_ANGLE = 30;
 	public final static int DELAY_MS = 500;
 	public final static int DISTANCE_DIFFERENCE = 5;
