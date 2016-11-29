@@ -73,7 +73,7 @@ public class ObstacleAvoider implements TimerListener {
 		// Processes a movement based on the US passed
 		// distance is within the bandCenter, it moves straight
 		if (ActionController.usPoller.getSideDistance() <= Constants.BANDCENTER + Constants.BANDWIDTH
-				&& distance >= Constants.BANDCENTER - Constants.BANDWIDTH) {
+				&& ActionController.usPoller.getSideDistance() >= Constants.BANDCENTER - Constants.BANDWIDTH) {
 
 			ActionController.setSpeeds(Constants.AVOID_SPEED_STRAIGHT, Constants.AVOID_SPEED_STRAIGHT, true);
 		}
