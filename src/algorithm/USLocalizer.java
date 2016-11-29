@@ -48,7 +48,6 @@ public class USLocalizer {
 
 		ActionController.stopMotors();
 		cw_angle = ActionController.odometer.getAng();
-		Sound.beep();
 		ActionController.setSpeeds(-Constants.FAST_ROTATION_SPEED, Constants.FAST_ROTATION_SPEED, true);
 
 		//turn counterclockwise until its not at the "edge" of the wall anymore
@@ -64,7 +63,6 @@ public class USLocalizer {
 
 		ActionController.stopMotors();
 		ccw_angle = ActionController.odometer.getAng();
-		Sound.beep();
 		
 		//TODO add constants
 		if (cw_angle > ccw_angle) {

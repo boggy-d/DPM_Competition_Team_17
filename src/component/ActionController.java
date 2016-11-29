@@ -366,8 +366,6 @@ public class ActionController {
 					SC = t.get("BSC");
 					ROLE = 0;
 				}
-
-				System.out.println(LGZy + " " + LGZx + " " + UGZy + " " + UGZx + " " + LRZy + " " + LRZx + " " + URZy + " " + URZx + " " + SC + " " + ROLE);
 			}
 		}
 	}

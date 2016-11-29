@@ -52,7 +52,6 @@ public class LightLocalizer {
 		
 		// black line detected
 		ActionController.stopMotors();
-		Sound.beep();
 			
 		// move backward until we are in the negative XY quadrant
 		ActionController.goForward((float)(Constants.COLOR_DIST + Constants.BUFFER_DIST), -Constants.FAST_FORWARD_SPEED);
@@ -82,8 +81,6 @@ public class LightLocalizer {
 					// store angle in array
 					angles[lineCount] = ActionController.odometer.getAng();
 					lineCount++;
-					// play sound to confirm
-					Sound.beep();
 					// avoid counting same line several times
 	           		 	Delay.msDelay(500);
 				}
@@ -111,7 +108,6 @@ public class LightLocalizer {
         }
         
         // two beeps after localization
-        Sound.beep();
         Sound.beep();
 
         //TODO check if it is supposed to be added to or not
