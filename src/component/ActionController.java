@@ -36,7 +36,7 @@ import lejos.utility.TimerListener;
 import userInterface.LCDInfo;
 import wifi.WifiConnection;
 
-public class ActionController implements TimerListener {
+public class ActionController{
 
 	//Instantiate more objects
 	public static Odometer odometer;
@@ -74,6 +74,9 @@ public class ActionController implements TimerListener {
 		setTestWifiInfo();
 		//setWifiInfo();
 		
+		
+		lightPoller = new LightPoller(Constants.colorSensor, Constants.lightSensor, 25, true);
+		
 		// for Tests
 		odometer = new Odometer(30, true, 0, 0, 0);	
 		//odometer = new Odometer(30, true, 0, 0, 90);	
@@ -83,7 +86,7 @@ public class ActionController implements TimerListener {
 
 		usPoller = new USPoller(Constants.frontUsSensor, Constants.sideUsSensor, Constants.DEFAULT_TIMEOUT_PERIOD, true);
 
-		lightPoller = new LightPoller(Constants.lightSensor, Constants.colorSensor, Constants.DEFAULT_TIMEOUT_PERIOD, true);
+		
 		
 		LCDInfo lcd = new LCDInfo();
 
@@ -104,6 +107,15 @@ public class ActionController implements TimerListener {
 //		ActionController.navigator.travelTo(0,0);
 //		ActionController.navigator.turnTo(0);
 
+		// TEST
+		while (true) {
+			if(lightPoller.isBlue()) {
+				Sound.beep();
+				Delay.msDelay(1000);
+
+			}
+				
+		}
 
 		//searcher = new Searcher(zone, restrictedZone, maxTowerHeight);
 		
@@ -499,12 +511,11 @@ public class ActionController implements TimerListener {
 
 	}
 
-	@Override
 	/**
 	 * Main routine of robot
 	 */
-	public void timedOut() {
-
+//	public void doRoutine() {
+//
 //		//Time is still remaining, do routine
 //		if(timeRecorder.isTimeRemaining())
 //		{
@@ -625,9 +636,10 @@ public class ActionController implements TimerListener {
 //			else
 //			{
 //				goToStart();
+//				System.exit(0);
 //			}
 //			
 //		}
-
-	}
+//
+//	}
 }
