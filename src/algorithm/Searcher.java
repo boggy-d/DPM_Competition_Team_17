@@ -142,6 +142,8 @@ public class Searcher extends Thread {
 				// once it sees a block stop
 				ActionController.stopMotors();
 				
+				
+				
 				// For testing only
 				Button.waitForAnyPress();
 				
@@ -150,8 +152,8 @@ public class Searcher extends Thread {
 				return;
 			}
 		}
-		// no block found, return 
-		return;
+		// no block found, return
+		ActionController.isSearching = true;
 	}
 
 	/**

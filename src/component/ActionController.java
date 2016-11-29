@@ -58,7 +58,7 @@ public class ActionController implements TimerListener {
 
 	private Timer acTimer;
 //	private double movementCounter = 0; // hold how many incremental pieces have been covered
-	private boolean isSearching = false;
+	public static boolean isSearching = false;
 	
 	//Create competition variables
 	static int SC, ROLE, LRZx, LRZy, URZx, URZy, LGZx, LGZy, UGZx, UGZy;
@@ -497,7 +497,7 @@ public class ActionController implements TimerListener {
 	 * Main routine of robot
 	 */
 	public void timedOut() {
-//
+
 //		//Time is still remaining, do routine
 //		if(timeRecorder.isTimeRemaining())
 //		{
@@ -525,7 +525,7 @@ public class ActionController implements TimerListener {
 //						{
 //							claw.pickUpBlock(); //WHAT IF WE GO BACKWARDS DOES THE PPTT STILL WORK
 //							
-//							//use eva's algorithm to figure out where to place the next block
+//							//TODO use eva's algorithm to figure out where to place the next block
 //							//destX = x coord of where we want to place block
 //							//destY = y coord of where we want to place block
 //							//navigator.partitionedPathTravelTo(this.destX, this.destY, Constants.MOVEMENT_PARTITIONS);
@@ -561,7 +561,7 @@ public class ActionController implements TimerListener {
 //				//Search mode navigation, keep going towars object
 //				else
 //				{
-//					//USE EVA'S ALGORITHM TO TURN A BIT IF THE OBJECT ISNT SEEN NO MORE
+//					//TODO USE EVA'S ALGORITHM TO TURN A BIT IF THE OBJECT ISNT SEEN NO MORE
 //					setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED, true);
 //				}
 //			}
@@ -569,7 +569,7 @@ public class ActionController implements TimerListener {
 //			//Travel done, either search or place block
 //			else
 //			{
-//				//Claw has a block already, place block USE EVA'S PLACING ALGORITHM, MUST DISCUSS
+//				//TODO Claw has a block already, place block USE EVA'S PLACING ALGORITHM, MUST DISCUSS
 //				if(claw.isBlockGrabbed())
 //				{
 //					//Detected an existing block where the block is supposed to be placed, stack
@@ -592,9 +592,10 @@ public class ActionController implements TimerListener {
 //				//We're at one of the corners, do scanForBlocks
 //				else
 //				{
+//					//TODO EVA PLZ
 //					//scanForBlocks
 //					//if scanForBlocks detects an object while turning, record the angle, break out of searching algorithm, and set isSearching to true.
-//					//else if scanForBlocks is succesfully completed
+//					//else if scanForBlocks is successfully completed
 //					//		i++ (counter for corners[i])
 //					//		destX = corner[i] x coord;
 //					//		destY = corner[i] y coord;

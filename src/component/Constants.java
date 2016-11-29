@@ -110,5 +110,8 @@ public class Constants {
 	
 	public static final double BANDWIDTH = 3;
 	public static final double BANDCENTER = 30;
+	
+	public static final double CORNER_ANGLE_ERROR = Math.toRadians(2); //Threshold value for when robot returns to angle before bang bang, hence it cleared to wall
+	public static final double FINISH_ANGLE_ERROR = Math.toRadians(89.5); //Threshold value between pre-bangbang angle and finish angle (should be 90)
 }
  
