@@ -19,7 +19,7 @@ import lejos.utility.Timer;
 import lejos.utility.TimerListener;
 import lejos.robotics.filter.MedianFilter;
 
-public class LightPoller implements TimerListener{
+public class LightPoller {
 	private SensorModes lightSensor, colorSensor;
 	private SampleProvider lightSampler, colorSampler;
 	private float[] lightData, colorData;
@@ -62,14 +62,6 @@ public class LightPoller implements TimerListener{
 
 		
 		this.medianFilter = new MedianFilter(lightSampler, 5);
-		
-		
-		if (autostart) {
-			// if the timeout interval is given as <= 0, default to 20ms timeout 
-			lightPollerTimer = new Timer((INTERVAL <= 0) ? INTERVAL : Constants.DEFAULT_TIMEOUT_PERIOD, this);
-			lightPollerTimer.start();
-		} else
-			lightPollerTimer = null;
 		
 	}
 	
@@ -127,9 +119,13 @@ public class LightPoller implements TimerListener{
 	 * @return <code>true</code> if the light value is smaller than the threshold, otherwise returns <code>false</code>
 	 */
 	public boolean isLine() {
-		synchronized(this)
+		if(Math.abs(ambientLight - getLightData()) >= Constants.LINE_DETECT_DIFF)
 		{
-			return isLine;
+			return true;
+		}
+		else
+		{
+			return false;
 		}
 	}
 	
@@ -141,36 +137,15 @@ public class LightPoller implements TimerListener{
 	 */
 	public boolean isBlue()
 	{
-		synchronized(this)
-		{
-			return isBlue;
-		}
-	}
-
-	@Override
-	/**
-	 * Constantly checks if the light sensor detects a line and the 
-	 * color sensor detects a blue block
-	 */
-	public void timedOut() {
-		//TODO Implement Filters
-		if(Math.abs(ambientLight - getLightData()) >= Constants.LINE_DETECT_DIFF)
-		{
-			isLine = true;
-		}
-		else
-		{
-			isLine = false;
-		}
-		
 		if(getColorData()[2] > (getColorData()[0]))
 		{
-			isBlue = true;
+			return true;
 		}
 		else
 		{
-			isBlue = false;
+			return false;
 		}
-		
+
 	}
+
 }
