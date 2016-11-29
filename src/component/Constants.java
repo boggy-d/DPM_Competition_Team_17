@@ -94,7 +94,7 @@ public class Constants {
 	public final static int DISTANCE_FROM_CORNER = 10;
 	public final static int SCAN_MARGIN = 5;
 	public final static int OUT_OF_BOUNDS_MARGIN = 5;
-	public final static int SEARCHING_CLIP = 5;
+	public final static int SEARCHING_CLIP = 255;
 
 	//obstacle avoidance
 	public final static int AVOID_SPEED_STRAIGHT = 100;

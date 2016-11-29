@@ -141,7 +141,6 @@ public class Searcher extends Thread {
 				return;
 			}
 		}
-//		ActionController.isSearching = true;
 		
 		// stop once you've passed the ending angle
 		ActionController.stopMotors();
@@ -182,6 +181,8 @@ public class Searcher extends Thread {
 			} else {
 				// keep rotating counter clockwise towards the block
 				ActionController.setSpeeds(-Constants.SLOW_ROTATION_SPEED, Constants.SLOW_ROTATION_SPEED, true);
+				Delay.msDelay(200);
+				ActionController.stopMotors();
 			}
 		}
 

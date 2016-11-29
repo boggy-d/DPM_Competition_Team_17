@@ -46,19 +46,15 @@ public class ActionController implements TimerListener {
 	public static ClawController claw;
 	public static Searcher searcher;
 	public static ObstacleAvoider avoider;
-	public static TimeRecorder timeRecorder;
 
 	Point[] zone;	
 	static Point[] restrictedZone;	
-	Point[] corners = new Point[4];
 	Point blockLocation;
 	int maxTowerHeight;
 	int towerHeight;
-	double destX, destY;
 
 	private Timer acTimer;
 //	private double movementCounter = 0; // hold how many incremental pieces have been covered
-	public static boolean isSearching = false;
 	
 	//Create competition variables
 	static int SC, ROLE, LRZx, LRZy, URZx, URZy, LGZx, LGZy, UGZx, UGZy;
@@ -74,12 +70,7 @@ public class ActionController implements TimerListener {
 		setTestWifiInfo();
 		//setWifiInfo();
 		
-		// for Tests
 		odometer = new Odometer(30, true, 0, 0, 0);	
-		//odometer = new Odometer(30, true, 0, 0, 90);	
-
-		timeRecorder = new TimeRecorder(30, true);
-		
 
 		usPoller = new USPoller(Constants.frontUsSensor, Constants.sideUsSensor, Constants.DEFAULT_TIMEOUT_PERIOD, true);
 
@@ -103,7 +94,7 @@ public class ActionController implements TimerListener {
 //		// travel to origin and face 0 degrees
 //		ActionController.navigator.travelTo(0,0);
 //		ActionController.navigator.turnTo(0);
-//
+
 //		// TEST
 //		while (true) {
 //			if(lightPoller.getColorData()[2] > lightPoller.getColorData()[0]) {
@@ -113,13 +104,6 @@ public class ActionController implements TimerListener {
 //			}
 //				
 //		}
-
-		
-		//i = 0 (counter for corners)
-		//destX = corner[i] x coord;
-		//destY = corner[i] y coord;
-		//navigator.partitionedPathTravelTo(this.destX, this.destY, Constants.MOVEMENT_PARTITIONS);
-		
 		
 		// update position to the actual corner it starts in
 		double angle = odometer.getAng();
@@ -377,6 +361,19 @@ public class ActionController implements TimerListener {
 	}
 
 	/**
+	 * Calculates the remaining time and returns if there is
+	 * enough time to continue the routine
+	 * 
+	 * @return	<code>true</code> if the time is almost up, otherwise returns <code>false</code>
+	 */
+	public boolean isTimeShort() {
+
+		//TODO Figure out how to get the time. Write algorithm to calculate remaining time
+
+		return false;
+	}
+
+	/**
 	 * Reads the <code>BTN</code> and <code>CTN</code> and returns the
 	 * robots job for the heat
 	 * @return <code>true</code> if the robot is a builder or <code>false</code> if it is a collector
@@ -456,7 +453,7 @@ public class ActionController implements TimerListener {
 	 * @return an array of points of all the corners of the zone
 	 */
 	public Point[] getZoneCorners(int lowerLeftX, int lowerLeftY, int upperRightX, int upperRightY) {
-		
+		Point[] corners = new Point[4];
 
 		// convert from tiles to Cm
 		double lowerLeftXCm = convertTilesToCm(lowerLeftX);
@@ -511,77 +508,40 @@ public class ActionController implements TimerListener {
 	public void timedOut() {
 
 //		//Time is still remaining, do routine
-//		if(timeRecorder.isTimeRemaining())
+//		if(time still remaining)
 //		{
 //			//Travel to not done, keep going to POI
-//			if(navigator.movementCounter != Constants.MOVEMENT_PARTITIONS) // || isSearching  (this flag overrides the need to not be at destination to check for blocks (basically makes it work when searching too)
+//			if(navigation not done)
 //			{
 //				//Object in front detected
 //				if(usPoller.isFrontBlock())
 //				{
-//					//Robot doesn't currently have a block grabbed
-//					if(!claw.isBlockGrabbed())
+//					setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED, true); //Get closer slower to detect color better
+//					
+//					//Block is blue, pick it up
+//					if(lightPoller.isBlue())
 //					{
-//						//Search mode needs to constantly moves motor, navigate mode only sets speeds cause movements done by partitions
-//						if(isSearching)
-//						{
-//							setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED, true); //Get closer slower to detect color better
-//						}
-//						else
-//						{
-//							setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED, false); //Get closer slower to detect color better
-//						}
-//						
-//						//Block is blue, pick it up
-//						if(lightPoller.isBlue())
-//						{
-//							claw.pickUpBlock(); //WHAT IF WE GO BACKWARDS DOES THE PPTT STILL WORK
-//							
-//							//TODO use eva's algorithm to figure out where to place the next block
-//							//destX = x coord of where we want to place block
-//							//destY = y coord of where we want to place block
-//							//navigator.partitionedPathTravelTo(this.destX, this.destY, Constants.MOVEMENT_PARTITIONS);
-//							
-//							//isSearching = false;
-//						}
-//						
-//						//Not a blue block, obstacle avoidance
-//						else
-//						{
-//							
-//						}
+//						claw.pickUpBlock();
 //					}
 //					
-//					//The claw already has a block, obstacle avoidance
+//					//Obstacle avoidance
 //					else
 //					{
 //						
 //					}
 //				}
 //				
-//				//Normal navigation, keep navigating to POI
-//				else if (!isSearching)   //makes it so movement uses pPTT when not searching and setSpeeds when searching
-//				{
-//					Constants.leftMotor.rotate((int) navigator.dR, true);
-//					Constants.rightMotor.rotate((int) navigator.dR, false);
-//
-//					//setSpeeds(FORWARD_SPEED,FORWARD_SPEED, true); TEST THIS TO ENSURE WHEELS KEEP MOVING BETWEEN ITERATIONS
-//
-//					++navigator.movementCounter;
-//				}
-//				
-//				//Search mode navigation, keep going towars object
+//				//Keep navigating to POI
 //				else
 //				{
-//					//TODO USE EVA'S ALGORITHM TO TURN A BIT IF THE OBJECT ISNT SEEN NO MORE
-//					setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED, true);
+//					
 //				}
 //			}
 //			
 //			//Travel done, either search or place block
 //			else
 //			{
-//				//TODO Claw has a block already, place block USE EVA'S PLACING ALGORITHM, MUST DISCUSS
+//				//Claw has a block already, place block and continue (might need to retravel to POI)
 //				if(claw.isBlockGrabbed())
 //				{
 //					//Detected an existing block where the block is supposed to be placed, stack
@@ -594,25 +554,10 @@ public class ActionController implements TimerListener {
 //					{
 //						claw.placeBlock(false);
 //					}
-//					
-//					//Go back to current corner
-//					//destX = current corner's x coord
-//					//destY = current corner's y coord
-//					//navigator.partitionedPathTravelTo(this.destX, this.destY, Constants.MOVEMENT_PARTITIONS);
 //				}
-//				
-//				//We're at one of the corners, do scanForBlocks
-//				else
+//				//Do searching algorithm
+//				else(search)
 //				{
-//					//TODO EVA PLZ
-//					//scanForBlocks
-//					//if scanForBlocks detects an object while turning, record the angle, break out of searching algorithm, and set isSearching to true.
-//					//else if scanForBlocks is successfully completed
-//					//		i++ (counter for corners[i])
-//					//		destX = corner[i] x coord;
-//					//		destY = corner[i] y coord;
-//					//		navigator.partitionedPathTravelTo(this.destX, this.destY, Constants.MOVEMENT_PARTITIONS);
-//					
 //					
 //				}
 //			}
@@ -621,7 +566,7 @@ public class ActionController implements TimerListener {
 //		//Round almost over, stop everything and go to start
 //		else
 //		{
-//			//Obstacle avoidance on any block
+//			//Avoid any block
 //			if(usPoller.isFrontBlock())
 //			{
 //				
@@ -635,4 +580,11 @@ public class ActionController implements TimerListener {
 //		}
 
 	}
+	// Navigation complete, start searching
+	// Start 360 scan
+	// if 360 scan hasnt been completed
+	// 		if object detected and still in range activate motors and restart timed
+	// 		out
+	// 		else keep turning until it hits 360 deg
+	// else go to second corner
 }
