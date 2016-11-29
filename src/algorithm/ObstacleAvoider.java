@@ -16,14 +16,21 @@ import lejos.utility.TimerListener;
 public class ObstacleAvoider implements TimerListener {
 	private int distance = 0;
 	private Timer obstacleTimer;
+	
+	private double initialTheta = 0; //The angle the robot detects the wall at
+	private double currentTheta;
+	private boolean isCleared = false;
 	//Default Constructor
 	
 	public ObstacleAvoider()
 	{
+		
+		initialTheta = ActionController.odometer.getAng();
 		//turn robot 90deg to right then move forward 
-		ActionController.navigator.turnTo(ActionController.odometer.getAng() - 90);
+		ActionController.navigator.turnTo(ActionController.navigator.wrapAngle(ActionController.odometer.getAng() - 90));
 		ActionController.setSpeeds(Constants.AVOID_SPEED, Constants.AVOID_SPEED,true);
 		this.obstacleTimer = new Timer(Constants.LCD_REFRESH, this);
+		
 		obstacleTimer.start();
 		
 	}
@@ -87,5 +94,27 @@ public class ObstacleAvoider implements TimerListener {
 	
 	@Override
 	public void timedOut() {
+		currentTheta = ActionController.odometer.getAng() % 360;
+		
+		//If the corner has been cleared and the angle is about 90 deg from the pre-bangbang angle stop wall-following
+		if(isCleared && Math.abs(initialTheta - currentTheta) > Constants.FINISH_ANGLE_ERROR)
+		{
+			ActionController.stopMotors();
+			isCleared = false;	
+			this.obstacleTimer.stop();
+		}
+		
+		//If the pre-bangbang angle is similar to the angle from the odometer during wall-following
+		//the corner has been cleared
+		else if((Math.abs(initialTheta - currentTheta)) <= Constants.CORNER_ANGLE_ERROR)
+		{
+			isCleared = true;
+		}
+		
+		//Else do bangbang
+		else
+		{
+			avoidObstacle();
+		}
 	}
 }
