@@ -38,7 +38,8 @@ public class LightPoller {
 	 * 
 	 * @since 0.1.1
 	 */
-	public LightPoller(SensorModes colorSensor, SensorModes lightSensor, int INTERVAL, boolean autostart)
+
+	public LightPoller(SensorModes lightSensor, SensorModes colorSensor)
 	{
 		//TODO Modify constructor parameters. Create appropriate fields. Assign params to fields
 		

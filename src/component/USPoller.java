@@ -22,7 +22,7 @@ public class USPoller{
 	 * @param INTERVAL
 	 * @param autostart
 	 */
-	public USPoller(SensorModes frontSensor, SensorModes sideSensor, int INTERVAL, boolean autostart){
+	public USPoller(SensorModes frontSensor, SensorModes sideSensor){
 		this.frontSensor = frontSensor;
 		frontSampler = frontSensor.getMode("Distance");
 		

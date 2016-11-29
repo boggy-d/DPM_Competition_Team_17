@@ -69,14 +69,13 @@ public class ActionController{
 		// set wifi info for testing only
 		setTestWifiInfo();
 		//setWifiInfo();
-		
-		lightPoller = new LightPoller(Constants.colorSensor, Constants.lightSensor, 25, true);
 
 		odometer = new Odometer(30, true, 0, 0, 0);	
 
-		usPoller = new USPoller(Constants.frontUsSensor, Constants.sideUsSensor, Constants.DEFAULT_TIMEOUT_PERIOD, true);
+		usPoller = new USPoller(Constants.frontUsSensor, Constants.sideUsSensor);
 
-		
+		lightPoller = new LightPoller(Constants.lightSensor, Constants.colorSensor);
+
 		
 		LCDInfo lcd = new LCDInfo();
 
