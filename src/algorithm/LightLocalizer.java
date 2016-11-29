@@ -107,7 +107,7 @@ public class LightLocalizer {
         	deltaTheta += 180;
         }
         
-        // two beeps after localization
+        // beep after localization
         Sound.beep();
 
         //TODO check if it is supposed to be added to or not

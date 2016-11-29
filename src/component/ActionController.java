@@ -70,8 +70,8 @@ public class ActionController {
 	public ActionController()
 	{
 		// set wifi info for testing only
-		setTestWifiInfo();
-		//setWifiInfo();
+//		setTestWifiInfo();
+		setWifiInfo();
 
 		odometer = new Odometer(30, true, 0, 0, 0);	
 

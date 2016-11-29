@@ -169,7 +169,7 @@ public class Searcher {
 				break;
 				// if the distance is less than the distance the sensor can see and the block is not out of bounds
 			} else if (ActionController.usPoller.getFrontDistance(Constants.SEARCHING_CLIP) < Constants.SEARCH_DISTANCE_THRESHOLD 
-					&& ActionController.inBounds(ActionController.calculatePosition(ActionController.odometer.getPosition(), ActionController.usPoller.getFrontDistance(Constants.SEARCHING_CLIP)))) {
+					/*&& ActionController.inBounds(ActionController.calculatePosition(ActionController.odometer.getPosition(), ActionController.usPoller.getFrontDistance(Constants.SEARCHING_CLIP)))*/) {
 				// go forward towards block
 				ActionController.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED, true);
 				Delay.msDelay(1000);
@@ -183,7 +183,7 @@ public class Searcher {
 
 		// approach the block
 		Delay.msDelay(100);
-		ActionController.goForward(2, Constants.FORWARD_SPEED);
+		ActionController.goForward(3, Constants.FORWARD_SPEED);
 		Delay.msDelay(200);
 		
 		// if it is a blue block pick it up
