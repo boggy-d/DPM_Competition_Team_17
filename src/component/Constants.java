@@ -101,6 +101,8 @@ public class Constants {
 	public final static int AVOID_SPEED_HIGH = 130;
 	public final static int BANDCENTER = 30;
 	public final static int BANDWIDTH = 3;
+	public final static int FINISH_ANGLE_ERROR;
+	public final static int CORNER_ANGLE_ERROR;
 		
 	// block placing
 	public final static double DELTA_X = TILE_LENGTH/2;
