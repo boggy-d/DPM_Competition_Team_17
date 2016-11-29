@@ -101,8 +101,9 @@ public class Constants {
 	public final static int AVOID_SPEED_HIGH = 130;
 	public final static int BANDCENTER = 30;
 	public final static int BANDWIDTH = 3;
-	public final static int FINISH_ANGLE_ERROR;
-	public final static int CORNER_ANGLE_ERROR;
+	public static final double CORNER_ANGLE_ERROR = Math.toRadians(2); //Threshold value for when robot returns to angle before bang bang, hence it cleared to wall
+	public static final double FINISH_ANGLE_ERROR = Math.toRadians(89.5); //Threshold value between pre-bangbang angle and finish angle (should be 90)
+
 		
 	// block placing
 	public final static double DELTA_X = TILE_LENGTH/2;
@@ -120,10 +121,7 @@ public class Constants {
 	public static final long FIVE_MINUTES = 300000;
 	public static final long TIME_TO_GO_TO_START = 60000;
 	
-	public static final double BANDWIDTH = 3;
-	public static final double BANDCENTER = 30;
 	
-	public static final double CORNER_ANGLE_ERROR = Math.toRadians(2); //Threshold value for when robot returns to angle before bang bang, hence it cleared to wall
-	public static final double FINISH_ANGLE_ERROR = Math.toRadians(89.5); //Threshold value between pre-bangbang angle and finish angle (should be 90)
+	
 }
  
