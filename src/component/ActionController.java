@@ -72,9 +72,9 @@ public class ActionController implements TimerListener {
 		
 		odometer = new Odometer(30, true, 0, 0, 0);	
 
-		usPoller = new USPoller(Constants.frontUsSensor, Constants.sideUsSensor, Constants.DEFAULT_TIMEOUT_PERIOD, true);
+		usPoller = new USPoller(Constants.frontUsSensor, Constants.sideUsSensor);
 
-		lightPoller = new LightPoller(Constants.lightSensor, Constants.colorSensor, Constants.DEFAULT_TIMEOUT_PERIOD, true);
+		lightPoller = new LightPoller(Constants.lightSensor, Constants.colorSensor);
 		
 		LCDInfo lcd = new LCDInfo();
 
