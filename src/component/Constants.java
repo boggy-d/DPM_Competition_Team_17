@@ -65,6 +65,7 @@ public class Constants {
 	public final static double SENSOR_DISTANCE = 14.5;
 	public final static double TILE_LENGTH = 30.48; 
 	public final static double CORNER_MARGIN = 0.15;
+	
 	// light Poller
 	public final static double BLACKINTENSITY = 0.2;
 	public final static double BLUECOLOURID = 2;
@@ -94,7 +95,13 @@ public class Constants {
 	public final static int SCAN_MARGIN = 5;
 	public final static int OUT_OF_BOUNDS_MARGIN = 5;
 
-
+	//obstacle avoidance
+	public final static int AVOID_SPEED_STRAIGHT = 100;
+	public final static int AVOID_SPEED_LOW = 70;
+	public final static int AVOID_SPEED_HIGH = 130;
+	public final static int BANDCENTER = 30;
+	public final static int BANDWIDTH = 3;
+		
 	// block placing
 	public final static double DELTA_X = TILE_LENGTH/2;
 	public final static double DELTA_Y = TILE_LENGTH/2;
