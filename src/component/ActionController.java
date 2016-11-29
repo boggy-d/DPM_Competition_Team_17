@@ -104,15 +104,6 @@ public class ActionController implements TimerListener {
 //		ActionController.navigator.travelTo(0,0);
 //		ActionController.navigator.turnTo(0);
 
-		// TEST
-		while (true) {
-			if(lightPoller.getColorData()[2] > lightPoller.getColorData()[0]) {
-				Sound.beep();
-				Delay.msDelay(1000);
-
-			}
-				
-		}
 
 		//searcher = new Searcher(zone, restrictedZone, maxTowerHeight);
 		
