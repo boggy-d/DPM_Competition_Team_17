@@ -115,12 +115,11 @@ public class USPoller implements TimerListener{
 		}	
 	}
 	
-	public double getFrontDistance()
+	public double getFrontDistance(int maxValue)
 	{
 		synchronized(this)
 		{
-//			return getClippedData(frontSensor, frontUsData, Constants.CLIP);
-			return getRawData(frontSensor, frontUsData);
+			return getClippedData(frontSensor, frontUsData, maxValue);
 
 		}
 	}
@@ -139,7 +138,7 @@ public class USPoller implements TimerListener{
 	 */
 	public void timedOut() {
 
-		if(getFrontDistance() < Constants.BLOCK_INFRONT)
+		if(getFrontDistance(Constants.SEARCHING_CLIP) < Constants.BLOCK_INFRONT)
 		{
 			isFrontBlock = true;
 		}

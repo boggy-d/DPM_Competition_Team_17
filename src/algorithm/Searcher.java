@@ -120,7 +120,7 @@ public class Searcher extends Thread {
 		
 		while (ActionController.odometer.getAng() > (endingAngle + Constants.SCAN_MARGIN) || ActionController.odometer.getAng() < (endingAngle - Constants.SCAN_MARGIN)) {
 
-			double distance = ActionController.usPoller.getFrontDistance();
+			double distance = ActionController.usPoller.getFrontDistance(Constants.SEARCHING_CLIP);
 			Point blockPosition = ActionController.calculatePosition(ActionController.odometer.getPosition(), distance);
 
 			// if the distance is less than the distance the sensor can see and the block is not out of bounds
@@ -132,8 +132,6 @@ public class Searcher extends Thread {
 
 				// once it sees a block stop
 				ActionController.stopMotors();
-				
-				
 				
 				// For testing only
 				Sound.beep();
@@ -177,7 +175,8 @@ public class Searcher extends Thread {
 				ActionController.stopMotors();
 				break;
 				// if the distance is less than the distance the sensor can see and the block is not out of bounds
-			} else if (ActionController.usPoller.getFrontDistance() < Constants.SEARCH_DISTANCE_THRESHOLD && ActionController.inBounds(ActionController.calculatePosition(ActionController.odometer.getPosition(), ActionController.usPoller.getFrontDistance()))) {
+			} else if (ActionController.usPoller.getFrontDistance(Constants.SEARCHING_CLIP) < Constants.SEARCH_DISTANCE_THRESHOLD 
+					&& ActionController.inBounds(ActionController.calculatePosition(ActionController.odometer.getPosition(), ActionController.usPoller.getFrontDistance(Constants.SEARCHING_CLIP)))) {
 				// go forward towards block
 				ActionController.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED, true);
 			} else {
@@ -249,12 +248,12 @@ public class Searcher extends Thread {
 				// start rotating counter clockwise
 				ActionController.setSpeeds(-Constants.ROTATION_SPEED, Constants.ROTATION_SPEED, true);
 
-				double distance1 = ActionController.usPoller.getFrontDistance();
+				double distance1 = ActionController.usPoller.getFrontDistance(Constants.SEARCHING_CLIP);
 
 				// delay for a bit
 				Delay.msDelay(Constants.DELAY_MS);
 
-				double distance2 = ActionController.usPoller.getFrontDistance();
+				double distance2 = ActionController.usPoller.getFrontDistance(Constants.SEARCHING_CLIP);
 
 				// check if the scan has passed the obstacle
 				if ((distance2 - distance1) > Constants.DISTANCE_DIFFERENCE) {

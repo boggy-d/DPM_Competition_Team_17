@@ -53,7 +53,7 @@ public class Constants {
 	
 	//us localization
 	public final static int ROTATE_SPEED = 300;
-	public final static int CLIP = 45;
+	public final static int LOCALIZATION_CLIP = 45;
 	public final static int WALL_DISTANCE_THRESHOLD = 42;
 	public final static int US_MARGIN = 2;
 	
@@ -93,6 +93,7 @@ public class Constants {
 	public final static int DISTANCE_FROM_CORNER = 10;
 	public final static int SCAN_MARGIN = 5;
 	public final static int OUT_OF_BOUNDS_MARGIN = 5;
+	public final static int SEARCHING_CLIP = 5;
 
 
 	// block placing
