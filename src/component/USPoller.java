@@ -6,7 +6,7 @@ import lejos.robotics.SampleProvider;
 import lejos.utility.Timer;
 import lejos.utility.TimerListener;
 
-public class USPoller implements TimerListener{
+public class USPoller{
 	private SensorModes frontSensor;
 	private SampleProvider frontSampler;
 	private float[] frontUsData, sideUsData;
@@ -31,13 +31,7 @@ public class USPoller implements TimerListener{
 		
 		this.frontUsData = new float[frontSampler.sampleSize()];
 		this.sideUsData = new float[sideSampler.sampleSize()];
-		
-		if (autostart) {
-			// if the timeout interval is given as <= 0, default to 20ms timeout 
-			usPollerTimer = new Timer((INTERVAL <= 0) ? INTERVAL : Constants.DEFAULT_TIMEOUT_PERIOD, this);
-			usPollerTimer.start();
-		} else
-			usPollerTimer = null;
+
 		
 	}
 	
@@ -99,62 +93,41 @@ public class USPoller implements TimerListener{
 	 */
 	public boolean isFrontBlock()
 	{
-		//TODO Write algorithm for block detection. Implement filters.
-		synchronized(this)
+		if(getFrontDistance(Constants.SEARCHING_CLIP) < Constants.BLOCK_INFRONT)
 		{
-			return isFrontBlock;
-		}	
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 	
 	public boolean isSideBlock()
 	{
-		//TODO Write algorithm for block detection. Implement filters.
-		synchronized(this)
+		if(getSideDistance() < Constants.BLOCK_INFRONT)
 		{
-			return isSideBlock;
-		}	
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 	
-	public double getFrontDistance()
+	public double getFrontDistance(int maxValue)
 	{
-		synchronized(this)
 		{
-//			return getClippedData(frontSensor, frontUsData, Constants.CLIP);
-			return getRawData(frontSensor, frontUsData);
+			return getClippedData(frontSensor, frontUsData, maxValue);
 
 		}
 	}
 	
 	public double getSideDistance()
 	{
-		synchronized(this)
 		{
 			return getRawData(frontSensor, sideUsData);
 		}
 	}
 
-	@Override
-	/**
-	 * Constantly checks if the front and side USSS detect a block
-	 */
-	public void timedOut() {
-
-		if(getFrontDistance() < Constants.BLOCK_INFRONT)
-		{
-			isFrontBlock = true;
-		}
-		else
-		{
-			isFrontBlock = false;
-		}
-		
-		if(getSideDistance() < Constants.BLOCK_INFRONT)
-		{
-			isSideBlock = true;
-		}
-		else
-		{
-			isSideBlock = false;
-		}
-	}
 }

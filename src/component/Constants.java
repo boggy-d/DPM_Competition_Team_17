@@ -53,7 +53,7 @@ public class Constants {
 	
 	//us localization
 	public final static int ROTATE_SPEED = 300;
-	public final static int CLIP = 45;
+	public final static int LOCALIZATION_CLIP = 45;
 	public final static int WALL_DISTANCE_THRESHOLD = 42;
 	public final static int US_MARGIN = 2;
 	
@@ -65,6 +65,7 @@ public class Constants {
 	public final static double SENSOR_DISTANCE = 14.5;
 	public final static double TILE_LENGTH = 30.48; 
 	public final static double CORNER_MARGIN = 0.15;
+	
 	// light Poller
 	public final static double BLACKINTENSITY = 0.2;
 	public final static double BLUECOLOURID = 2;
@@ -93,7 +94,16 @@ public class Constants {
 	public final static int DISTANCE_FROM_CORNER = 10;
 	public final static int SCAN_MARGIN = 5;
 	public final static int OUT_OF_BOUNDS_MARGIN = 5;
+	public final static int SEARCHING_CLIP = 255;
 
+	//obstacle avoidance
+	public final static int AVOID_SPEED_STRAIGHT = 100;
+	public final static int AVOID_SPEED_LOW = 70;
+	public final static int AVOID_SPEED_HIGH = 130;
+	public final static int BANDCENTER = 30;
+	public final static int BANDWIDTH = 3;
+	public static final double CORNER_ANGLE_ERROR = Math.toRadians(2); //Threshold value for when robot returns to angle before bang bang, hence it cleared to wall
+	public static final double FINISH_ANGLE_ERROR = Math.toRadians(89.5); //Threshold value between pre-bangbang angle and finish angle (should be 90)
 
 	// block placing
 	public final static double DELTA_X = TILE_LENGTH/2;
@@ -111,10 +121,7 @@ public class Constants {
 	public static final long FIVE_MINUTES = 300000;
 	public static final long TIME_TO_GO_TO_START = 60000;
 	
-	public static final double BANDWIDTH = 3;
-	public static final double BANDCENTER = 30;
 	
-	public static final double CORNER_ANGLE_ERROR = Math.toRadians(2); //Threshold value for when robot returns to angle before bang bang, hence it cleared to wall
-	public static final double FINISH_ANGLE_ERROR = Math.toRadians(89.5); //Threshold value between pre-bangbang angle and finish angle (should be 90)
+	
 }
  

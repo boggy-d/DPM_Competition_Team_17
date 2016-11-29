@@ -64,7 +64,7 @@ public class LCDInfo implements TimerListener{
 		LCD.drawInt((int)(pos[0]), 3, 0);
 		LCD.drawInt((int)(pos[1]), 3, 1);
 		LCD.drawInt((int)pos[2], 3, 2);
-		LCD.drawInt((int)ActionController.usPoller.getFrontDistance(), 3, 3);
+		LCD.drawInt((int)ActionController.usPoller.getFrontDistance(Constants.LOCALIZATION_CLIP), 3, 3);
 		LCD.drawInt((int) color[2] * 1000, 3, 4);
 		LCD.drawInt((int) color[0] * 1000, 3, 5);
 		

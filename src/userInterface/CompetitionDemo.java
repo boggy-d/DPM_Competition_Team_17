@@ -25,7 +25,7 @@ public class CompetitionDemo {
 		
 		while(true)
 		{
-			ac.doRoutine();
+			//ac.doRoutine();
 		}
 		
 		//final boolean TIME_TO_GO_TO_SLEEP = true; //zzz	
