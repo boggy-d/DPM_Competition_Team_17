@@ -50,13 +50,21 @@ public class ClawController {
 	public void placeBlock(boolean stackBlock)
 	{
 		if (stackBlock) {
-			lift(Constants.CLAW_LIFT_TWO_BLOCK);
+			// put claw down
+			lift(Constants.CLAW_LIFT_FULL - Constants.CLAW_STACK);
 			release();
-			lift(Constants.CLAW_LIFT_TWO_BLOCK - Constants.CLAW_LIFT_FULL);
+			// lift block up
+			lift(-(Constants.CLAW_LIFT_FULL- Constants.CLAW_STACK));
+			// close claw
+			grab();
 		} else {
-			lift(Constants.CLAW_LIFT_ONE_BLOCK);
+			// put claw down
+			lift(Constants.CLAW_LIFT_FULL);
 			release();
-			lift(Constants.CLAW_LIFT_ONE_BLOCK - Constants.CLAW_LIFT_FULL);
+			// lift block up
+			lift(-Constants.CLAW_LIFT_FULL);
+			// close claw
+			grab();
 		}
 		this.setBlockGrabbed(false);
 	}
