@@ -186,7 +186,7 @@ public class Searcher {
 
 		// approach the block
 		Delay.msDelay(100);
-		ActionController.goForward(3, Constants.FORWARD_SPEED);
+		ActionController.goForward(2, Constants.FORWARD_SPEED);
 		Delay.msDelay(200);
 		
 		// if it is a blue block pick it up

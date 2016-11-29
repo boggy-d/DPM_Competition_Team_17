@@ -19,6 +19,7 @@ import algorithm.ClawController;
 import algorithm.LightLocalizer;
 import algorithm.Navigator;
 import algorithm.ObstacleAvoider;
+import algorithm.OdometerCorrection;
 import algorithm.Searcher;
 import algorithm.USLocalizer;
 import lejos.hardware.Button;
@@ -46,6 +47,8 @@ public class ActionController {
 	public static ClawController claw;
 	public static Searcher searcher;
 	public static ObstacleAvoider avoider;
+	public static OdometerCorrection odometerCorrection;
+
 
 	Point[] zone;	
 	static Point[] restrictedZone;	
@@ -76,9 +79,8 @@ public class ActionController {
 
 		lightPoller = new LightPoller(Constants.lightSensor, Constants.colorSensor);
 
-		
 		// for debugging only REMOVE TO RUN
-		LCDInfo lcd = new LCDInfo();
+//		LCDInfo lcd = new LCDInfo();
 
 		navigator = new Navigator();
 
@@ -86,7 +88,6 @@ public class ActionController {
 		
 //		avoider = new ObstacleAvoider();
 
-		
 		// localize
 		USLocalizer usLocalizer = new USLocalizer();
 		usLocalizer.usLocalize();
@@ -98,16 +99,6 @@ public class ActionController {
 		ActionController.navigator.travelTo(0,0);
 		ActionController.navigator.turnTo(0);
 
-//		// TEST
-//		while (true) {
-//			if(lightPoller.getColorData()[2] > lightPoller.getColorData()[0]) {
-//				Sound.beep();
-//				Delay.msDelay(1000);
-//
-//			}
-//				
-//		}
-		
 		// update position to the actual corner it starts in
 		double angle = odometer.getAng();
 		double[] position;
@@ -143,6 +134,8 @@ public class ActionController {
 			maxTowerHeight = 1;
 		}
 
+//		odometerCorrection = new OdometerCorrection(25, true);
+		
 		searcher = new Searcher(zone, restrictedZone, maxTowerHeight);
 		
 //		// navigate to the first corner of the zone while avoiding obstacles
@@ -302,6 +295,26 @@ public class ActionController {
 
 		// tower builder
 		ROLE = 0;
+		
+//		// TEST CASE 4
+//		// set zones
+//		LGZy = 7;
+//		LGZx = 7;
+//		
+//		UGZy = 8;
+//		UGZx = 8;
+//		
+//		LRZy = 6;
+//		LRZx = 2;
+//		
+//		URZy = 8;
+//		URZx = 3;
+//		
+//		// set starting corner
+//		SC = 2;
+//
+//		// tower builder
+//		ROLE = 1;
 				
 	}
 

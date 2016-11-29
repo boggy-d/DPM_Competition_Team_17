@@ -42,7 +42,7 @@ public class Constants {
 	public final static int FORWARD_SPEED = 150;
 	public final static int FAST_ROTATION_SPEED = 200;
 	public final static int ROTATION_SPEED = 130;
-	public final static int SLOW_ROTATION_SPEED = 70;
+	public final static int SLOW_ROTATION_SPEED = 60;
 	public final static int ACCELERATION = 3000;
 	public final static int AVOID_SPEED = 100;
 	
@@ -84,7 +84,7 @@ public class Constants {
 	public final static int CLAW_OPEN_ANGLE = 80;
 
 	// searching
-	public final static int SEARCH_DISTANCE_THRESHOLD = 70;
+	public final static int SEARCH_DISTANCE_THRESHOLD = 60;
 	public final static int STARTING_SCANNING_ANGLE = 30;
 	public final static int DELAY_MS = 500;
 	public final static int DISTANCE_DIFFERENCE = 5;
