@@ -130,9 +130,6 @@ public class Searcher {
 				// once it sees a block stop
 				ActionController.stopMotors();
 				
-				// For testing only
-				Sound.beep();
-				
 				// is is a block, check what block it is 
 				getBlock(endingAngle, ActionController.odometer.getAng(), cornerX, cornerY);
 				return;
@@ -191,7 +188,6 @@ public class Searcher {
 		
 		// if it is a blue block pick it up
 		if (ActionController.lightPoller.isBlue()) {
-			Sound.beepSequenceUp();
 			// backup to pick up the block
 			ActionController.goForward(14, -Constants.FORWARD_SPEED);
 			//Claw pickup routine

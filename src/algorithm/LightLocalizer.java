@@ -105,16 +105,15 @@ public class LightLocalizer {
         double deltaX = -Constants.COLOR_DIST * Math.cos(Math.toRadians(deltaYTheta) / 2);
         double deltaY = -Constants.COLOR_DIST * Math.cos(Math.toRadians(deltaXTheta) / 2);
         double deltaTheta = 180 - negativeYTheta + deltaYTheta / 2;		//check math
-        /*	
-        System.out.println("deltaX: "+ deltaX);
-        System.out.println("deltaY: "+ deltaY);
-        System.out.println("deltaTheta: "+ deltaTheta);
-        */
+
         if(deltaTheta > 180){
         	deltaTheta += 180;
         }
-        //System.out.println("wrapped deltaTheta: "+ deltaTheta);
         
+        // two beeps after localization
+        Sound.beep();
+        Sound.beep();
+
         //TODO check if it is supposed to be added to or not
         // correct coordinates and orientation
 		double[] correction = {deltaX, deltaY, ActionController.odometer.getAng() + deltaTheta};
