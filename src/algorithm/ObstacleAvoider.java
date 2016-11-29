@@ -27,7 +27,7 @@ public class ObstacleAvoider implements TimerListener {
 		
 		initialTheta = ActionController.odometer.getAng();
 		//turn robot 90deg to right then move forward 
-		ActionController.navigator.turnTo(ActionController.odometer.getAng() - 90);
+		ActionController.navigator.turnTo(ActionController.navigator.wrapAngle(ActionController.odometer.getAng() - 90));
 		ActionController.setSpeeds(Constants.AVOID_SPEED, Constants.AVOID_SPEED,true);
 		this.obstacleTimer = new Timer(Constants.LCD_REFRESH, this);
 		
