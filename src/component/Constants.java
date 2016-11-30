@@ -84,7 +84,7 @@ public class Constants {
 	public final static int CLAW_OPEN_ANGLE = 80;
 
 	// searching
-	public final static int SEARCH_DISTANCE_THRESHOLD = 60;
+	public final static int SEARCH_DISTANCE_THRESHOLD = 50;
 	public final static int STARTING_SCANNING_ANGLE = 30;
 	public final static int DELAY_MS = 500;
 	public final static int DISTANCE_DIFFERENCE = 5;

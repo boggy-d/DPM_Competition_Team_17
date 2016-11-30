@@ -177,13 +177,13 @@ public class Searcher {
 				// keep rotating counter clockwise towards the block
 				ActionController.setSpeeds(-Constants.SLOW_ROTATION_SPEED, Constants.SLOW_ROTATION_SPEED, true);
 				Delay.msDelay(100);
-				ActionController.goForward(3, Constants.FORWARD_SPEED);
+				ActionController.goForward(4, Constants.FORWARD_SPEED);
 			}
 		}
 
 		// approach the block
 		Delay.msDelay(100);
-		ActionController.goForward(3, Constants.FORWARD_SPEED);
+		ActionController.goForward(2, Constants.FORWARD_SPEED);
 		Delay.msDelay(200);
 		
 		// if it is a blue block pick it up

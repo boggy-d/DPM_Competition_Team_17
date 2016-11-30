@@ -69,10 +69,6 @@ public class ActionController {
 	 */
 	public ActionController()
 	{
-		// set wifi info for testing only
-//		setTestWifiInfo();
-		setWifiInfo();
-
 		odometer = new Odometer(30, true, 0, 0, 0);	
 
 		usPoller = new USPoller(Constants.frontUsSensor, Constants.sideUsSensor);
@@ -86,13 +82,17 @@ public class ActionController {
 
 		claw = new ClawController();
 		
-//		avoider = new ObstacleAvoider();
-
-		// localize
 		USLocalizer usLocalizer = new USLocalizer();
-		usLocalizer.usLocalize();
-
 		LightLocalizer lightLocalizer = new LightLocalizer();
+
+//		avoider = new ObstacleAvoider();
+		
+		// set wifi info for testing only
+//		setTestWifiInfo();
+		setWifiInfo();
+		
+		// localize
+		usLocalizer.usLocalize();
 		lightLocalizer.lightlocalize();
 
 		// travel to origin and face 0 degrees
@@ -256,33 +256,13 @@ public class ActionController {
 //		// tower builder
 //		ROLE = 0;
 		
-//		// TEST CASE 2
-//		// set zones
-//		LGZy = 2;
-//		LGZx = 2;
-//		
-//		UGZy = 4;
-//		UGZx = 3;
-//		
-//		LRZy = 6;
-//		LRZx = 2;
-//		
-//		URZy = 8;
-//		URZx = 3;
-//		
-//		// set starting corner
-//		SC = 1;
-//
-//		// tower builder
-//		ROLE = 0;
-		
-		// TEST CASE 3
+		// TEST CASE 2
 		// set zones
-		LGZy = 4;
-		LGZx = 4;
+		LGZy = 2;
+		LGZx = 2;
 		
-		UGZy = 5;
-		UGZx = 6;
+		UGZy = 4;
+		UGZx = 3;
 		
 		LRZy = 6;
 		LRZx = 2;
@@ -295,6 +275,26 @@ public class ActionController {
 
 		// tower builder
 		ROLE = 0;
+		
+//		// TEST CASE 3
+//		// set zones
+//		LGZy = 4;
+//		LGZx = 4;
+//		
+//		UGZy = 5;
+//		UGZx = 6;
+//		
+//		LRZy = 6;
+//		LRZx = 2;
+//		
+//		URZy = 8;
+//		URZx = 3;
+//		
+//		// set starting corner
+//		SC = 1;
+//
+//		// tower builder
+//		ROLE = 0;
 		
 //		// TEST CASE 4
 //		// set zones
@@ -506,7 +506,7 @@ public class ActionController {
 	/**
 	 * Moves the robot to the starting corner
 	 */
-	public void goToStart() {		
+	public static void goToStart() {		
 		// avoid obstacles on the way
 //		avoider.start();
 		

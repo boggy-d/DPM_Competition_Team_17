@@ -90,6 +90,7 @@ public class TimeRecorder implements TimerListener{
 		if(calculateTimeRemaining() < Constants.TIME_TO_GO_TO_START)
 		{
 			isTimeRemaining = false;
+			ActionController.goToStart();
 		}
 		else
 		{
