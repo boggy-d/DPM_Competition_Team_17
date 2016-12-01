@@ -35,19 +35,16 @@ public class LightLocalizer {
 		ActionController.navigator.turnTo(45);
 		
 		ActionController.stopMotors();
+		
 		//setting speed and begin to move forward speed
 		ActionController.setSpeeds(Constants.FAST_FORWARD_SPEED, Constants.FAST_FORWARD_SPEED, true);
 		
-		
-		//TODO Check if we actually need prevLightData
-		//set the previous light data
-		//double prevLightData = ActionController.lightPoller.getLightData();
+	
 		
 		// keeps driving forward until we detect a line
 		while(!(ActionController.lightPoller.isLine())) {
 			
-			//change the previous light data
-			//prevLightData = ActionController.lightPoller.getLightData();
+			//keep traveling forward
 		}
 		
 		// black line detected
@@ -64,18 +61,19 @@ public class LightLocalizer {
 		
 		//angles = {angleX negative, angleY positive, angleX positive, angleY negative}
 		double[] angles = new double[4] ;
+		
+		//line detected variable used to make sure lines are not counted twice
 		boolean isOnLine = false;
 		
 		
+		//keep rotating until 4 lines have been scanned
 		while (lineCount < 4) {
-			
-			//set the previous light data
-			//prevLightData = ActionController.lightPoller.getLightData();
 			
 			// keeps rotating until line is detected
 			if(ActionController.lightPoller.isLine()) 
 			{ isOnLine = true; }
 				
+			//no longer on line - read first line
 				if (isOnLine) {
 					
 					// store angle in array
@@ -84,25 +82,26 @@ public class LightLocalizer {
 					// avoid counting same line several times
 	           		 	Delay.msDelay(500);
 				}
+			//set variable to off line state
 				isOnLine = false;
 		}
 
 		// stop motors
 		ActionController.stopMotors();
-        /*System.out.println("x: "+ ActionController.odometer.getX());
-        System.out.println("y: "+ ActionController.odometer.getY());
-        System.out.println("Th: "+ ActionController.odometer.getAng());
-		*/
+
         // calculate correct x, y and theta differences
         // using formulas from the tutorial slides 
         double negativeYTheta = angles[3];
         double deltaXTheta = angles[2] - angles[0];
-        double deltaYTheta = angles[3] - angles[1];		// or 3-1? check
+        double deltaYTheta = angles[3] - angles[1];		
         
+	//caluclate position relative to assumed (0,0)
         double deltaX = -Constants.COLOR_DIST * Math.cos(Math.toRadians(deltaYTheta) / 2);
         double deltaY = -Constants.COLOR_DIST * Math.cos(Math.toRadians(deltaXTheta) / 2);
-        double deltaTheta = 180 - negativeYTheta + deltaYTheta / 2;		//check math
-
+        //calculate angle for angle correction
+	double deltaTheta = 180 - negativeYTheta + deltaYTheta / 2;		
+	
+	//rescale angle if out of range
         if(deltaTheta > 180){
         	deltaTheta += 180;
         }
@@ -110,16 +109,11 @@ public class LightLocalizer {
         // beep after localization
         Sound.beep();
 
-        //TODO check if it is supposed to be added to or not
-        // correct coordinates and orientation
+     
+       		// correct coordinates and orientation by updating odometer
 		double[] correction = {deltaX, deltaY, ActionController.odometer.getAng() + deltaTheta};
 		boolean[] update = {true, true, true};
 		ActionController.odometer.setPosition(correction, update);
-		/*
-		System.out.println("x: "+ ActionController.odometer.getX());
-        System.out.println("y: "+ ActionController.odometer.getY());
-        System.out.println("Th: "+ ActionController.odometer.getAng());
-		*/
 	}
 }
 

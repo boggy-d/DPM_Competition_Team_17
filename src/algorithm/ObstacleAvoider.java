@@ -79,13 +79,13 @@ public class ObstacleAvoider implements TimerListener {
 		}
 
 		// too close, it needs to move away from the wall
-		// outer wheel moves backwards
+		// left wheel fast, right wheel slow. Causes robot to move toward bandcenter (move right)
 		else if (ActionController.usPoller.getSideDistance() < Constants.BANDCENTER - Constants.BANDWIDTH) {
 			ActionController.setSpeeds(Constants.AVOID_SPEED_HIGH, Constants.AVOID_SPEED_LOW, true);
 		}
 
 		// too far, it needs to move closer to the wall
-		// outer wheels moves forward faster
+		// left wheel slow, right wheel fast. Causes robot to move toward bandcenter (move left)
 		else if (ActionController.usPoller.getSideDistance() > Constants.BANDCENTER + Constants.BANDWIDTH) {
 			ActionController.setSpeeds(Constants.AVOID_SPEED_LOW, Constants.AVOID_SPEED_HIGH, true);
 		}
