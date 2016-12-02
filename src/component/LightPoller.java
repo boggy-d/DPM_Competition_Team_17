@@ -27,21 +27,13 @@ public class LightPoller {
 	private Timer lightPollerTimer;
 	private double ambientLight;
 	private boolean isLine, isBlue;
-
-	// initializes color sensor.
-	// method with variable filters for different needs
-	// one filter for black gridlines
-	// one filter for object detection
 	
 	/**
-	 * Class Constructor
-	 * 
-	 * @since 0.1.1
+	 * Class Constructor that initializes the sensors
 	 */
 
 	public LightPoller(SensorModes lightSensor, SensorModes colorSensor)
 	{
-		//TODO Modify constructor parameters. Create appropriate fields. Assign params to fields
 		
 		this.lightSensor = lightSensor;
 		this.lightSampler = this.lightSensor.getMode("Red");
@@ -63,36 +55,14 @@ public class LightPoller {
 	}
 	
 	/**
-	 * Stops the Timer
-	 * @see Timer
-	 * @see TimerListener
-	 */
-	public void stop() {
-		if (lightPollerTimer != null)
-			lightPollerTimer.stop();
-	}
-	
-	/**
-	 * Starts the Timer
-	 * @see Timer
-	 * @see TimerListener
-	 */
-	public void start() {
-		if (lightPollerTimer != null)
-			lightPollerTimer.start();
-	}
-	
-	/**
 	 * Polls the LightSensor1 and returns the
 	 * amount of light the LightSensor1 detected 
 	 * @return the light value between 0 and 100, with 0 = light and 100 = dark
 	 */
 	public double getLightData()
 	{
-		//TODO filter
 		
 		lightSensor.fetchSample(lightData, 0);
-//		medianFilter.fetchSample(lightData, 0);
 		return lightData[0];
 		
 	}

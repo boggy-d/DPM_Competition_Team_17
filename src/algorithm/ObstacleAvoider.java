@@ -24,6 +24,7 @@ public class ObstacleAvoider{
 	private boolean isDone = false;
 	//Default Constructor
 	
+	
 	public ObstacleAvoider()
 	{
 		
@@ -35,31 +36,7 @@ public class ObstacleAvoider{
 	}
 	
 	/**
-	 * Checks how long the USS has been detecting values
-	 * under the threshold and returns if the object is a wall
-	 * 
-	 * @return <code>true</code> if the USS has been detecting values under the threshold for n (TBD) seconds, <code>false</code> otherwise
-	 */
-	public boolean isWall()
-	{
-		return false;
-		
-	}
-	
-	/**
-	 * Turns the robot 90deg and breaks out of obstacle avoidance (exact algorithm still TBD)
-	 * 
-	 * @see component.TimeRecorder
-	 * @see component.Odometer
-	 */
-	public void avoidWall()
-	{
-		
-	}
-	
-	/**
-	 * Turns the robot 90deg and makes it go forward until the second
-	 * USS does not detect an obstacle anymore (exact algorithm still TBD)
+	 * Avoids blocks using Bang bang algorithm
 	 * 
 	 * @see USPoller
 	 * @see TimeRecorder
@@ -94,7 +71,10 @@ public class ObstacleAvoider{
 		isDone = false;
 	}
 
-	
+	/**
+	 * Avoids walls by turning left motor faster if the robot gets close to a wall or
+	 * turning the right motor faster if it goes too far away
+	 */
 	public void bangBang() {
 		// Processes a movement based on the US passed
 		// distance is within the bandCenter, it moves straight
@@ -105,13 +85,13 @@ public class ObstacleAvoider{
 		}
 
 		// too close, it needs to move away from the wall
-		// outer wheel moves backwards
+		// left wheel fast, right wheel slow. Causes robot to move toward bandcenter (move right)
 		else if (ActionController.usPoller.getSideDistance() < Constants.BANDCENTER - Constants.BANDWIDTH) {
 			ActionController.setSpeeds(Constants.AVOID_SPEED_HIGH, Constants.AVOID_SPEED_LOW, true);
 		}
 
 		// too far, it needs to move closer to the wall
-		// outer wheels moves forward faster
+		// left wheel slow, right wheel fast. Causes robot to move toward bandcenter (move left)
 		else if (ActionController.usPoller.getSideDistance() > Constants.BANDCENTER + Constants.BANDWIDTH) {
 			ActionController.setSpeeds(Constants.AVOID_SPEED_LOW, Constants.AVOID_SPEED_HIGH, true);
 		}

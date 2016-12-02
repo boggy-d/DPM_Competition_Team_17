@@ -20,8 +20,6 @@ public class Constants {
 	public final static EV3LargeRegulatedMotor clawClose = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("B"));
 
 	// Instantiate sensors
-	// private static final EV3UltrasonicSensor frontUsSensor = new
-	// EV3UltrasonicSensor(LocalEV3.get().getPort("S2"));
 
 	public static final Port usPort = LocalEV3.get().getPort("S2");
 	public static final SensorModes frontUsSensor = new EV3UltrasonicSensor(usPort);
@@ -42,7 +40,7 @@ public class Constants {
 	public final static int FORWARD_SPEED = 150;
 	public final static int FAST_ROTATION_SPEED = 200;
 	public final static int ROTATION_SPEED = 130;
-	public final static int SLOW_ROTATION_SPEED = 70;
+	public final static int SLOW_ROTATION_SPEED = 60;
 	public final static int ACCELERATION = 3000;
 	public final static int AVOID_SPEED = 100;
 	
@@ -72,22 +70,19 @@ public class Constants {
 	public final static double LINE_DETECT_DIFF = 0.3;
 	
 	// us poller
-	public final static double BLOCK_INFRONT = 5;
-
+	public final static double BLOCK_INFRONT = 8;
 
 	// odometer
 	public final static int DEFAULT_TIMEOUT_PERIOD = 20;
 
 	// claw controller
 	public final static int CLAW_LIFT_FULL = (int) (360 * 2.25);
-	public final static int CLAW_LIFT_ONE_BLOCK = -700;
-	public final static int CLAW_LIFT_TWO_BLOCK = 600;
-	public final static int CLAW_LIFT_THREE_BLOCK = 500;
-	public final static int CLAW_CLOSE_ANGLE = 75;
-	public final static int CLAW_OPEN_ANGLE = 60;
+	public final static int CLAW_STACK = (int) (360);
+	public final static int CLAW_CLOSE_ANGLE = 90;
+	public final static int CLAW_OPEN_ANGLE = 80;
 
 	// searching
-	public final static int SEARCH_DISTANCE_THRESHOLD = 40;
+	public final static int SEARCH_DISTANCE_THRESHOLD = 50;
 	public final static int STARTING_SCANNING_ANGLE = 30;
 	public final static int DELAY_MS = 500;
 	public final static int DISTANCE_DIFFERENCE = 5;

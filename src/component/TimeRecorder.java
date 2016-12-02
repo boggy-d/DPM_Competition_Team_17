@@ -3,8 +3,6 @@
  * to the heat
  * 
  * @author Bogdan Dumitru
- * @version 0.1.0
- * @since 0.1.0
  */
 
 package component;
@@ -18,35 +16,12 @@ public class TimeRecorder{
 	private boolean isTimeRemaining;
 	private Timer timeTimer;
 	
+	/**
+	 * Sets the beginning time of the competition
+	 */
 	public TimeRecorder()
 	{
 		setBeginningTime();
-//		if (autostart) {
-//			// if the timeout interval is given as <= 0, default to 20ms timeout 
-//			timeTimer = new Timer((INTERVAL <= 0) ? INTERVAL : Constants.DEFAULT_TIMEOUT_PERIOD, this);
-//			timeTimer.start();
-//		} else
-//			timeTimer = null;
-	}
-	
-	/**
-	 * Stops the Timer
-	 * @see Timer
-	 * @see TimerListener
-	 */
-	public void stop() {
-		if (timeTimer != null)
-			timeTimer.stop();
-	}
-	
-	/**
-	 * Starts the Timer
-	 * @see Timer
-	 * @see TimerListener
-	 */
-	public void start() {
-		if (timeTimer != null)
-			timeTimer.start();
 	}
 	
 	/**
@@ -54,7 +29,6 @@ public class TimeRecorder{
 	 */
 	public void setBeginningTime()
 	{
-		// TODO Figure out how to get the time.
 		this.beginningTime = System.currentTimeMillis();
 	}
 	
@@ -63,42 +37,36 @@ public class TimeRecorder{
 	 */
 	public void setCurrentTime()
 	{
-		// TODO Figure out how to get the time.
 		this.currentTime = System.currentTimeMillis();
 	}
 	
 	/**
-	 * Returns the time remaining to the heat
+	 * Returns the time remaining to the round
 	 */
 	public long calculateTimeRemaining()
 	{
-		//TODO Simple subtraction to calculate time remaining
 		return (Constants.FIVE_MINUTES + this.beginningTime) - this.currentTime;
 	}
 	
+	/**
+	 * Evaluates the time remaining of the round to 
+	 * see if the robot needs to return to the starting
+	 * corner or not
+	 * @return true if there is time remaining before returning to the starting corner, false otherwise
+	 */
 	public boolean isTimeRemaining()
 	{
 		setCurrentTime();
 
 		if (calculateTimeRemaining() < Constants.TIME_TO_GO_TO_START) {
 			isTimeRemaining = false;
-		} else {
+
+			ActionController.goToStart();
+		}
+		else
+		{
 			isTimeRemaining = true;
 		}
 		return isTimeRemaining;
 	}
-
-//	@Override
-//	public void timedOut() {
-//		// TODO Get data. Calculate time (basically use the above methods)
-//		setCurrentTime();
-//
-//		if (calculateTimeRemaining() < Constants.TIME_TO_GO_TO_START) {
-//			isTimeRemaining = false;
-//		} else {
-//			isTimeRemaining = true;
-//		}
-//		
-//		
-//	}
 }

@@ -2,8 +2,6 @@
  * The Searcher class looks for blocks in the arena, and places them properly in the zone
  * 
  * @author Eva Suska
- * @version 1.0.0
- * @since 0.1.0
  */
 
 package algorithm;
@@ -41,9 +39,16 @@ public class Searcher{
 		// initialize starting block placing position
 		blockLocation = new Point((float)(zone[0].x + Constants.DELTA_X), (float)(zone[0].y + Constants.TILE_LENGTH / 4));
 		towerHeight = 0;
-		
-		// a certain amount up from the corner so that it is not exactly in the
-		// corner
+	}
+
+	
+	/**
+	 * Search for blocks
+	 * @param corners a Point array of each of the corners of the zone to search
+	 * 
+	 */
+	public void search() {
+		// a certain amount up from the corner so that it is not exactly in the corner
 		int xBuffer = (int) (Constants.DISTANCE_FROM_CORNER * Math.sin(45));
 		int yBuffer = (int) (Constants.DISTANCE_FROM_CORNER * Math.cos(45));
 
@@ -81,7 +86,8 @@ public class Searcher{
 	}
 
 	/**
-	 * Scan for blocks
+	 * Keeps rotating the robot until the USS either detects a block
+	 * or the scan is complete
 	 * @param endingAngle angle the robot should stop scanning at
 	 * @param cornerX the x coordinate of the corner you are searching
 	 * @param cornerY the y coordinate of the corner you are searching
@@ -107,11 +113,6 @@ public class Searcher{
 				// once it sees a block stop
 				ActionController.stopMotors();
 				
-				// For testing only
-				Sound.beep();
-				
-				currentAngle = ActionController.odometer.getAng();
-				
 				// is is a block, check what block it is 
 				//getBlock(endingAngle, ActionController.odometer.getAng(), cornerX, cornerY);
 				return true;
@@ -132,6 +133,7 @@ public class Searcher{
 	 * Approach the block and check if it is a wooden or foam block,
 	 * if it is a wooden block go back and continue scanning for blocks
 	 * if it is a blue block, pick it up and place or stack it
+	 * 
 	 * @param endingAngle the angle the robot should stop scanning at
 	 * @param angleOfBlock the angle where the robot detected an object
 	 * @param cornerX the x coordinate of the corner you are searching
@@ -151,27 +153,27 @@ public class Searcher{
 				break;
 				// if the distance is less than the distance the sensor can see and the block is not out of bounds
 			} else if (ActionController.usPoller.getFrontDistance(Constants.SEARCHING_CLIP) < Constants.SEARCH_DISTANCE_THRESHOLD 
-					&& ActionController.inBounds(ActionController.calculatePosition(ActionController.odometer.getPosition(), ActionController.usPoller.getFrontDistance(Constants.SEARCHING_CLIP)))) {
+					/*&& ActionController.inBounds(ActionController.calculatePosition(ActionController.odometer.getPosition(), ActionController.usPoller.getFrontDistance(Constants.SEARCHING_CLIP)))*/) {
 				// go forward towards block
 				ActionController.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED, true);
+				Delay.msDelay(1000);
 			} else {
 				// keep rotating counter clockwise towards the block
 				ActionController.setSpeeds(-Constants.SLOW_ROTATION_SPEED, Constants.SLOW_ROTATION_SPEED, true);
-				Delay.msDelay(200);
-				ActionController.stopMotors();
+				Delay.msDelay(100);
+				ActionController.goForward(4, Constants.FORWARD_SPEED);
 			}
 		}
 
 		// approach the block
 		Delay.msDelay(100);
-		ActionController.goForward(3, Constants.FORWARD_SPEED);
+		ActionController.goForward(2, Constants.FORWARD_SPEED);
 		Delay.msDelay(200);
 		
 		// if it is a blue block pick it up
 		if (ActionController.lightPoller.isBlue()) {
-			Sound.beepSequenceUp();
 			// backup to pick up the block
-			ActionController.goForward(7, -Constants.FORWARD_SPEED);
+			ActionController.goForward(14, -Constants.FORWARD_SPEED);
 			//Claw pickup routine
 			ActionController.claw.pickUpBlock();
 			hasBlock = true;
@@ -201,10 +203,6 @@ public class Searcher{
 
 			towerHeight++;
 
-			// TODO add block position we just placed to zones we should avoid
-
-
-			// TODO use zone avoiding algorithm (wavefront ect) when traveling to the corner
 			// go back to the corner
 			ActionController.navigator.travelTo(cornerX, cornerY);
 			ActionController.navigator.turnTo(angleOfBlock);

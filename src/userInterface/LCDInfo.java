@@ -5,7 +5,6 @@
  * prints them on the LCD screen of the EV3
  * 
  * @author Bogdan Dumitru
- * @version 0.1.0
  */
 
 package userInterface;
@@ -28,14 +27,12 @@ public class LCDInfo implements TimerListener{
 
 	// arrays for displaying data
 	private double [] pos;
-	private float[] color;
 	
 	public LCDInfo() {
 		this.lcdTimer = new Timer(Constants.LCD_REFRESH, this);
 		
 		// initialise the arrays for displaying data
 		pos = new double [3];
-		color = new float[ActionController.lightPoller.getColorData().length];
 		
 		// start the timer
 		lcdTimer.start();
@@ -51,7 +48,6 @@ public class LCDInfo implements TimerListener{
 	 */
 	public void printDisplay()
 	{
-		//TODO add constants
 		LCD.clear();
 		LCD.drawString("X: ", 0, 0);
 		LCD.drawString("Y: ", 0, 1);
@@ -59,23 +55,13 @@ public class LCDInfo implements TimerListener{
 		LCD.drawString("D: ", 0, 3);
 		LCD.drawString("Blu: ", 0, 4);
 		LCD.drawString("Red: ", 0, 5);
-		LCD.drawString("isBlue: ", 0, 6);
 
 		LCD.drawInt((int)(pos[0]), 3, 0);
 		LCD.drawInt((int)(pos[1]), 3, 1);
 		LCD.drawInt((int)pos[2], 3, 2);
-		LCD.drawInt((int)ActionController.usPoller.getFrontDistance(Constants.LOCALIZATION_CLIP), 3, 3);
-		LCD.drawInt((int) color[2] * 1000, 3, 4);
-		LCD.drawInt((int) color[0] * 1000, 3, 5);
-		
-		if(ActionController.lightPoller.isBlue())
-		{
-			LCD.drawString("True", 10, 6);
-		}
-		else
-		{
-			LCD.drawString("False", 10, 6);
-		}
+		LCD.drawInt((int)ActionController.usPoller.getFrontDistance(Constants.SEARCHING_CLIP), 3, 3);
+		LCD.drawInt((int)ActionController.lightPoller.getColorData()[2] * 1000, 3, 4);
+		LCD.drawInt((int)ActionController.lightPoller.getColorData()[0] * 1000, 3, 5);
 	}
 
 	/**
@@ -83,7 +69,6 @@ public class LCDInfo implements TimerListener{
 	 */
 	public void timedOut() { 
 		ActionController.odometer.getPosition(pos);
-		color = ActionController.lightPoller.getColorData();
 		printDisplay();
 	}
 	

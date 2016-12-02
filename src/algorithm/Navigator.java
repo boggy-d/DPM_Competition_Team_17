@@ -6,8 +6,6 @@
  * @author Bogdan Dumitru
  * @author Eric Zimmermann
  * @author Fiona Hang
- * @version 1.0.0
- * @since 0.1.0
  */
 
 package algorithm;
@@ -29,6 +27,7 @@ public class Navigator {
 	 */
 
 	public Navigator() {
+		//set accelerations of motors
 		Constants.leftMotor.setAcceleration(Constants.ACCELERATION);
 		Constants.rightMotor.setAcceleration(Constants.ACCELERATION);
 	}
@@ -41,8 +40,6 @@ public class Navigator {
 	 * @return the new angle value between 0 and 360
 	 */
 	public double wrapAngle(double angle) {
-
-		// TODO Might be deprecated because of the fixDegreeAngle method
 
 		if (angle < 0) {
 			angle += 360;
@@ -58,7 +55,7 @@ public class Navigator {
 	/**
 	 * Calculates rotations needed to be performed by both wheels in order to
 	 * rotate by a certain angle. Rotations needed are calculated by the
-	 * relative dimensions of the bot accuracy is clipped by casting actual
+	 * relative dimensions of the bot and accuracy is clipped by casting actual
 	 * value to an integer value
 	 * 
 	 * @param radius
@@ -102,7 +99,7 @@ public class Navigator {
 				return_angle += Math.PI;
 			}
 
-			else // 3rd quadrant anfle wrt x-axis
+			else // 3rd quadrant angle wrt x-axis
 			{
 				return_angle += Math.PI;
 			}
@@ -127,32 +124,17 @@ public class Navigator {
 
 		ActionController.stopMotors();
 		ActionController.setSpeeds(Constants.FAST_ROTATION_SPEED, Constants.FAST_ROTATION_SPEED, false);
-
+		
+		
+		//calculate angle required to turn one direction
 		double delta_theta = target_angle - ActionController.odometer.getAng();
 		int turning_angle = convertAngle(Constants.RADIUS, Constants.TRACK, delta_theta);
-		/*
-		 * System.out.println("target_angle:" + target_angle);
-		 * System.out.println("delta_theta:"+ delta_theta); System.out.println(
-		 * "odo ang:"+ ActionController.odometer.getAng()); System.out.println(
-		 * "turning angle:"+ turning_angle);
-		 */
-
+		
+		//calculate angle required to turn in other direction
 		double adjusted_theta = 360 - Math.abs(delta_theta);
 		int adjusted_turning_angle = convertAngle(Constants.RADIUS, Constants.TRACK, adjusted_theta);
 
-		/*
-		 * System.out.println("adjusted theta:"+ adjusted_theta);
-		 * System.out.println("adjusted turning angle:" +
-		 * adjusted_turning_angle);
-		 */
-		/*
-		 * if ( delta_theta < 0){
-		 * 
-		 * turning_angle *= -1; adjusted_turning_angle *= -1;
-		 * 
-		 * }
-		 */
-
+		//turn by the minimal angle
 		if (-180 < delta_theta && delta_theta < 180) {
 
 			Constants.rightMotor.rotate(turning_angle, true);
@@ -169,7 +151,6 @@ public class Navigator {
 			Constants.rightMotor.rotate(-adjusted_turning_angle, true);
 			Constants.leftMotor.rotate(adjusted_turning_angle, false);
 		}
-		// System.out.println("final ang:"+ ActionController.odometer.getAng());
 
 	}
 
@@ -185,64 +166,47 @@ public class Navigator {
 	public void travelTo(double final_x, double final_y) {
 
 		turnTo(calculateAngle(ActionController.odometer.getX(), ActionController.odometer.getY(), final_x, final_y));
-
-		double delta_x = Math.abs(final_x - ActionController.odometer.getX()); // can
-																				// be
-																				// directly
-																				// placed
-																				// into
-																				// total
-																				// dist
 		
-		double delta_y = Math.abs(final_y - ActionController.odometer.getY()); // can
-																				// be
-																				// directly
-																				// placed
-																				// into
-																				// total
-																				// dist
-
+		//calculate component differnce in current poition relative to final position
+		double delta_x = Math.abs(final_x - ActionController.odometer.getX());																
+		double delta_y = Math.abs(final_y - ActionController.odometer.getY());
+		
+		//calculate total scalr distance between two points
 		double total_distance = Math.sqrt((Math.pow(delta_x, 2) + Math.pow(delta_y, 2)));
-
+		
+		//calculate rotations require by wheels to travel a set distance
 		double total_rotations = calculateForwardRotation(total_distance);
 	
+		//rotate wheels
 		ActionController.setSpeeds(Constants.FAST_FORWARD_SPEED, Constants.FAST_FORWARD_SPEED, false);
 		Constants.leftMotor.rotate((int) total_rotations, true);
 		Constants.rightMotor.rotate((int) total_rotations, false);
 
 	}
 
+	
+	/**
+	 * Moves the robot to the desired coordinate in the grid field by making the
+	 * motors advance in partitions instead of one piece
+	 * 
+	 * @param destination_x
+	 *            the X coordinate to travel to
+	 * @param destination_y
+	 *            the Y coordinate to travel to
+	 * @param partitions
+	 *            number of iterations to travel to
+	 */
 	public void partitionedPathTravelTo(double final_x, double final_y, int partitions) {
 
 		turnTo(calculateAngle(ActionController.odometer.getX(), ActionController.odometer.getY(), final_x, final_y)); // now
 																														// move
 																														// straight
 
-		double delta_x = Math.abs(final_x - ActionController.odometer.getX()); // can
-																				// be
-																				// directly
-																				// placed
-																				// into
-																				// total
-																				// dist
-		double delta_y = Math.abs(final_y - ActionController.odometer.getY()); // can
-																				// be
-																				// directly
-																				// placed
-																				// into
-																				// total
-																				// dist
-
+		double delta_x = Math.abs(final_x - ActionController.odometer.getX()); 									// dist
+		double delta_y = Math.abs(final_y - ActionController.odometer.getY()); 
 		double total_distance = Math.sqrt((Math.pow(delta_x, 2) + Math.pow(delta_y, 2)));
-																								// total
-																								// distance
-																								// between
-																								// points
-
-		double dP = total_distance / partitions; // incremental piece of
-													// distance in cm
-		dR = this.calculateForwardRotation(dP); // incremental piece of
-														// rotation in degrees
+		double dP = total_distance / partitions; // incremental piece of distance in cm
+		dR = this.calculateForwardRotation(dP); // incremental piece of rotation in degrees
 		
 		movementCounter = 0; // hold how many incremental pieces have been covered
 		
@@ -250,20 +214,21 @@ public class Navigator {
 		ActionController.setSpeeds(Constants.FAST_FORWARD_SPEED, Constants.FAST_FORWARD_SPEED, false);
 
 	}
-
+	
+	/**
+	 * Calculates rotations of a wheel for a given distance
+	 * @param distance distance to be travelled in cm
+	 * @return number of wheel rotations
+	 */
 	public double calculateForwardRotation(double distance) {
 
-		// we know the circumfrence C is 2PIr which corresponds to 360 degrees
+		// circumfrence C is 2PIr which corresponds to 360 degrees
 		// we travel a distance D which which contains D/C rotations
 		// total rotations in dregrees is therefore 360*(D/C)
 
-		// VERIFY RADIUS
-
-		// CAN BE DIRECTLY PLACED INTO PPTT
 
 		return 360 * (distance / (2 * Math.PI * Constants.RADIUS));
 
 	}
 
-	// TODO might have to convert all methods to work in degrees
 }

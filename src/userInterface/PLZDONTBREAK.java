@@ -5,7 +5,6 @@
  * before giving control to the ActionController class
  * 
  *  @author Bogdan Dumitru
- *  @version 0.1.0
  */
 
 
@@ -17,18 +16,20 @@ import lejos.hardware.Button;
 
 public class PLZDONTBREAK {
 
+	/**
+	 * Main Class of the program. Waits for the Enter button to be 
+	 * pressed and then loops the routine
+	 * @param args
+	 */
 	public static void main(String[] args) {
-
-		while (Button.waitForAnyPress() != Button.ID_ENTER);
-		
-		ActionController ac = new ActionController(Constants.DEFAULT_TIMEOUT_PERIOD, true);
+		isEnter();
+		ActionController ac = new ActionController();
 		
 		while(true)
 		{
 			ac.doRoutine();
 		}
 		
-		//final boolean TIME_TO_GO_TO_SLEEP = true; //zzz	
 	}
 	
 	
@@ -37,9 +38,9 @@ public class PLZDONTBREAK {
 	 * on the EV3 Brick. Pressing the Escape button will cause
 	 * the program to terminate
 	 */
-	public static void isEnter(int buttonChoice)
+	public static void isEnter()
 	{
-		buttonChoice = Button.waitForAnyPress();
+		int buttonChoice = Button.waitForAnyPress();
 		
 		if(buttonChoice == Button.ID_ESCAPE)
 		{
@@ -48,8 +49,5 @@ public class PLZDONTBREAK {
 		else{
 			return;
 		}
-	
-		
-		//while(Button.waitForAnyPress() != Button.ID_ENTER && Button.waitForAnyPress() != Button.ID_ESCAPE);
 	}
 }

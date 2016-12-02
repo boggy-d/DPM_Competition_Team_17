@@ -3,8 +3,7 @@
  * machine for the system as it controls the flow
  * of the routine.
  * 
- * @author Bogdan Dumitru, Eric Zimmermann
- * @version 0.2.0
+ * @author Bogdan Dumitru, Eric Zimmermann, Eva Suska
  * 
  */
 
@@ -19,6 +18,7 @@ import algorithm.ClawController;
 import algorithm.LightLocalizer;
 import algorithm.Navigator;
 import algorithm.ObstacleAvoider;
+import algorithm.OdometerCorrection;
 import algorithm.Searcher;
 import algorithm.USLocalizer;
 import lejos.hardware.Button;
@@ -36,7 +36,7 @@ import lejos.utility.TimerListener;
 import userInterface.LCDInfo;
 import wifi.WifiConnection;
 
-public class ActionController{
+public class ActionController {
 
 	//Instantiate more objects
 	public static Odometer odometer;
@@ -47,6 +47,7 @@ public class ActionController{
 	public static Searcher searcher;
 	public static ObstacleAvoider avoider;
 	public static TimeRecorder timeRecorder;
+	public static OdometerCorrection odometerCorrection;
 
 	Point[] zone;	
 	static Point[] restrictedZone;	
@@ -57,7 +58,6 @@ public class ActionController{
 	double destX, destY;
 	
 	private Timer acTimer;
-//	private double movementCounter = 0; // hold how many incremental pieces have been covered
 	static boolean isSearching = false;
 	
 	//Create competition variables
@@ -65,47 +65,33 @@ public class ActionController{
 	
 	/**
 	 * Class constructor that does localization and sets up the thread loop
-	 * @param INTERVAL the refresh rate of the Timer
-	 * @param autostart the flag that start the Timer on startup or not
 	 */
-	public ActionController(int INTERVAL, boolean autostart)
+	public ActionController()
 	{
-		
-
-		odometer = new Odometer(30, true, 0, 0, 0);	
-
+		//Create odometer and sensors before gtting wifi info
+		odometer = new Odometer(30, true, 0, 0, 0);
 		usPoller = new USPoller(Constants.frontUsSensor, Constants.sideUsSensor);
-
 		lightPoller = new LightPoller(Constants.lightSensor, Constants.colorSensor);
 		
-		//LCDInfo lcd = new LCDInfo();
-
-		navigator = new Navigator();
-
-		claw = new ClawController();
+		setWifiInfo();
 		
-		// set wifi info for testing only
-		setTestWifiInfo();
-		// setWifiInfo();
-		
+		//Starts round time
 		timeRecorder = new TimeRecorder();
-//		avoider = new ObstacleAvoider();
-
-//		// localize
-//		USLocalizer usLocalizer = new USLocalizer();
-//		usLocalizer.usLocalize();
-//
-//		LightLocalizer lightLocalizer = new LightLocalizer();
-//		lightLocalizer.lightlocalize();
-//
-//		// travel to origin and face 0 degrees
-//		ActionController.navigator.travelTo(0,0);
-//		ActionController.navigator.turnTo(0);
-//		
-//				
-//		}
 		
-		// update position to the actual corner it starts in
+		//Instantiates rest of objects
+		claw = new ClawController();
+		avoider = new ObstacleAvoider();
+		navigator = new Navigator();
+		
+		//Localize to corner
+		USLocalizer usLocalizer = new USLocalizer();
+		LightLocalizer lightLocalizer = new LightLocalizer();
+		usLocalizer.usLocalize();
+		lightLocalizer.lightlocalize();
+		ActionController.navigator.travelTo(0,0);
+		ActionController.navigator.turnTo(0);
+
+		//Updates odometer position based on starting corner
 		double angle = odometer.getAng();
 		double[] position;
 		boolean[] update = {true, true, true};
@@ -124,66 +110,27 @@ public class ActionController{
 		}
 		ActionController.odometer.setPosition(position, update);		
 
-
-		if (ROLE == 0) {
-			// tower builder get green zone
-			zone = getZoneCorners(LGZx, LGZy, UGZx, UGZy);
-			restrictedZone = getZoneCorners(LRZx, LRZy, URZx, URZy);
-			// set tower height
-			maxTowerHeight = 2;
-
-		} else {
-			// garbage collector get red zone
-			zone = getZoneCorners(LRZx, LRZy, URZx, URZy);
-			restrictedZone = getZoneCorners(LGZx, LGZy, UGZx, UGZy);
-			// set tower height
-			maxTowerHeight = 1;
-		}
-
+		jobAssigned();
+		//Starts odometry correction
+		odometerCorrection = new OdometerCorrection(25, true);
+		
+		//Initializes the searching algorithm
 		searcher = new Searcher(zone, restrictedZone, maxTowerHeight);
 		
-		i = 0;  //(counter for corners)
+		//Set the position of the first corner to travel to
+		i = 0;
 		destX = searcher.cornersAndAngles.get(i).get("x");
 		destY = searcher.cornersAndAngles.get(i).get("y");
 		navigator.partitionedPathTravelTo(this.destX, this.destY, Constants.MOVEMENT_PARTITIONS);
-		
-		
-//		// navigate to the first corner of the zone while avoiding obstacles
-//		avoider.start();
-//		navigator.travelTo(zone[0].getX(), zone[0].getY());
-//		avoider.stop();
-
-		// once it is done searching go back to home
-//		goToStart();
-
-	}
-
-
-	/**
-	 * Stops the Timer
-	 * @see Timer
-	 * @see TimerListener
-	 */
-	public void stop() {
-		if (acTimer != null)
-			acTimer.stop();
 	}
 
 	/**
-	 * Starts the Timer
-	 * @see Timer
-	 * @see TimerListener
-	 */
-	public void start() {
-		if (acTimer != null)
-			acTimer.start();
-	}
-	/**
-	 * Turns the left and right motors at
-	 * the specified speeds
+	 * Sets the speeds of the motors and if they
+	 * should be activated or not
 	 * 
 	 * @param lSpd	the speed of the left motor
 	 * @param rSpd	the speed of the right motor
+	 * @param move true if the robot starts moving, false if not
 	 */
 	public static void setSpeeds(int lSpd, int rSpd, boolean move) {
 
@@ -236,60 +183,9 @@ public class ActionController{
 		stopMotors();
 	}
 
-
-	/**
-	 * For testing only
-	 * sets "fake" wifi info
-	 */
-	public void setTestWifiInfo() {
-//		// TEST CASE 1
-//		// set zones
-//		LGZy = 8;
-//		LGZx = 0;
-//
-//		UGZy = 9;
-//		UGZx = 2;
-//
-//		LRZy = 6;
-//		LRZx = 2;
-//
-//		URZy = 8;
-//		URZx = 3;
-//
-//		// set starting corner
-//		SC = 4;
-//
-//		// tower builder
-//		ROLE = 0;
-		
-		// TEST CASE 2
-		// set zones
-		LGZy = 1;
-		LGZx = 1;
-		
-		UGZy = 2;
-		UGZx = 2;
-		
-		LRZy = 6;
-		LRZx = 2;
-		
-		URZy = 8;
-		URZx = 3;
-		
-		// set starting corner
-		SC = 1;
-
-		// tower builder
-		ROLE = 0;
-				
-	}
-
-
 	/**
 	 * Gets the competition information provided by WiFi
 	 * and stores it into fields
-	 * 
-	 * @see WifiConnection
 	 */
 	public void setWifiInfo() {
 
@@ -332,8 +228,6 @@ public class ActionController{
 					SC = t.get("BSC");
 					ROLE = 0;
 				}
-
-				System.out.println(LGZy + " " + LGZx + " " + UGZy + " " + UGZx + " " + LRZy + " " + LRZx + " " + URZy + " " + URZx + " " + SC + " " + ROLE);
 			}
 		}
 	}
@@ -348,36 +242,25 @@ public class ActionController{
 	}
 
 	/**
-	 * Sets up the odometer thread
-	 * 
-	 * @see Odometer
-	 */
-	public void startOdometer() {
-		//TODO Instantiate odometer. Start odometer thread
-	}
-
-	/**
-	 * Calculates the remaining time and returns if there is
-	 * enough time to continue the routine
-	 * 
-	 * @return	<code>true</code> if the time is almost up, otherwise returns <code>false</code>
-	 */
-	public boolean isTimeShort() {
-
-		//TODO Figure out how to get the time. Write algorithm to calculate remaining time
-
-		return false;
-	}
-
-	/**
 	 * Reads the <code>BTN</code> and <code>CTN</code> and returns the
 	 * robots job for the heat
-	 * @return <code>true</code> if the robot is a builder or <code>false</code> if it is a collector
 	 */
-	public boolean jobAssigned() {
-		//TODO Write simple if-else. Create fields
+	public void jobAssigned() {
+		// Decide the role of the robot based on wifi info
+		if (ROLE == 0) {
+			// tower builder get green zone
+			zone = getZoneCorners(LGZx, LGZy, UGZx, UGZy);
+			restrictedZone = getZoneCorners(LRZx, LRZy, URZx, URZy);
+			// set tower height
+			maxTowerHeight = 2;
 
-		return false;
+		} else {
+			// garbage collector get red zone
+			zone = getZoneCorners(LRZx, LRZy, URZx, URZy);
+			restrictedZone = getZoneCorners(LGZx, LGZy, UGZx, UGZy);
+			// set tower height
+			maxTowerHeight = 1;
+		}
 
 	}
 
@@ -474,7 +357,7 @@ public class ActionController{
 	/**
 	 * Moves the robot to the starting corner
 	 */
-	public void goToStart() {		
+	public static void goToStart() {		
 		// avoid obstacles on the way
 //		avoider.start();
 		
@@ -491,9 +374,6 @@ public class ActionController{
 			// Go back to upper left corner
 			navigator.travelTo(-Constants.DISTANCE_IN_CORNER, convertTilesToCm(10) + Constants.DISTANCE_IN_CORNER);
 		}
-		
-//		// stop avoider
-//		avoider.stop();
 	}
 
 	/**
@@ -546,20 +426,12 @@ public class ActionController{
 							claw.pickUpBlock(); // WHAT IF WE GO BACKWARDS DOES
 												// THE PPTT STILL WORK
 
-							// TODO use eva's algorithm to figure out where to
-							// place the next block
 							searcher.chooseNextBlockPosition();
 							destX = searcher.blockLocation.x;
 							destY = searcher.blockLocation.y;
 							navigator.partitionedPathTravelTo(this.destX, this.destY, Constants.MOVEMENT_PARTITIONS);
 							
 							isSearching = false;
-							// destX = x coord of where we want to place block
-							// destY = y coord of where we want to place block
-							// navigator.partitionedPathTravelTo(this.destX,
-							// this.destY, Constants.MOVEMENT_PARTITIONS);
-
-							// isSearching = false;
 						}
 
 						// Not a blue block, obstacle avoidance
@@ -583,17 +455,15 @@ public class ActionController{
 					Constants.rightMotor.rotate((int) navigator.dR, false);
 
 					 setSpeeds(Constants.FORWARD_SPEED,Constants.FORWARD_SPEED, true);
-					// TO ENSURE WHEELS KEEP MOVING BETWEEN ITERATIONS
 
 					++navigator.movementCounter;
 				}
 
 				// Search mode navigation, keep going towards object
 				else {
-					// TODO USE EVA'S ALGORITHM TO TURN A BIT IF THE OBJECT ISNT
-					// SEEN NO MORE
+
 					while (ActionController.usPoller.getFrontDistance(Constants.SEARCHING_CLIP) < Constants.SEARCH_DISTANCE_THRESHOLD
-							/*&& ActionController.inBounds(ActionController.calculatePosition(ActionController.odometer.getPosition(), ActionController.usPoller.getFrontDistance(Constants.SEARCHING_CLIP)))*/)
+							&& ActionController.inBounds(ActionController.calculatePosition(ActionController.odometer.getPosition(), ActionController.usPoller.getFrontDistance(Constants.SEARCHING_CLIP))))
 					{
 						setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED, true);
 						if(ActionController.usPoller.getFrontDistance(255) < 8)
@@ -668,20 +538,6 @@ public class ActionController{
 						destY = searcher.cornersAndAngles.get(i).get("y");
 						navigator.partitionedPathTravelTo(this.destX, this.destY, Constants.MOVEMENT_PARTITIONS);
 					}
-					
-					
-					// TODO EVA PLZ
-					// scanForBlocks
-					// if scanForBlocks detects an object while turning, record
-					// the angle, break out of searching algorithm, and set
-					// isSearching to true.
-					// else if scanForBlocks is successfully completed
-					// i++ (counter for corners[i])
-					// destX = corner[i] x coord;
-					// destY = corner[i] y coord;
-					// navigator.partitionedPathTravelTo(this.destX, this.destY,
-					// Constants.MOVEMENT_PARTITIONS);
-
 				}
 			}
 		}
