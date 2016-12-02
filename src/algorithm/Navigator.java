@@ -247,7 +247,7 @@ public class Navigator {
 		movementCounter = 0; // hold how many incremental pieces have been covered
 		
 		// for timed out
-//		ActionController.setSpeeds(Constants.FAST_FORWARD_SPEED, Constants.FAST_FORWARD_SPEED, false);
+		ActionController.setSpeeds(Constants.FAST_FORWARD_SPEED, Constants.FAST_FORWARD_SPEED, false);
 
 	}
 

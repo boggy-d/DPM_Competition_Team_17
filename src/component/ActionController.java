@@ -46,15 +46,19 @@ public class ActionController{
 	public static ClawController claw;
 	public static Searcher searcher;
 	public static ObstacleAvoider avoider;
+	public static TimeRecorder timeRecorder;
 
 	Point[] zone;	
 	static Point[] restrictedZone;	
 	Point blockLocation;
 	int maxTowerHeight;
 	int towerHeight;
-
+	int i;
+	double destX, destY;
+	
 	private Timer acTimer;
 //	private double movementCounter = 0; // hold how many incremental pieces have been covered
+	static boolean isSearching = false;
 	
 	//Create competition variables
 	static int SC, ROLE, LRZx, LRZy, URZx, URZy, LGZx, LGZy, UGZx, UGZy;
@@ -66,23 +70,25 @@ public class ActionController{
 	 */
 	public ActionController(int INTERVAL, boolean autostart)
 	{
-		// set wifi info for testing only
-		setTestWifiInfo();
-		//setWifiInfo();
+		
 
 		odometer = new Odometer(30, true, 0, 0, 0);	
 
 		usPoller = new USPoller(Constants.frontUsSensor, Constants.sideUsSensor);
 
 		lightPoller = new LightPoller(Constants.lightSensor, Constants.colorSensor);
-
 		
-		LCDInfo lcd = new LCDInfo();
+		//LCDInfo lcd = new LCDInfo();
 
 		navigator = new Navigator();
 
 		claw = new ClawController();
 		
+		// set wifi info for testing only
+		setTestWifiInfo();
+		// setWifiInfo();
+		
+		timeRecorder = new TimeRecorder();
 //		avoider = new ObstacleAvoider();
 
 //		// localize
@@ -95,14 +101,7 @@ public class ActionController{
 //		// travel to origin and face 0 degrees
 //		ActionController.navigator.travelTo(0,0);
 //		ActionController.navigator.turnTo(0);
-
-//		// TEST
-//		while (true) {
-//			if(lightPoller.getColorData()[2] > lightPoller.getColorData()[0]) {
-//				Sound.beep();
-//				Delay.msDelay(1000);
-//
-//			}
+//		
 //				
 //		}
 		
@@ -143,17 +142,19 @@ public class ActionController{
 
 		searcher = new Searcher(zone, restrictedZone, maxTowerHeight);
 		
+		i = 0;  //(counter for corners)
+		destX = searcher.cornersAndAngles.get(i).get("x");
+		destY = searcher.cornersAndAngles.get(i).get("y");
+		navigator.partitionedPathTravelTo(this.destX, this.destY, Constants.MOVEMENT_PARTITIONS);
+		
+		
 //		// navigate to the first corner of the zone while avoiding obstacles
 //		avoider.start();
 //		navigator.travelTo(zone[0].getX(), zone[0].getY());
 //		avoider.stop();
 
-		// search for blocks
-//		searcher.start();
-		searcher.search();
-
 		// once it is done searching go back to home
-		goToStart();
+//		goToStart();
 
 	}
 
@@ -498,81 +499,204 @@ public class ActionController{
 	/**
 	 * Main routine of robot
 	 */
-//	public void doRoutine() {
-//
-//		//Time is still remaining, do routine
-//		if(time still remaining)
-//		{
-//			//Travel to not done, keep going to POI
-//			if(navigation not done)
-//			{
-//				//Object in front detected
-//				if(usPoller.isFrontBlock())
-//				{
-//					setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED, true); //Get closer slower to detect color better
-//					
-//					//Block is blue, pick it up
-//					if(lightPoller.isBlue())
-//					{
-//						claw.pickUpBlock();
-//					}
-//					
-//					//Obstacle avoidance
-//					else
-//					{
-//						
-//					}
-//				}
-//				
-//				//Keep navigating to POI
-//				else
-//				{
-//					
-//				}
-//			}
-//			
-//			//Travel done, either search or place block
-//			else
-//			{
-//				//Claw has a block already, place block and continue (might need to retravel to POI)
-//				if(claw.isBlockGrabbed())
-//				{
-//					//Detected an existing block where the block is supposed to be placed, stack
-//					if(usPoller.isFrontBlock() && lightPoller.isBlue())
-//					{
-//						claw.placeBlock(true);
-//					}
-//					//No block where the block is supposed to be placed, place block on ground
-//					else
-//					{
-//						claw.placeBlock(false);
-//					}
-//				}
-//				//Do searching algorithm
-//				else(search)
-//				{
-//					
-//				}
-//			}
-//		}
-//		
-//		//Round almost over, stop everything and go to start
-//		else
-//		{
-//			//Avoid any block
-//			if(usPoller.isFrontBlock())
-//			{
-//				
-//			}
-//			//Move to starting position
-//			else
-//			{
-//				goToStart();
-//				System.exit(0);
-//			}
-//			
-//		}
-//
-//	}
+	public void doRoutine() {
+		// Time is still remaining, do routine
+		if (timeRecorder.isTimeRemaining()) {
+			// Travel to not done, keep going to POI
+			if (navigator.movementCounter != Constants.MOVEMENT_PARTITIONS  || isSearching )
+																			// (this
+																			// flag
+																			// overrides
+																			// the
+																			// need
+																			// to
+																			// not
+																			// be
+																			// at
+																			// destination
+																			// to
+																			// check
+																			// for
+																			// blocks
+																			// (basically
+																			// makes
+																			// it
+																			// work
+																			// when
+																			// searching
+																			// too)
+			{
+				// Object in front detected
+				if (usPoller.isFrontBlock()) {
+					// Robot doesn't currently have a block grabbed
+					if (!claw.isBlockGrabbed()) {
+						// Search mode needs to constantly moves motor, navigate
+						// mode only sets speeds cause movements done by
+						// partitions
+						if (isSearching) {
+							setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED, true); // Get closer slower to detect color better
+							
+						} else {
+							setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED, false); // Set the motors to a lower speed
+						}
 
+						// Block is blue, pick it up
+						if (lightPoller.isBlue()) {
+							System.out.println("BLUE OK!");
+							claw.pickUpBlock(); // WHAT IF WE GO BACKWARDS DOES
+												// THE PPTT STILL WORK
+
+							// TODO use eva's algorithm to figure out where to
+							// place the next block
+							searcher.chooseNextBlockPosition();
+							destX = searcher.blockLocation.x;
+							destY = searcher.blockLocation.y;
+							navigator.partitionedPathTravelTo(this.destX, this.destY, Constants.MOVEMENT_PARTITIONS);
+							
+							isSearching = false;
+							// destX = x coord of where we want to place block
+							// destY = y coord of where we want to place block
+							// navigator.partitionedPathTravelTo(this.destX,
+							// this.destY, Constants.MOVEMENT_PARTITIONS);
+
+							// isSearching = false;
+						}
+
+						// Not a blue block, obstacle avoidance
+						else {
+							//avoider.avoidObstacle();
+						}
+					}
+
+					// The claw already has a block, obstacle avoidance
+					else {
+						//avoider.avoidObstacle();
+					}
+				}
+
+				// Normal navigation, keep navigating to POI
+				else if (!isSearching) // makes it so movement uses pPTT when
+										// not searching and setSpeeds when
+										// searching
+				{
+					Constants.leftMotor.rotate((int) navigator.dR, true);
+					Constants.rightMotor.rotate((int) navigator.dR, false);
+
+					 setSpeeds(Constants.FORWARD_SPEED,Constants.FORWARD_SPEED, true);
+					// TO ENSURE WHEELS KEEP MOVING BETWEEN ITERATIONS
+
+					++navigator.movementCounter;
+				}
+
+				// Search mode navigation, keep going towards object
+				else {
+					// TODO USE EVA'S ALGORITHM TO TURN A BIT IF THE OBJECT ISNT
+					// SEEN NO MORE
+					while (ActionController.usPoller.getFrontDistance(Constants.SEARCHING_CLIP) < Constants.SEARCH_DISTANCE_THRESHOLD
+							/*&& ActionController.inBounds(ActionController.calculatePosition(ActionController.odometer.getPosition(), ActionController.usPoller.getFrontDistance(Constants.SEARCHING_CLIP)))*/)
+					{
+						setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED, true);
+						if(ActionController.usPoller.getFrontDistance(255) < 8)
+						{ stopMotors();
+						break;
+						}
+					}
+					
+					if(ActionController.usPoller.getFrontDistance(255) < 8)
+					{
+						// keep rotating counter clockwise towards the block
+						goForward(3, Constants.FORWARD_SPEED);
+						Delay.msDelay(200);
+						if (lightPoller.isBlue())
+						{
+							claw.pickUpBlock();
+						}
+						else
+						{
+							ActionController.setSpeeds(-Constants.SLOW_ROTATION_SPEED, Constants.SLOW_ROTATION_SPEED, true);
+							Delay.msDelay(200);
+							ActionController.stopMotors();
+						}
+						
+						
+						
+					}
+					
+				}
+			}
+
+			// Travel done, either search or place block
+			else {
+				// ALGORITHM, MUST DISCUSS
+				if (claw.isBlockGrabbed()) {
+					// Detected an existing block where the block is supposed to
+					// be placed, stack
+					if (usPoller.isFrontBlock() && lightPoller.isBlue()) {
+						claw.placeBlock(true);
+					}
+					// No block where the block is supposed to be placed, place
+					// block on ground
+					else {
+						claw.placeBlock(false);
+					}
+					// Go back to current corner
+					destX = searcher.cornersAndAngles.get(i).get("x");
+					destY = searcher.cornersAndAngles.get(i).get("y");
+					navigator.partitionedPathTravelTo(this.destX, this.destY, Constants.MOVEMENT_PARTITIONS);
+				}
+
+				// We're at one of the corners, do scanForBlocks
+				else {
+					
+					// turn to starting angle of that corner
+					ActionController.navigator.turnTo(searcher.cornersAndAngles.get(i).get("angle"));
+
+					// get the angle to stop scanning at
+					double endingAngle = searcher.cornersAndAngles.get(i).get("angle") + searcher.degreesToScan;
+					// wrap ending angle to not be over 360 degrees
+					endingAngle = ActionController.navigator.wrapAngle(endingAngle);
+					
+					// start scanning for blocks
+					if(searcher.scanForBlocks(endingAngle, searcher.cornersAndAngles.get(i).get("x"), searcher.cornersAndAngles.get(i).get("y")))
+					{
+						isSearching = true;
+					}
+					else
+					{
+						i++; //(counter for corners[i])
+						destX = searcher.cornersAndAngles.get(i).get("x");
+						destY = searcher.cornersAndAngles.get(i).get("y");
+						navigator.partitionedPathTravelTo(this.destX, this.destY, Constants.MOVEMENT_PARTITIONS);
+					}
+					
+					
+					// TODO EVA PLZ
+					// scanForBlocks
+					// if scanForBlocks detects an object while turning, record
+					// the angle, break out of searching algorithm, and set
+					// isSearching to true.
+					// else if scanForBlocks is successfully completed
+					// i++ (counter for corners[i])
+					// destX = corner[i] x coord;
+					// destY = corner[i] y coord;
+					// navigator.partitionedPathTravelTo(this.destX, this.destY,
+					// Constants.MOVEMENT_PARTITIONS);
+
+				}
+			}
+		}
+
+		// Round almost over, stop everything and go to start
+		else {
+			// Obstacle avoidance on any block
+			if (usPoller.isFrontBlock()) {
+				//avoider.avoidObstacle();
+			}
+			// Move to starting position
+			else {
+				goToStart();
+			}
+
+		}
+	}
 }

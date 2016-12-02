@@ -22,13 +22,17 @@ import lejos.hardware.Sound;
 import lejos.robotics.geometry.Point;
 import lejos.utility.Delay;
 
-public class Searcher extends Thread {
+public class Searcher{
 	Point[] zone;	
 	Point[] restrictedZone;	
-	Point blockLocation;
+	public Point blockLocation;
 	int maxTowerHeight;
 	int towerHeight;
-
+	
+	public List<HashMap<String, Double>> cornersAndAngles = new ArrayList<HashMap<String, Double>>();
+	public double degreesToScan;
+	public double currentAngle;
+	
 	public Searcher(Point[] zone, Point[] restrictedZone, int maxTowerHeight) {
 		this.zone = zone;
 		this.restrictedZone = restrictedZone;
@@ -37,43 +41,33 @@ public class Searcher extends Thread {
 		// initialize starting block placing position
 		blockLocation = new Point((float)(zone[0].x + Constants.DELTA_X), (float)(zone[0].y + Constants.TILE_LENGTH / 4));
 		towerHeight = 0;
-	}
-
-	public void run() {
-		search();
-	}
-	
-	/**
-	 * Search for blocks
-	 * @param corners a Point array of each of the corners of the zone to search
-	 * 
-	 */
-	public void search() {
-		// a certain amount up from the corner so that it is not exactly in the corner
+		
+		// a certain amount up from the corner so that it is not exactly in the
+		// corner
 		int xBuffer = (int) (Constants.DISTANCE_FROM_CORNER * Math.sin(45));
 		int yBuffer = (int) (Constants.DISTANCE_FROM_CORNER * Math.cos(45));
-		
-		// create a List of hashmaps of the position the robot should be at for each corner and the angle it should turn to for each corner
-		List<HashMap<String, Double>> cornersAndAngles = new ArrayList<HashMap<String, Double>>();
-		
+
+		// create a List of hashmaps of the position the robot should be at for
+		// each corner and the angle it should turn to for each corner
+
 		HashMap<String, Double> lowerLeft = new HashMap<String, Double>();
 		lowerLeft.put("x", (double) (zone[0].x - xBuffer));
 		lowerLeft.put("y", (double) (zone[0].y - yBuffer));
 		lowerLeft.put("angle", (double) (90 + Constants.STARTING_SCANNING_ANGLE));
 
 		HashMap<String, Double> lowerRight = new HashMap<String, Double>();
-		lowerRight.put("x", (double) ((int)zone[1].x + xBuffer));
-		lowerRight.put("y", (double) ((int)zone[1].y - yBuffer) );
+		lowerRight.put("x", (double) ((int) zone[1].x + xBuffer));
+		lowerRight.put("y", (double) ((int) zone[1].y - yBuffer));
 		lowerRight.put("angle", (double) (180 + Constants.STARTING_SCANNING_ANGLE));
 
 		HashMap<String, Double> upperRight = new HashMap<String, Double>();
-		upperRight.put("x", (double) ((int)zone[3].x + xBuffer));
-		upperRight.put("y", (double) ((int)zone[3].y + yBuffer));
+		upperRight.put("x", (double) ((int) zone[3].x + xBuffer));
+		upperRight.put("y", (double) ((int) zone[3].y + yBuffer));
 		upperRight.put("angle", (double) (270 + Constants.STARTING_SCANNING_ANGLE));
 
 		HashMap<String, Double> upperLeft = new HashMap<String, Double>();
-		upperLeft.put("x", (double) ((int)zone[2].x - xBuffer));
-		upperLeft.put("y", (double) ((int)zone[2].y + yBuffer));
+		upperLeft.put("x", (double) ((int) zone[2].x - xBuffer));
+		upperLeft.put("y", (double) ((int) zone[2].y + yBuffer));
 		upperLeft.put("angle", (double) Constants.STARTING_SCANNING_ANGLE);
 
 		cornersAndAngles.add(lowerLeft);
@@ -82,28 +76,8 @@ public class Searcher extends Thread {
 		cornersAndAngles.add(upperLeft);
 
 		// calculate the degrees to scan
-		double degreesToScan = 270 - (2 * Constants.STARTING_SCANNING_ANGLE);
-
-		// for each corner of the zone search for blocks
-		for (HashMap<String, Double> corner : cornersAndAngles) {
-			// TODO use zone avoiding algorithm (wavefront ect) when traveling to the corner
-			// travel to the corner
-			ActionController.navigator.travelTo(corner.get("x"), corner.get("y"));
-
-			// turn to starting angle of that corner
-			ActionController.navigator.turnTo(corner.get("angle"));
-
-			// get the angle to stop scanning at
-			double endingAngle = corner.get("angle") + degreesToScan;
-			// wrap ending angle to not be over 360 degrees
-			endingAngle = ActionController.navigator.wrapAngle(endingAngle);
-			
-			// start scanning for blocks
-			scanForBlocks(endingAngle, corner.get("x"), corner.get("y"));
-		}
-
-		// once it scanned all the corners
-		// TODO implement secondary searching steps here
+		degreesToScan = 270 - (2 * Constants.STARTING_SCANNING_ANGLE);
+		
 	}
 
 	/**
@@ -112,7 +86,7 @@ public class Searcher extends Thread {
 	 * @param cornerX the x coordinate of the corner you are searching
 	 * @param cornerY the y coordinate of the corner you are searching
 	 */
-	public void scanForBlocks(double endingAngle, Double cornerX, Double cornerY) {		
+	public boolean scanForBlocks(double endingAngle, Double cornerX, Double cornerY) {		
 		// scan until it reaches ending angle
 		
 		// start rotating counter clockwise
@@ -136,9 +110,11 @@ public class Searcher extends Thread {
 				// For testing only
 				Sound.beep();
 				
+				currentAngle = ActionController.odometer.getAng();
+				
 				// is is a block, check what block it is 
-				getBlock(endingAngle, ActionController.odometer.getAng(), cornerX, cornerY);
-				return;
+				//getBlock(endingAngle, ActionController.odometer.getAng(), cornerX, cornerY);
+				return true;
 			}
 		}
 		
@@ -149,7 +125,7 @@ public class Searcher extends Thread {
 //		Button.waitForAnyPress();
 		
 		// no block found, return 
-		return;
+		return false;
 	}
 
 	/**

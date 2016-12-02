@@ -35,7 +35,7 @@ public class Constants {
 	public static final Port colorPort = LocalEV3.get().getPort("S3");
 	public static final SensorModes colorSensor = new EV3ColorSensor(colorPort);
 	
-	public final static int MOVEMENT_PARTITIONS = 0;
+	public final static int MOVEMENT_PARTITIONS = 20;
 	
 	//motor speeds
 	public final static int FAST_FORWARD_SPEED = 250;

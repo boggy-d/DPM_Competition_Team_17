@@ -15,7 +15,7 @@ import component.ActionController;
 import component.Constants;
 import lejos.hardware.Button;
 
-public class CompetitionDemo {
+public class PLZDONTBREAK {
 
 	public static void main(String[] args) {
 
@@ -25,7 +25,7 @@ public class CompetitionDemo {
 		
 		while(true)
 		{
-			//ac.doRoutine();
+			ac.doRoutine();
 		}
 		
 		//final boolean TIME_TO_GO_TO_SLEEP = true; //zzz	
@@ -39,7 +39,7 @@ public class CompetitionDemo {
 	 */
 	public static void isEnter(int buttonChoice)
 	{
-		while(buttonChoice != Button.ID_ENTER && buttonChoice != Button.ID_ESCAPE);
+		buttonChoice = Button.waitForAnyPress();
 		
 		if(buttonChoice == Button.ID_ESCAPE)
 		{

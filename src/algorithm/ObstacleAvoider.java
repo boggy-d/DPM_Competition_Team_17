@@ -14,13 +14,14 @@ import component.Constants;
 import lejos.utility.Timer;
 import lejos.utility.TimerListener;
 
-public class ObstacleAvoider implements TimerListener {
+public class ObstacleAvoider{
 	private int distance = 0;
 	private Timer obstacleTimer;
 	
 	private double initialTheta = 0; //The angle the robot detects the wall at
 	private double currentTheta;
 	private boolean isCleared = false;
+	private boolean isDone = false;
 	//Default Constructor
 	
 	public ObstacleAvoider()
@@ -30,13 +31,9 @@ public class ObstacleAvoider implements TimerListener {
 		//turn robot 90deg to right then move forward 
 		ActionController.navigator.turnTo(ActionController.navigator.wrapAngle(ActionController.odometer.getAng() - 90));
 		ActionController.setSpeeds(Constants.AVOID_SPEED_STRAIGHT, Constants.AVOID_SPEED_STRAIGHT,true);
-		this.obstacleTimer = new Timer(Constants.LCD_REFRESH, this);
-		
-		obstacleTimer.start();
 		
 	}
-
-
+	
 	/**
 	 * Checks how long the USS has been detecting values
 	 * under the threshold and returns if the object is a wall
@@ -70,6 +67,35 @@ public class ObstacleAvoider implements TimerListener {
 	 */
 	public void avoidObstacle()
 	{
+		while(!isDone)
+		{
+			currentTheta = ActionController.odometer.getAng() % 360;
+
+			// If the corner has been cleared and the angle is about 90 deg from the
+			// pre-bangbang angle stop wall-following
+			if (isCleared && Math.abs(initialTheta - currentTheta) > Constants.FINISH_ANGLE_ERROR) {
+				ActionController.stopMotors();
+				isCleared = false;
+				isDone = true;
+			}
+
+			// If the pre-bangbang angle is similar to the angle from the odometer
+			// during wall-following
+			// the corner has been cleared
+			else if ((Math.abs(initialTheta - currentTheta)) <= Constants.CORNER_ANGLE_ERROR) {
+				isCleared = true;
+			}
+
+			// Else do bangbang
+			else {
+				bangBang();
+			}
+		}
+		isDone = false;
+	}
+
+	
+	public void bangBang() {
 		// Processes a movement based on the US passed
 		// distance is within the bandCenter, it moves straight
 		if (ActionController.usPoller.getSideDistance() <= Constants.BANDCENTER + Constants.BANDWIDTH
@@ -90,32 +116,5 @@ public class ObstacleAvoider implements TimerListener {
 			ActionController.setSpeeds(Constants.AVOID_SPEED_LOW, Constants.AVOID_SPEED_HIGH, true);
 		}
 		
-	}
-
-	
-	@Override
-	public void timedOut() {
-		currentTheta = ActionController.odometer.getAng() % 360;
-		
-		//If the corner has been cleared and the angle is about 90 deg from the pre-bangbang angle stop wall-following
-		if(isCleared && Math.abs(initialTheta - currentTheta) > Constants.FINISH_ANGLE_ERROR)
-		{
-			ActionController.stopMotors();
-			isCleared = false;	
-			this.obstacleTimer.stop();
-		}
-		
-		//If the pre-bangbang angle is similar to the angle from the odometer during wall-following
-		//the corner has been cleared
-		else if((Math.abs(initialTheta - currentTheta)) <= Constants.CORNER_ANGLE_ERROR)
-		{
-			isCleared = true;
-		}
-		
-		//Else do bangbang
-		else
-		{
-			avoidObstacle();
-		}
 	}
 }

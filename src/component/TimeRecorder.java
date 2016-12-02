@@ -12,20 +12,21 @@ package component;
 import lejos.utility.Timer;
 import lejos.utility.TimerListener;
 
-public class TimeRecorder implements TimerListener{
+public class TimeRecorder{
 	
 	private long beginningTime, currentTime, timeRemaining;
 	private boolean isTimeRemaining;
 	private Timer timeTimer;
 	
-	public TimeRecorder(int INTERVAL, boolean autostart)
+	public TimeRecorder()
 	{
-		if (autostart) {
-			// if the timeout interval is given as <= 0, default to 20ms timeout 
-			timeTimer = new Timer((INTERVAL <= 0) ? INTERVAL : Constants.DEFAULT_TIMEOUT_PERIOD, this);
-			timeTimer.start();
-		} else
-			timeTimer = null;
+		setBeginningTime();
+//		if (autostart) {
+//			// if the timeout interval is given as <= 0, default to 20ms timeout 
+//			timeTimer = new Timer((INTERVAL <= 0) ? INTERVAL : Constants.DEFAULT_TIMEOUT_PERIOD, this);
+//			timeTimer.start();
+//		} else
+//			timeTimer = null;
 	}
 	
 	/**
@@ -72,29 +73,32 @@ public class TimeRecorder implements TimerListener{
 	public long calculateTimeRemaining()
 	{
 		//TODO Simple subtraction to calculate time remaining
-		
 		return (Constants.FIVE_MINUTES + this.beginningTime) - this.currentTime;
 	}
 	
 	public boolean isTimeRemaining()
 	{
+		setCurrentTime();
+
+		if (calculateTimeRemaining() < Constants.TIME_TO_GO_TO_START) {
+			isTimeRemaining = false;
+		} else {
+			isTimeRemaining = true;
+		}
 		return isTimeRemaining;
 	}
 
-	@Override
-	public void timedOut() {
-		// TODO Get data. Calculate time (basically use the above methods)
-		
-		setCurrentTime();
-		
-		if(calculateTimeRemaining() < Constants.TIME_TO_GO_TO_START)
-		{
-			isTimeRemaining = false;
-		}
-		else
-		{
-			isTimeRemaining = true;
-		}
-		
-	}
+//	@Override
+//	public void timedOut() {
+//		// TODO Get data. Calculate time (basically use the above methods)
+//		setCurrentTime();
+//
+//		if (calculateTimeRemaining() < Constants.TIME_TO_GO_TO_START) {
+//			isTimeRemaining = false;
+//		} else {
+//			isTimeRemaining = true;
+//		}
+//		
+//		
+//	}
 }
